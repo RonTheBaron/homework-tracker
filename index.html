@@ -10,10 +10,10 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { min-height: 100vh; background: #0a0a0f; font-family: 'Courier New', monospace; background-image: radial-gradient(ellipse at 20% 50%, #0d1a2a 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, #1a0d1a 0%, transparent 60%); color: #fff; direction: rtl; }
     header { border-bottom: 1px solid #222; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); position: sticky; top: 0; z-index: 100; }
-    .header-title-label { font-size: 11px; letter-spacing: 2px; color: #555; margin-bottom: 4px; text-transform: uppercase; }
+    .header-title-label { font-size: 11px; letter-spacing: 2px; color: #555; margin-bottom: 4px; }
     .header-title { font-size: 24px; font-weight: bold; }
     .header-actions { display: flex; gap: 10px; align-items: center; }
-    .btn { padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; letter-spacing: 1px; font-family: 'Courier New', monospace; transition: all 0.2s; }
+    .btn { padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'Courier New', monospace; transition: all 0.2s; }
     .btn-white { background: #fff; color: #000; border: none; font-weight: bold; }
     .btn-outline { background: transparent; border: 1px solid #333; color: #888; }
     .btn-outline:hover { border-color: #fff; color: #fff; }
@@ -21,42 +21,108 @@
     .btn-full { width: 100%; padding: 14px; background: #fff; color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; font-family: 'Courier New', monospace; margin-top: 8px; }
     .notif-on { color: #30d158; font-size: 12px; }
     main { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
+
+    /* ADD BUTTON */
     .add-btn-dashed { width: 100%; padding: 16px; background: transparent; border: 2px dashed #333; color: #666; border-radius: 16px; cursor: pointer; font-size: 15px; font-family: 'Courier New', monospace; transition: all 0.2s; margin-bottom: 28px; }
     .add-btn-dashed:hover { border-color: #fff; color: #fff; }
+
+    /* ADD FORM */
     .add-form { background: #111; border: 1px solid #333; border-radius: 16px; padding: 24px; margin-bottom: 28px; display: flex; flex-direction: column; gap: 12px; }
     .add-form-title { font-weight: bold; letter-spacing: 1px; margin-bottom: 4px; }
-    input { width: 100%; padding: 12px 14px; background: #0a0a0f; border: 1px solid #333; border-radius: 10px; color: #fff; font-size: 14px; font-family: 'Courier New', monospace; outline: none; text-align: right; }
-    input:focus { border-color: #555; }
+
+    input[type=text], input[type=password], input[type=date], textarea {
+      width: 100%; padding: 12px 14px; background: #0a0a0f; border: 1px solid #333;
+      border-radius: 10px; color: #fff; font-size: 14px; font-family: 'Courier New', monospace;
+      outline: none; text-align: right;
+    }
+    input[type=text]:focus, input[type=password]:focus, input[type=date]:focus, textarea:focus { border-color: #555; }
     input[type=date] { text-align: left; direction: ltr; }
     input[type=date]::-webkit-calendar-picker-indicator { filter: invert(1); }
+    textarea { resize: none; height: 70px; }
+
+    /* CHECKBOX ROW */
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: #0a0a0f;
+      border: 1px solid #333;
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.2s;
+    }
+    .checkbox-row:hover { border-color: #555; }
+    .checkbox-row.active { border-color: #64d2ff; }
+
+    .custom-checkbox {
+      width: 20px; height: 20px; border-radius: 6px;
+      border: 2px solid #444; background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: all 0.2s;
+    }
+    .custom-checkbox.checked { background: #64d2ff; border-color: #64d2ff; }
+    .custom-checkbox.checked::after { content: '✓'; font-size: 13px; color: #000; font-weight: bold; }
+
+    .checkbox-label { color: #aaa; font-size: 13px; transition: color 0.2s; }
+    .checkbox-row.active .checkbox-label { color: #fff; }
+
+    /* QUESTIONS BOX */
+    .questions-box {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+    }
+    .questions-box.open { max-height: 120px; opacity: 1; }
+
     .form-row { display: flex; gap: 10px; }
     .form-row button { flex: 1; }
     .btn-cancel { flex: 1; padding: 12px; background: transparent; color: #666; border: 1px solid #333; border-radius: 10px; cursor: pointer; font-family: 'Courier New', monospace; font-size: 14px; }
+
+    /* CARDS */
     .cards-list { display: flex; flex-direction: column; gap: 14px; }
-    .card { border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; transition: transform 0.2s; cursor: default; animation: fadeIn 0.3s ease; }
+    .card { border-radius: 16px; padding: 20px 24px; display: flex; align-items: flex-start; transition: transform 0.2s; cursor: default; animation: fadeIn 0.3s ease; }
     .card:hover { transform: translateX(-4px); }
-    .card-number { width: 32px; height: 32px; border-radius: 50%; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin-left: 18px; flex-shrink: 0; }
+    .card-number { width: 32px; height: 32px; border-radius: 50%; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin-left: 18px; flex-shrink: 0; margin-top: 3px; }
     .card-info { flex: 1; }
     .card-subject { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
     .card-pages { color: #aaa; font-size: 13px; }
     .card-pages span { color: #fff; font-weight: bold; }
-    .card-due { text-align: left; margin-left: 0; }
+    .card-questions {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: rgba(100, 210, 255, 0.08);
+      border: 1px solid rgba(100, 210, 255, 0.2);
+      border-radius: 8px;
+      font-size: 12px;
+      color: #64d2ff;
+      line-height: 1.5;
+    }
+    .card-questions-label { color: #3a8fa8; margin-left: 4px; }
+    .card-due { text-align: left; margin-left: 0; flex-shrink: 0; }
     .card-due.has-delete { margin-left: 16px; }
-    .card-urgency { font-weight: bold; font-size: 13px; letter-spacing: 1px; }
+    .card-urgency { font-weight: bold; font-size: 13px; }
     .card-date { color: #555; font-size: 12px; margin-top: 3px; }
-    .delete-btn { background: transparent; border: 1px solid #333; color: #555; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; line-height: 1; }
+    .delete-btn { background: transparent; border: 1px solid #333; color: #555; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; line-height: 1; margin-top: 3px; }
     .delete-btn:hover { border-color: #ff2d55; color: #ff2d55; }
+
+    /* EMPTY */
     .empty { text-align: center; padding: 80px 0; }
     .empty-emoji { font-size: 48px; margin-bottom: 16px; }
     .empty-text { color: #444; font-size: 16px; }
     .empty-sub { color: #333; font-size: 13px; margin-top: 8px; }
     .total-count { text-align: center; margin-top: 40px; color: #333; font-size: 12px; letter-spacing: 2px; }
+
+    /* MODAL */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); z-index: 999; }
     .modal { background: #111; border: 1px solid #333; border-radius: 20px; padding: 32px; width: 320px; }
     .modal-title { font-weight: bold; font-size: 18px; margin-bottom: 6px; }
     .modal-sub { color: #555; font-size: 13px; margin-bottom: 24px; }
     .modal-error { color: #ff2d55; font-size: 12px; margin-bottom: 8px; margin-top: -4px; }
     .hidden { display: none; }
+
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
     @media (max-width: 500px) { header { padding: 16px; flex-wrap: wrap; gap: 10px; } .card { padding: 16px; } .card-subject { font-size: 15px; } }
   </style>
@@ -77,16 +143,30 @@
 
 <main>
   <button class="add-btn-dashed hidden" id="addBtn" onclick="showForm()">+ הוסף שיעורי בית</button>
+
   <div class="add-form hidden" id="addForm">
     <div class="add-form-title">משימה חדשה</div>
     <input type="text" id="subjectInput" placeholder="מקצוע (למשל: מתמטיקה)" />
     <input type="text" id="pagesInput" placeholder="עמודים (למשל: 45-67)" />
     <input type="date" id="dateInput" />
+
+    <!-- Checkbox for specific questions -->
+    <div class="checkbox-row" id="checkboxRow" onclick="toggleQuestions()">
+      <div class="custom-checkbox" id="customCheckbox"></div>
+      <span class="checkbox-label">שאלות ספציפיות בלבד</span>
+    </div>
+
+    <!-- Questions text box (hidden by default) -->
+    <div class="questions-box" id="questionsBox">
+      <textarea id="questionsInput" placeholder="רשום אילו שאלות צריך לעשות (למשל: 1, 3, 5-7, 12)"></textarea>
+    </div>
+
     <div class="form-row">
       <button class="btn-full" style="flex:1;margin-top:0" onclick="addCard()">הוסף</button>
       <button class="btn-cancel" onclick="hideForm()">ביטול</button>
     </div>
   </div>
+
   <div class="cards-list" id="cardsList"></div>
   <div class="empty hidden" id="emptyState">
     <div class="empty-emoji">✨</div>
@@ -96,6 +176,7 @@
   <div class="total-count hidden" id="totalCount"></div>
 </main>
 
+<!-- Login Modal -->
 <div class="modal-overlay hidden" id="loginModal" onclick="closeModal(event)">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title">כניסת מנהל</div>
@@ -121,6 +202,22 @@
   const ADMIN_PASSWORD = "homework123";
   let isAdmin = false;
   let cards = [];
+  let specificQuestions = false;
+
+  function toggleQuestions() {
+    specificQuestions = !specificQuestions;
+    const checkbox = document.getElementById("customCheckbox");
+    const row = document.getElementById("checkboxRow");
+    const box = document.getElementById("questionsBox");
+    checkbox.classList.toggle("checked", specificQuestions);
+    row.classList.toggle("active", specificQuestions);
+    box.classList.toggle("open", specificQuestions);
+    if (specificQuestions) {
+      setTimeout(() => document.getElementById("questionsInput").focus(), 300);
+    } else {
+      document.getElementById("questionsInput").value = "";
+    }
+  }
 
   function getDaysUntil(dateStr) {
     const today = new Date(); today.setHours(0,0,0,0);
@@ -129,12 +226,12 @@
   }
 
   function getUrgency(days) {
-    if (days < 0)   return { label: "פג תוקף!",         color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55", glow: "0 0 20px #ff2d5566" };
-    if (days === 0) return { label: "להגשה היום!",       color: "#ff6b35", bg: "#2a1200", border: "#ff6b35", glow: "0 0 20px #ff6b3566" };
-    if (days === 1) return { label: "להגשה מחר",         color: "#ffcc02", bg: "#2a2000", border: "#ffcc02", glow: "0 0 20px #ffcc0244" };
-    if (days <= 3)  return { label: "עוד "+days+" ימים", color: "#ff9f0a", bg: "#201500", border: "#ff9f0a", glow: "0 0 15px #ff9f0a33" };
-    if (days <= 7)  return { label: "עוד "+days+" ימים", color: "#30d158", bg: "#0a1f10", border: "#30d158", glow: "0 0 15px #30d15833" };
-    return           { label: "עוד "+days+" ימים",       color: "#64d2ff", bg: "#001a2a", border: "#64d2ff44", glow: "none" };
+    if (days < 0)   return { label: "פג תוקף!",          color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55", glow: "0 0 20px #ff2d5566" };
+    if (days === 0) return { label: "להגשה היום!",        color: "#ff6b35", bg: "#2a1200", border: "#ff6b35", glow: "0 0 20px #ff6b3566" };
+    if (days === 1) return { label: "להגשה מחר",          color: "#ffcc02", bg: "#2a2000", border: "#ffcc02", glow: "0 0 20px #ffcc0244" };
+    if (days <= 3)  return { label: "עוד "+days+" ימים",  color: "#ff9f0a", bg: "#201500", border: "#ff9f0a", glow: "0 0 15px #ff9f0a33" };
+    if (days <= 7)  return { label: "עוד "+days+" ימים",  color: "#30d158", bg: "#0a1f10", border: "#30d158", glow: "0 0 15px #30d15833" };
+    return           { label: "עוד "+days+" ימים",        color: "#64d2ff", bg: "#001a2a", border: "#64d2ff44", glow: "none" };
   }
 
   function formatDate(dateStr) {
@@ -160,11 +257,17 @@
         const div = document.createElement("div");
         div.className = "card";
         div.style.cssText = `background:${u.bg};border:1px solid ${u.border};box-shadow:${u.glow}`;
+
+        const questionsHTML = card.questions
+          ? `<div class="card-questions"><span class="card-questions-label">שאלות:</span>${card.questions}</div>`
+          : "";
+
         div.innerHTML = `
           <div class="card-number" style="border:1px solid ${u.color}44;color:${u.color}">#${i+1}</div>
           <div class="card-info">
             <div class="card-subject">${card.subject}</div>
             <div class="card-pages">עמודים <span>${card.pages}</span></div>
+            ${questionsHTML}
           </div>
           <div class="card-due ${isAdmin ? 'has-delete' : ''}">
             <div class="card-urgency" style="color:${u.color}">${u.label}</div>
@@ -191,11 +294,15 @@
     const subject = document.getElementById("subjectInput").value.trim();
     const pages = document.getElementById("pagesInput").value.trim();
     const dueDate = document.getElementById("dateInput").value;
+    const questions = specificQuestions ? document.getElementById("questionsInput").value.trim() : "";
     if (!subject || !pages || !dueDate) return alert("נא למלא את כל השדות!");
-    await db.collection("homework").add({ subject, pages, dueDate });
+    if (specificQuestions && !questions) return alert("נא לרשום את השאלות הספציפיות!");
+    await db.collection("homework").add({ subject, pages, dueDate, questions });
     document.getElementById("subjectInput").value = "";
     document.getElementById("pagesInput").value = "";
     document.getElementById("dateInput").value = "";
+    document.getElementById("questionsInput").value = "";
+    if (specificQuestions) toggleQuestions();
     hideForm();
   }
 
