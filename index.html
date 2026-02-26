@@ -15,21 +15,13 @@
     .header-actions { display: flex; gap: 10px; align-items: center; }
     .btn { padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'Courier New', monospace; transition: all 0.2s; }
     .btn-white { background: #fff; color: #000; border: none; font-weight: bold; }
-    .btn-outline { background: transparent; border: 1px solid #333; color: #888; }
-    .btn-outline:hover { border-color: #fff; color: #fff; }
     .btn-danger { background: transparent; border: 1px solid #ff2d55; color: #ff2d55; }
     .btn-full { width: 100%; padding: 14px; background: #fff; color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; font-family: 'Courier New', monospace; margin-top: 8px; }
-    .notif-on { color: #30d158; font-size: 12px; }
     main { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
-
-    /* ADD BUTTON */
     .add-btn-dashed { width: 100%; padding: 16px; background: transparent; border: 2px dashed #333; color: #666; border-radius: 16px; cursor: pointer; font-size: 15px; font-family: 'Courier New', monospace; transition: all 0.2s; margin-bottom: 28px; }
     .add-btn-dashed:hover { border-color: #fff; color: #fff; }
-
-    /* ADD FORM */
     .add-form { background: #111; border: 1px solid #333; border-radius: 16px; padding: 24px; margin-bottom: 28px; display: flex; flex-direction: column; gap: 12px; }
     .add-form-title { font-weight: bold; letter-spacing: 1px; margin-bottom: 4px; }
-
     input[type=text], input[type=password], input[type=date], textarea {
       width: 100%; padding: 12px 14px; background: #0a0a0f; border: 1px solid #333;
       border-radius: 10px; color: #fff; font-size: 14px; font-family: 'Courier New', monospace;
@@ -39,49 +31,19 @@
     input[type=date] { text-align: left; direction: ltr; }
     input[type=date]::-webkit-calendar-picker-indicator { filter: invert(1); }
     textarea { resize: none; height: 70px; }
-
-    /* CHECKBOX ROW */
-    .checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 14px;
-      background: #0a0a0f;
-      border: 1px solid #333;
-      border-radius: 10px;
-      cursor: pointer;
-      user-select: none;
-      transition: border-color 0.2s;
-    }
+    .checkbox-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #0a0a0f; border: 1px solid #333; border-radius: 10px; cursor: pointer; user-select: none; transition: border-color 0.2s; }
     .checkbox-row:hover { border-color: #555; }
     .checkbox-row.active { border-color: #64d2ff; }
-
-    .custom-checkbox {
-      width: 20px; height: 20px; border-radius: 6px;
-      border: 2px solid #444; background: transparent;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; transition: all 0.2s;
-    }
+    .custom-checkbox { width: 20px; height: 20px; border-radius: 6px; border: 2px solid #444; background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
     .custom-checkbox.checked { background: #64d2ff; border-color: #64d2ff; }
     .custom-checkbox.checked::after { content: '✓'; font-size: 13px; color: #000; font-weight: bold; }
-
     .checkbox-label { color: #aaa; font-size: 13px; transition: color 0.2s; }
     .checkbox-row.active .checkbox-label { color: #fff; }
-
-    /* QUESTIONS BOX */
-    .questions-box {
-      overflow: hidden;
-      max-height: 0;
-      transition: max-height 0.3s ease, opacity 0.3s ease;
-      opacity: 0;
-    }
+    .questions-box { overflow: hidden; max-height: 0; transition: max-height 0.3s ease, opacity 0.3s ease; opacity: 0; }
     .questions-box.open { max-height: 120px; opacity: 1; }
-
     .form-row { display: flex; gap: 10px; }
     .form-row button { flex: 1; }
     .btn-cancel { flex: 1; padding: 12px; background: transparent; color: #666; border: 1px solid #333; border-radius: 10px; cursor: pointer; font-family: 'Courier New', monospace; font-size: 14px; }
-
-    /* CARDS */
     .cards-list { display: flex; flex-direction: column; gap: 14px; }
     .card { border-radius: 16px; padding: 20px 24px; display: flex; align-items: flex-start; transition: transform 0.2s; cursor: default; animation: fadeIn 0.3s ease; }
     .card:hover { transform: translateX(-4px); }
@@ -90,16 +52,7 @@
     .card-subject { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
     .card-pages { color: #aaa; font-size: 13px; }
     .card-pages span { color: #fff; font-weight: bold; }
-    .card-questions {
-      margin-top: 8px;
-      padding: 8px 12px;
-      background: rgba(100, 210, 255, 0.08);
-      border: 1px solid rgba(100, 210, 255, 0.2);
-      border-radius: 8px;
-      font-size: 12px;
-      color: #64d2ff;
-      line-height: 1.5;
-    }
+    .card-questions { margin-top: 8px; padding: 8px 12px; background: rgba(100, 210, 255, 0.08); border: 1px solid rgba(100, 210, 255, 0.2); border-radius: 8px; font-size: 12px; color: #64d2ff; line-height: 1.5; }
     .card-questions-label { color: #3a8fa8; margin-left: 4px; }
     .card-due { text-align: left; margin-left: 0; flex-shrink: 0; }
     .card-due.has-delete { margin-left: 16px; }
@@ -107,22 +60,18 @@
     .card-date { color: #555; font-size: 12px; margin-top: 3px; }
     .delete-btn { background: transparent; border: 1px solid #333; color: #555; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; line-height: 1; margin-top: 3px; }
     .delete-btn:hover { border-color: #ff2d55; color: #ff2d55; }
-
-    /* EMPTY */
     .empty { text-align: center; padding: 80px 0; }
     .empty-emoji { font-size: 48px; margin-bottom: 16px; }
     .empty-text { color: #444; font-size: 16px; }
     .empty-sub { color: #333; font-size: 13px; margin-top: 8px; }
     .total-count { text-align: center; margin-top: 40px; color: #333; font-size: 12px; letter-spacing: 2px; }
-
-    /* MODAL */
+    .credit { text-align: center; margin-top: 8px; color: #222; font-size: 11px; }
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); z-index: 999; }
     .modal { background: #111; border: 1px solid #333; border-radius: 20px; padding: 32px; width: 320px; }
     .modal-title { font-weight: bold; font-size: 18px; margin-bottom: 6px; }
     .modal-sub { color: #555; font-size: 13px; margin-bottom: 24px; }
     .modal-error { color: #ff2d55; font-size: 12px; margin-bottom: 8px; margin-top: -4px; }
     .hidden { display: none; }
-
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
     @media (max-width: 500px) { header { padding: 16px; flex-wrap: wrap; gap: 10px; } .card { padding: 16px; } .card-subject { font-size: 15px; } }
   </style>
@@ -135,8 +84,6 @@
     <div class="header-title">📚 מעקב שיעורי בית</div>
   </div>
   <div class="header-actions">
-    <button class="btn btn-outline" id="notifBtn" onclick="requestNotif()">🔔 הפעל התראות</button>
-    <span class="notif-on hidden" id="notifOn">🔔 התראות פעילות</span>
     <button class="btn btn-white" id="adminBtn" onclick="toggleAdmin()">כניסת מנהל</button>
   </div>
 </header>
@@ -149,18 +96,13 @@
     <input type="text" id="subjectInput" placeholder="מקצוע (למשל: מתמטיקה)" />
     <input type="text" id="pagesInput" placeholder="עמודים (למשל: 45-67)" />
     <input type="date" id="dateInput" />
-
-    <!-- Checkbox for specific questions -->
     <div class="checkbox-row" id="checkboxRow" onclick="toggleQuestions()">
       <div class="custom-checkbox" id="customCheckbox"></div>
       <span class="checkbox-label">שאלות ספציפיות בלבד</span>
     </div>
-
-    <!-- Questions text box (hidden by default) -->
     <div class="questions-box" id="questionsBox">
       <textarea id="questionsInput" placeholder="רשום אילו שאלות צריך לעשות (למשל: 1, 3, 5-7, 12)"></textarea>
     </div>
-
     <div class="form-row">
       <button class="btn-full" style="flex:1;margin-top:0" onclick="addCard()">הוסף</button>
       <button class="btn-cancel" onclick="hideForm()">ביטול</button>
@@ -174,9 +116,9 @@
     <div class="empty-sub">תהנו מהחופש!</div>
   </div>
   <div class="total-count hidden" id="totalCount"></div>
+  <div class="credit hidden" id="credit">רון יאדגרוב</div>
 </main>
 
-<!-- Login Modal -->
 <div class="modal-overlay hidden" id="loginModal" onclick="closeModal(event)">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title">כניסת מנהל</div>
@@ -206,17 +148,11 @@
 
   function toggleQuestions() {
     specificQuestions = !specificQuestions;
-    const checkbox = document.getElementById("customCheckbox");
-    const row = document.getElementById("checkboxRow");
-    const box = document.getElementById("questionsBox");
-    checkbox.classList.toggle("checked", specificQuestions);
-    row.classList.toggle("active", specificQuestions);
-    box.classList.toggle("open", specificQuestions);
-    if (specificQuestions) {
-      setTimeout(() => document.getElementById("questionsInput").focus(), 300);
-    } else {
-      document.getElementById("questionsInput").value = "";
-    }
+    document.getElementById("customCheckbox").classList.toggle("checked", specificQuestions);
+    document.getElementById("checkboxRow").classList.toggle("active", specificQuestions);
+    document.getElementById("questionsBox").classList.toggle("open", specificQuestions);
+    if (specificQuestions) setTimeout(() => document.getElementById("questionsInput").focus(), 300);
+    else document.getElementById("questionsInput").value = "";
   }
 
   function getDaysUntil(dateStr) {
@@ -242,14 +178,17 @@
     const list = document.getElementById("cardsList");
     const empty = document.getElementById("emptyState");
     const total = document.getElementById("totalCount");
+    const credit = document.getElementById("credit");
     list.innerHTML = "";
     const sorted = [...cards].sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate));
     if (sorted.length === 0) {
       empty.classList.remove("hidden");
       total.classList.add("hidden");
+      credit.classList.add("hidden");
     } else {
       empty.classList.add("hidden");
       total.classList.remove("hidden");
+      credit.classList.remove("hidden");
       total.textContent = "סה\"כ " + sorted.length + " משימות";
       sorted.forEach((card, i) => {
         const days = getDaysUntil(card.dueDate);
@@ -257,11 +196,9 @@
         const div = document.createElement("div");
         div.className = "card";
         div.style.cssText = `background:${u.bg};border:1px solid ${u.border};box-shadow:${u.glow}`;
-
         const questionsHTML = card.questions
           ? `<div class="card-questions"><span class="card-questions-label">שאלות:</span>${card.questions}</div>`
           : "";
-
         div.innerHTML = `
           <div class="card-number" style="border:1px solid ${u.color}44;color:${u.color}">#${i+1}</div>
           <div class="card-info">
@@ -283,9 +220,6 @@
   let prevCount = null;
   db.collection("homework").orderBy("dueDate").onSnapshot(snapshot => {
     cards = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    if (prevCount !== null && cards.length > prevCount && Notification.permission === "granted") {
-      new Notification("📚 שיעורי בית חדשים!", { body: `נוספו ${cards.length - prevCount} משימות חדשות!` });
-    }
     prevCount = cards.length;
     render();
   });
@@ -355,20 +289,6 @@
   function hideForm() {
     document.getElementById("addForm").classList.add("hidden");
     if (isAdmin) document.getElementById("addBtn").classList.remove("hidden");
-  }
-
-  function requestNotif() {
-    Notification.requestPermission().then(p => {
-      if (p === "granted") {
-        document.getElementById("notifBtn").classList.add("hidden");
-        document.getElementById("notifOn").classList.remove("hidden");
-      }
-    });
-  }
-
-  if (Notification.permission === "granted") {
-    document.getElementById("notifBtn").classList.add("hidden");
-    document.getElementById("notifOn").classList.remove("hidden");
   }
 </script>
 </body>
