@@ -26,14 +26,18 @@
     .add-btn-dashed:hover { border-color: #fff; color: #fff; }
     .add-form { background: #111; border: 1px solid #333; border-radius: 16px; padding: 24px; margin-bottom: 28px; display: flex; flex-direction: column; gap: 12px; }
     .form-title { font-weight: bold; letter-spacing: 1px; margin-bottom: 4px; font-size: 15px; }
-    input[type=text], input[type=password], input[type=date], textarea {
+    .form-row-2 { display: flex; gap: 10px; }
+    .form-row-2 > * { flex: 1; }
+    input[type=text], input[type=password], input[type=date], input[type=time], textarea {
       width: 100%; padding: 12px 14px; background: #0a0a0f; border: 1px solid #333;
       border-radius: 10px; color: #fff; font-size: 14px; font-family: 'Courier New', monospace;
       outline: none; text-align: right;
     }
-    input[type=text]:focus, input[type=password]:focus, input[type=date]:focus, textarea:focus { border-color: #555; }
-    input[type=date] { text-align: left; direction: ltr; }
-    input[type=date]::-webkit-calendar-picker-indicator { filter: invert(1); }
+    input[type=text]:focus, input[type=password]:focus, input[type=date]:focus, input[type=time]:focus, textarea:focus { border-color: #555; }
+    input[type=date], input[type=time] { text-align: left; direction: ltr; }
+    input[type=date]::-webkit-calendar-picker-indicator,
+    input[type=time]::-webkit-calendar-picker-indicator { filter: invert(1); }
+    .input-label { font-size: 11px; color: #555; margin-bottom: 4px; letter-spacing: 1px; }
     textarea { resize: none; height: 70px; }
     .checkbox-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #0a0a0f; border: 1px solid #333; border-radius: 10px; cursor: pointer; user-select: none; transition: border-color 0.2s; }
     .checkbox-row:hover { border-color: #555; }
@@ -63,6 +67,7 @@
     .card-due.has-delete { margin-left: 16px; }
     .card-urgency { font-weight: bold; font-size: 13px; }
     .card-date { color: #555; font-size: 12px; margin-top: 3px; }
+    .card-time-badge { font-size: 11px; margin-top: 4px; padding: 2px 8px; border-radius: 6px; display: inline-block; }
     .delete-btn { background: transparent; border: 1px solid #333; color: #555; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; line-height: 1; margin-top: 3px; }
     .delete-btn:hover { border-color: #ff2d55; color: #ff2d55; }
     .empty { text-align: center; padding: 80px 0; }
@@ -116,7 +121,7 @@
     .lightbox img { max-width: 95vw; max-height: 95vh; object-fit: contain; border-radius: 8px; }
     .hidden { display: none; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 500px) { header { padding: 16px; flex-wrap: wrap; gap: 10px; } .card { padding: 16px; } .card-subject { font-size: 15px; } }
+    @media (max-width: 500px) { header { padding: 16px; flex-wrap: wrap; gap: 10px; } .card { padding: 16px; } .card-subject { font-size: 15px; } .form-row-2 { flex-direction: column; } }
   </style>
 </head>
 <body>
@@ -139,7 +144,16 @@
     <div class="form-title">משימה חדשה</div>
     <input type="text" id="subjectInput" placeholder="מקצוע (למשל: מתמטיקה)" />
     <input type="text" id="pagesInput" placeholder="עמודים (למשל: 45-67)" />
-    <input type="date" id="dateInput" />
+    <div class="form-row-2">
+      <div>
+        <div class="input-label">תאריך הגשה</div>
+        <input type="date" id="dateInput" />
+      </div>
+      <div>
+        <div class="input-label">שעת הגשה (אופציונלי)</div>
+        <input type="time" id="timeInput" />
+      </div>
+    </div>
     <div class="checkbox-row" id="checkboxRow" onclick="toggleQuestions()">
       <div class="custom-checkbox" id="customCheckbox"></div>
       <span class="checkbox-label">שאלות ספציפיות בלבד</span>
@@ -152,6 +166,7 @@
       <button class="btn-cancel" onclick="hideAddForm()">ביטול</button>
     </div>
   </div>
+
   <div class="cards-list" id="cardsList"></div>
   <div class="empty hidden" id="emptyState">
     <div class="empty-emoji">✨</div>
@@ -211,7 +226,7 @@
       </div>
       <button class="close-btn" onclick="closeAnswers()">&#215;</button>
     </div>
-    <div class="answers-body" id="answersBody">
+    <div class="answers-body">
       <div id="uploadSection">
         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
           <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(event)" />
@@ -258,6 +273,21 @@
   let currentUser = null;
   let pendingFiles = [];
   let photosUnsubscribe = null;
+
+  // ── AUTO DELETE EXPIRED ──
+  async function deleteExpiredCards() {
+    const now = new Date();
+    const snapshot = await db.collection("homework").get();
+    snapshot.forEach(async doc => {
+      const data = doc.data();
+      const dueDate = data.dueDate;
+      const dueTime = data.dueTime || "23:59";
+      const dueDateTime = new Date(`${dueDate}T${dueTime}:00`);
+      if (now >= dueDateTime) {
+        await db.collection("homework").doc(doc.id).delete();
+      }
+    });
+  }
 
   // ── SAVED LOGIN ──
   function loadSavedUser() {
@@ -400,13 +430,15 @@
     const subject = document.getElementById("subjectInput").value.trim();
     const pages = document.getElementById("pagesInput").value.trim();
     const dueDate = document.getElementById("dateInput").value;
+    const dueTime = document.getElementById("timeInput").value || "";
     const questions = specificQuestions ? document.getElementById("questionsInput").value.trim() : "";
     if (!subject || !pages || !dueDate) return alert("נא למלא את כל השדות!");
     if (specificQuestions && !questions) return alert("נא לרשום את השאלות הספציפיות!");
-    await db.collection("homework").add({ subject, pages, dueDate, questions });
+    await db.collection("homework").add({ subject, pages, dueDate, dueTime, questions });
     document.getElementById("subjectInput").value = "";
     document.getElementById("pagesInput").value = "";
     document.getElementById("dateInput").value = "";
+    document.getElementById("timeInput").value = "";
     document.getElementById("questionsInput").value = "";
     if (specificQuestions) toggleQuestions();
     hideAddForm();
@@ -419,23 +451,29 @@
   }
 
   // ── RENDER ──
-  function getDaysUntil(dateStr) {
-    const today = new Date(); today.setHours(0,0,0,0);
-    const due = new Date(dateStr); due.setHours(0,0,0,0);
-    return Math.round((due - today) / 86400000);
+  function getMinutesUntil(dueDate, dueTime) {
+    const timeStr = dueTime || "23:59";
+    const due = new Date(`${dueDate}T${timeStr}:00`);
+    return Math.round((due - new Date()) / 60000);
   }
 
-  function getUrgency(days) {
-    if (days < 0)   return { label: "פג תוקף!",          color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55", glow: "0 0 20px #ff2d5566" };
-    if (days === 0) return { label: "להגשה היום!",        color: "#ff6b35", bg: "#2a1200", border: "#ff6b35", glow: "0 0 20px #ff6b3566" };
-    if (days === 1) return { label: "להגשה מחר",          color: "#ffcc02", bg: "#2a2000", border: "#ffcc02", glow: "0 0 20px #ffcc0244" };
-    if (days <= 3)  return { label: "עוד "+days+" ימים",  color: "#ff9f0a", bg: "#201500", border: "#ff9f0a", glow: "0 0 15px #ff9f0a33" };
-    if (days <= 7)  return { label: "עוד "+days+" ימים",  color: "#30d158", bg: "#0a1f10", border: "#30d158", glow: "0 0 15px #30d15833" };
-    return           { label: "עוד "+days+" ימים",        color: "#64d2ff", bg: "#001a2a", border: "#64d2ff44", glow: "none" };
+  function getUrgency(minutes) {
+    const hours = minutes / 60;
+    const days = minutes / 1440;
+    if (minutes < 0)    return { label: "פג תוקף!",           color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55", glow: "0 0 20px #ff2d5566" };
+    if (minutes < 60)   return { label: "פחות משעה!",         color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55", glow: "0 0 20px #ff2d5566" };
+    if (hours < 3)      return { label: "עוד "+Math.round(hours)+" שעות!", color: "#ff6b35", bg: "#2a1200", border: "#ff6b35", glow: "0 0 20px #ff6b3566" };
+    if (days < 1)       return { label: "להגשה היום!",        color: "#ffcc02", bg: "#2a2000", border: "#ffcc02", glow: "0 0 20px #ffcc0244" };
+    if (days < 2)       return { label: "להגשה מחר",          color: "#ff9f0a", bg: "#201500", border: "#ff9f0a", glow: "0 0 15px #ff9f0a33" };
+    if (days < 7)       return { label: "עוד "+Math.floor(days)+" ימים", color: "#30d158", bg: "#0a1f10", border: "#30d158", glow: "0 0 15px #30d15833" };
+    return               { label: "עוד "+Math.floor(days)+" ימים", color: "#64d2ff", bg: "#001a2a", border: "#64d2ff44", glow: "none" };
   }
 
-  function formatDate(dateStr) {
-    return new Date(dateStr).toLocaleDateString("he-IL", { weekday: "short", month: "short", day: "numeric" });
+  function formatDate(dueDate, dueTime) {
+    const timeStr = dueTime || "23:59";
+    const d = new Date(`${dueDate}T${timeStr}:00`);
+    const datePart = d.toLocaleDateString("he-IL", { weekday: "short", month: "short", day: "numeric" });
+    return dueTime ? datePart + " · " + dueTime : datePart;
   }
 
   function render() {
@@ -444,7 +482,11 @@
     const total = document.getElementById("totalCount");
     const credit = document.getElementById("credit");
     list.innerHTML = "";
-    const sorted = [...cards].sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate));
+    const sorted = [...cards].sort((a,b) => {
+      const aTime = `${a.dueDate}T${a.dueTime || "23:59"}`;
+      const bTime = `${b.dueDate}T${b.dueTime || "23:59"}`;
+      return new Date(aTime) - new Date(bTime);
+    });
     if (sorted.length === 0) {
       empty.classList.remove("hidden");
       total.classList.add("hidden");
@@ -455,8 +497,8 @@
       credit.classList.remove("hidden");
       total.textContent = "סה\"כ " + sorted.length + " משימות";
       sorted.forEach((card, i) => {
-        const days = getDaysUntil(card.dueDate);
-        const u = getUrgency(days);
+        const minutes = getMinutesUntil(card.dueDate, card.dueTime);
+        const u = getUrgency(minutes);
         const div = document.createElement("div");
         div.className = "card";
         div.style.cssText = `background:${u.bg};border:1px solid ${u.border};box-shadow:${u.glow}`;
@@ -477,7 +519,7 @@
           </div>
           <div class="card-due ${isAdmin ? 'has-delete' : ''}">
             <div class="card-urgency" style="color:${u.color}">${u.label}</div>
-            <div class="card-date">${formatDate(card.dueDate)}</div>
+            <div class="card-date">${formatDate(card.dueDate, card.dueTime)}</div>
           </div>
           ${isAdmin ? `<button class="delete-btn" onclick="deleteCard('${card.id}')">&#215;</button>` : ""}
         `;
@@ -486,20 +528,14 @@
     }
   }
 
-  let prevCount = null;
   db.collection("homework").orderBy("dueDate").onSnapshot(snapshot => {
     cards = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    prevCount = cards.length;
     render();
   });
 
   // ── ANSWERS MODAL ──
   function handleCardClick(cardId) {
-    if (!currentUser) {
-      currentCardId = cardId;
-      openAuthModal();
-      return;
-    }
+    if (!currentUser) { currentCardId = cardId; openAuthModal(); return; }
     openAnswers(cardId);
   }
 
@@ -530,7 +566,6 @@
     const noPhotos = document.getElementById("noPhotos");
     grid.innerHTML = '<div style="text-align:center;color:#444;font-size:13px;padding:20px">טוען...</div>';
     noPhotos.classList.add("hidden");
-
     photosUnsubscribe = db.collection("homework").doc(cardId).collection("photos")
       .orderBy("timestamp", "desc")
       .onSnapshot(snapshot => {
@@ -659,7 +694,11 @@
     document.getElementById("lightboxImg").src = "";
   }
 
+  // ── INIT ──
   loadSavedUser();
+  deleteExpiredCards();
+  // Re-check every minute
+  setInterval(deleteExpiredCards, 60000);
 </script>
 </body>
 </html>
