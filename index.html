@@ -9,30 +9,21 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { min-height: 100vh; background: #0a0a0f; font-family: 'Courier New', monospace; background-image: radial-gradient(ellipse at 20% 50%, #0d1a2a 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, #1a0d1a 0%, transparent 60%); color: #fff; direction: rtl; }
-
-    /* HEADER */
     header { border-bottom: 1px solid #222; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); position: sticky; top: 0; z-index: 100; }
     .header-title-label { font-size: 11px; letter-spacing: 2px; color: #555; margin-bottom: 4px; }
     .header-title { font-size: 24px; font-weight: bold; }
     .header-actions { display: flex; gap: 10px; align-items: center; }
     .user-badge { font-size: 12px; color: #888; padding: 6px 12px; border: 1px solid #222; border-radius: 8px; }
-
-    /* BUTTONS */
     .btn { padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'Courier New', monospace; transition: all 0.2s; border: none; }
     .btn-white { background: #fff; color: #000; font-weight: bold; }
     .btn-ghost { background: transparent; border: 1px solid #333; color: #888; }
     .btn-ghost:hover { border-color: #fff; color: #fff; }
     .btn-danger { background: transparent; border: 1px solid #ff2d55; color: #ff2d55; }
-    .btn-blue { background: #64d2ff; color: #000; font-weight: bold; }
     .btn-full { width: 100%; padding: 14px; background: #fff; color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; font-family: 'Courier New', monospace; margin-top: 8px; transition: background 0.2s; }
     .btn-full:hover { background: #e0e0e0; }
-
-    /* MAIN */
     main { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
     .add-btn-dashed { width: 100%; padding: 16px; background: transparent; border: 2px dashed #333; color: #666; border-radius: 16px; cursor: pointer; font-size: 15px; font-family: 'Courier New', monospace; transition: all 0.2s; margin-bottom: 28px; }
     .add-btn-dashed:hover { border-color: #fff; color: #fff; }
-
-    /* FORMS */
     .add-form { background: #111; border: 1px solid #333; border-radius: 16px; padding: 24px; margin-bottom: 28px; display: flex; flex-direction: column; gap: 12px; }
     .form-title { font-weight: bold; letter-spacing: 1px; margin-bottom: 4px; font-size: 15px; }
     input[type=text], input[type=password], input[type=date], textarea {
@@ -44,8 +35,6 @@
     input[type=date] { text-align: left; direction: ltr; }
     input[type=date]::-webkit-calendar-picker-indicator { filter: invert(1); }
     textarea { resize: none; height: 70px; }
-
-    /* CHECKBOX */
     .checkbox-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #0a0a0f; border: 1px solid #333; border-radius: 10px; cursor: pointer; user-select: none; transition: border-color 0.2s; }
     .checkbox-row:hover { border-color: #555; }
     .checkbox-row.active { border-color: #64d2ff; }
@@ -56,14 +45,11 @@
     .checkbox-row.active .checkbox-label { color: #fff; }
     .questions-box { overflow: hidden; max-height: 0; transition: max-height 0.3s ease, opacity 0.3s ease; opacity: 0; }
     .questions-box.open { max-height: 120px; opacity: 1; }
-
     .form-row { display: flex; gap: 10px; }
     .form-row button { flex: 1; }
     .btn-cancel { flex: 1; padding: 12px; background: transparent; color: #666; border: 1px solid #333; border-radius: 10px; cursor: pointer; font-family: 'Courier New', monospace; font-size: 14px; }
-
-    /* CARDS */
     .cards-list { display: flex; flex-direction: column; gap: 14px; }
-    .card { border-radius: 16px; padding: 20px 24px; display: flex; align-items: flex-start; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; animation: fadeIn 0.3s ease; }
+    .card { border-radius: 16px; padding: 20px 24px; display: flex; align-items: flex-start; transition: transform 0.2s; cursor: pointer; animation: fadeIn 0.3s ease; }
     .card:hover { transform: translateX(-4px); }
     .card-number { width: 32px; height: 32px; border-radius: 50%; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin-left: 18px; flex-shrink: 0; margin-top: 3px; }
     .card-info { flex: 1; }
@@ -79,16 +65,12 @@
     .card-date { color: #555; font-size: 12px; margin-top: 3px; }
     .delete-btn { background: transparent; border: 1px solid #333; color: #555; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; line-height: 1; margin-top: 3px; }
     .delete-btn:hover { border-color: #ff2d55; color: #ff2d55; }
-
-    /* EMPTY / FOOTER */
     .empty { text-align: center; padding: 80px 0; }
     .empty-emoji { font-size: 48px; margin-bottom: 16px; }
     .empty-text { color: #444; font-size: 16px; }
     .empty-sub { color: #333; font-size: 13px; margin-top: 8px; }
     .total-count { text-align: center; margin-top: 40px; color: #333; font-size: 12px; letter-spacing: 2px; }
     .credit { text-align: center; margin-top: 8px; color: #222; font-size: 11px; }
-
-    /* MODALS */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(12px); z-index: 999; padding: 16px; }
     .modal { background: #111; border: 1px solid #333; border-radius: 20px; padding: 32px; width: 100%; max-width: 360px; }
     .modal-title { font-weight: bold; font-size: 18px; margin-bottom: 6px; }
@@ -96,18 +78,13 @@
     .modal-error { color: #ff2d55; font-size: 12px; margin-top: 6px; }
     .modal-link { color: #64d2ff; cursor: pointer; font-size: 12px; text-align: center; margin-top: 12px; }
     .modal-link:hover { text-decoration: underline; }
-
-    /* ANSWERS MODAL */
     .answers-modal { background: #0f0f15; border: 1px solid #222; border-radius: 20px; width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
     .answers-header { padding: 20px 24px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
     .answers-title { font-size: 18px; font-weight: bold; }
     .answers-subject { font-size: 12px; color: #555; margin-top: 2px; }
-    .close-btn { background: transparent; border: 1px solid #333; color: #666; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .close-btn { background: transparent; border: 1px solid #333; color: #666; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
     .close-btn:hover { border-color: #fff; color: #fff; }
     .answers-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
-    .answers-footer { padding: 16px 24px; border-top: 1px solid #1a1a1a; flex-shrink: 0; }
-
-    /* UPLOAD AREA */
     .upload-area { border: 2px dashed #333; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 16px; }
     .upload-area:hover { border-color: #64d2ff; }
     .upload-area input { display: none; }
@@ -121,28 +98,25 @@
     .upload-btn:hover { background: #4ab8e8; }
     .upload-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
     .uploading-text { text-align: center; color: #64d2ff; font-size: 13px; margin-top: 8px; }
-
-    /* PHOTO GRID */
     .photos-grid { display: flex; flex-direction: column; gap: 16px; }
     .photo-card { background: #161620; border: 1px solid #222; border-radius: 14px; overflow: hidden; }
     .photo-card-header { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
     .photo-uploader { font-size: 13px; font-weight: bold; color: #fff; }
     .photo-time { font-size: 11px; color: #444; }
-    .photo-img { width: 100%; max-height: 400px; object-fit: contain; background: #0a0a0f; cursor: pointer; }
+    .photo-img { width: 100%; max-height: 400px; object-fit: contain; background: #0a0a0f; cursor: pointer; display: block; }
     .photo-img:hover { opacity: 0.9; }
     .photo-actions { padding: 10px 14px; display: flex; align-items: center; gap: 10px; }
     .like-btn { background: transparent; border: 1px solid #333; border-radius: 8px; padding: 6px 14px; color: #888; cursor: pointer; font-size: 13px; font-family: 'Courier New', monospace; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
     .like-btn:hover { border-color: #ff2d55; color: #ff2d55; }
     .like-btn.liked { border-color: #ff2d55; color: #ff2d55; background: rgba(255,45,85,0.1); }
+    .photo-delete-btn { background: transparent; border: 1px solid #333; border-radius: 8px; padding: 6px 12px; color: #555; cursor: pointer; font-size: 12px; font-family: 'Courier New', monospace; transition: all 0.2s; margin-right: auto; }
+    .photo-delete-btn:hover { border-color: #ff2d55; color: #ff2d55; background: rgba(255,45,85,0.1); }
     .no-photos { text-align: center; padding: 40px 0; color: #333; font-size: 14px; }
-
-    /* LIGHTBOX */
     .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 9999; cursor: pointer; }
     .lightbox img { max-width: 95vw; max-height: 95vh; object-fit: contain; border-radius: 8px; }
-
     .hidden { display: none; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 500px) { header { padding: 16px; flex-wrap: wrap; gap: 10px; } .card { padding: 16px; } .card-subject { font-size: 15px; } .answers-modal { border-radius: 16px; } }
+    @media (max-width: 500px) { header { padding: 16px; flex-wrap: wrap; gap: 10px; } .card { padding: 16px; } .card-subject { font-size: 15px; } }
   </style>
 </head>
 <body>
@@ -161,7 +135,6 @@
 
 <main>
   <button class="add-btn-dashed hidden" id="addBtn" onclick="showAddForm()">+ הוסף שיעורי בית</button>
-
   <div class="add-form hidden" id="addForm">
     <div class="form-title">משימה חדשה</div>
     <input type="text" id="subjectInput" placeholder="מקצוע (למשל: מתמטיקה)" />
@@ -179,7 +152,6 @@
       <button class="btn-cancel" onclick="hideAddForm()">ביטול</button>
     </div>
   </div>
-
   <div class="cards-list" id="cardsList"></div>
   <div class="empty hidden" id="emptyState">
     <div class="empty-emoji">✨</div>
@@ -193,7 +165,6 @@
 <!-- AUTH MODAL -->
 <div class="modal-overlay hidden" id="authModal">
   <div class="modal">
-    <!-- Login -->
     <div id="loginView">
       <div class="modal-title">כניסה</div>
       <div class="modal-sub">הכנס את פרטיך כדי להעלות תשובות</div>
@@ -203,7 +174,6 @@
       <button class="btn-full" onclick="doUserLogin()">כניסה</button>
       <div class="modal-link" onclick="switchToRegister()">אין לך חשבון? הירשם כאן</div>
     </div>
-    <!-- Register -->
     <div id="registerView" class="hidden">
       <div class="modal-title">הרשמה</div>
       <div class="modal-sub">צור חשבון חדש</div>
@@ -241,9 +211,7 @@
       </div>
       <button class="close-btn" onclick="closeAnswers()">&#215;</button>
     </div>
-
     <div class="answers-body" id="answersBody">
-      <!-- Upload section -->
       <div id="uploadSection">
         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
           <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(event)" />
@@ -253,8 +221,6 @@
         <button class="upload-btn" id="uploadBtn" onclick="uploadPhotos()" disabled>העלה תשובות</button>
         <div class="uploading-text hidden" id="uploadingText">מעלה תמונות... אנא המתן</div>
       </div>
-
-      <!-- Photos grid -->
       <div style="margin-top:24px">
         <div style="font-size:12px;color:#444;margin-bottom:12px;letter-spacing:1px">תשובות שהועלו</div>
         <div class="photos-grid" id="photosGrid"></div>
@@ -296,10 +262,7 @@
   // ── SAVED LOGIN ──
   function loadSavedUser() {
     const saved = localStorage.getItem("hw_user");
-    if (saved) {
-      currentUser = JSON.parse(saved);
-      updateUserUI();
-    }
+    if (saved) { currentUser = JSON.parse(saved); updateUserUI(); }
   }
 
   function updateUserUI() {
@@ -321,7 +284,7 @@
     updateUserUI();
   }
 
-  // ── REGISTRATION / LOGIN ──
+  // ── AUTH ──
   function openAuthModal() {
     document.getElementById("authModal").classList.remove("hidden");
     switchToLogin();
@@ -347,22 +310,17 @@
     const pass = document.getElementById("regPass").value;
     const pass2 = document.getElementById("regPass2").value;
     const errEl = document.getElementById("registerError");
-
     if (!username || !pass) { showErr(errEl, "נא למלא את כל השדות"); return; }
     if (pass !== pass2) { showErr(errEl, "הסיסמאות אינן תואמות"); return; }
     if (username.length < 2) { showErr(errEl, "שם משתמש קצר מדי"); return; }
     if (pass.length < 4) { showErr(errEl, "סיסמה קצרה מדי (לפחות 4 תווים)"); return; }
-
-    // Check if username taken
     const existing = await db.collection("users").doc(username).get();
     if (existing.exists) { showErr(errEl, "שם משתמש כבר תפוס"); return; }
-
     await db.collection("users").doc(username).set({ username, password: pass });
     currentUser = { username };
     localStorage.setItem("hw_user", JSON.stringify(currentUser));
     updateUserUI();
     closeAuthModal();
-    // Re-open answers if was pending
     if (currentCardId) openAnswers(currentCardId);
   }
 
@@ -370,15 +328,9 @@
     const username = document.getElementById("loginUser").value.trim();
     const pass = document.getElementById("loginPass").value;
     const errEl = document.getElementById("loginError");
-
     if (!username || !pass) { showErr(errEl, "נא למלא את כל השדות"); return; }
-
     const doc = await db.collection("users").doc(username).get();
-    if (!doc.exists || doc.data().password !== pass) {
-      showErr(errEl, "שם משתמש או סיסמה שגויים");
-      return;
-    }
-
+    if (!doc.exists || doc.data().password !== pass) { showErr(errEl, "שם משתמש או סיסמה שגויים"); return; }
     currentUser = { username };
     localStorage.setItem("hw_user", JSON.stringify(currentUser));
     updateUserUI();
@@ -386,10 +338,7 @@
     if (currentCardId) openAnswers(currentCardId);
   }
 
-  function showErr(el, msg) {
-    el.textContent = msg;
-    el.classList.remove("hidden");
-  }
+  function showErr(el, msg) { el.textContent = msg; el.classList.remove("hidden"); }
 
   // ── ADMIN ──
   function toggleAdmin() {
@@ -469,7 +418,7 @@
     }
   }
 
-  // ── RENDER CARDS ──
+  // ── RENDER ──
   function getDaysUntil(dateStr) {
     const today = new Date(); today.setHours(0,0,0,0);
     const due = new Date(dateStr); due.setHours(0,0,0,0);
@@ -607,12 +556,20 @@
                 <button class="like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${photo.id}')">
                   ❤️ ${likeCount > 0 ? likeCount : "לייק"}
                 </button>
+                ${isAdmin ? `<button class="photo-delete-btn" onclick="deletePhoto('${photo.id}')">🗑️ מחק</button>` : ""}
               </div>
             `;
             grid.appendChild(div);
           });
         }
       });
+  }
+
+  async function deletePhoto(photoId) {
+    if (!isAdmin) return;
+    if (confirm("למחוק תמונה זו?")) {
+      await db.collection("homework").doc(currentCardId).collection("photos").doc(photoId).delete();
+    }
   }
 
   async function toggleLike(photoId) {
@@ -629,7 +586,7 @@
     }
   }
 
-  // ── PHOTO UPLOAD ──
+  // ── UPLOAD ──
   function handleFiles(e) {
     const files = Array.from(e.target.files);
     pendingFiles = [...pendingFiles, ...files];
@@ -645,10 +602,7 @@
       reader.onload = (e) => {
         const wrap = document.createElement("div");
         wrap.className = "upload-preview";
-        wrap.innerHTML = `
-          <img src="${e.target.result}" />
-          <button class="upload-preview-remove" onclick="removeFile(${i})">&#215;</button>
-        `;
+        wrap.innerHTML = `<img src="${e.target.result}" /><button class="upload-preview-remove" onclick="removeFile(${i})">&#215;</button>`;
         container.appendChild(wrap);
       };
       reader.readAsDataURL(file);
@@ -676,14 +630,11 @@
     const uploadingText = document.getElementById("uploadingText");
     btn.disabled = true;
     uploadingText.classList.remove("hidden");
-
     try {
       for (const file of pendingFiles) {
         const url = await uploadToImgBB(file);
         await db.collection("homework").doc(currentCardId).collection("photos").add({
-          url,
-          uploader: currentUser.username,
-          likes: [],
+          url, uploader: currentUser.username, likes: [],
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
       }
@@ -693,7 +644,6 @@
     } catch (err) {
       alert("שגיאה בהעלאת תמונות: " + err.message);
     }
-
     btn.disabled = true;
     uploadingText.classList.add("hidden");
   }
@@ -709,7 +659,6 @@
     document.getElementById("lightboxImg").src = "";
   }
 
-  // ── INIT ──
   loadSavedUser();
 </script>
 </body>
