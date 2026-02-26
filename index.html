@@ -569,7 +569,8 @@
     photosUnsubscribe = db.collection("homework").doc(cardId).collection("photos")
       .orderBy("timestamp", "desc")
       .onSnapshot(snapshot => {
-        const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+          .sort((a, b) => (b.likes?.length || 0) - (a.likes?.length || 0));
         grid.innerHTML = "";
         if (photos.length === 0) {
           noPhotos.classList.remove("hidden");
