@@ -1,365 +1,111 @@
-!DOCTYPE html
-html lang=en
-head
-  meta charset=UTF-8 
-  meta name=viewport content=width=device-width, initial-scale=1.0
-  titleHomework Trackertitle
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Homework Tracker</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; background: #0a0a0f; font-family: 'Courier New', monospace; background-image: radial-gradient(ellipse at 20% 50%, #0d1a2a 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, #1a0d1a 0%, transparent 60%); color: #fff; }
+    header { border-bottom: 1px solid #222; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); position: sticky; top: 0; z-index: 100; }
+    .header-title-label { font-size: 11px; letter-spacing: 4px; color: #555; margin-bottom: 4px; text-transform: uppercase; }
+    .header-title { font-size: 24px; font-weight: bold; letter-spacing: -1px; }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+    .btn { padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; letter-spacing: 1px; font-family: 'Courier New', monospace; transition: all 0.2s; }
+    .btn-white { background: #fff; color: #000; border: none; font-weight: bold; }
+    .btn-outline { background: transparent; border: 1px solid #333; color: #888; }
+    .btn-outline:hover { border-color: #fff; color: #fff; }
+    .btn-danger { background: transparent; border: 1px solid #ff2d55; color: #ff2d55; }
+    .btn-full { width: 100%; padding: 14px; background: #fff; color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; letter-spacing: 1px; font-family: 'Courier New', monospace; margin-top: 8px; }
+    .notif-on { color: #30d158; font-size: 12px; }
+    main { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
+    .add-btn-dashed { width: 100%; padding: 16px; background: transparent; border: 2px dashed #333; color: #666; border-radius: 16px; cursor: pointer; font-size: 15px; font-family: 'Courier New', monospace; transition: all 0.2s; margin-bottom: 28px; }
+    .add-btn-dashed:hover { border-color: #fff; color: #fff; }
+    .add-form { background: #111; border: 1px solid #333; border-radius: 16px; padding: 24px; margin-bottom: 28px; display: flex; flex-direction: column; gap: 12px; }
+    .add-form-title { font-weight: bold; letter-spacing: 1px; margin-bottom: 4px; }
+    input { width: 100%; padding: 12px 14px; background: #0a0a0f; border: 1px solid #333; border-radius: 10px; color: #fff; font-size: 14px; font-family: 'Courier New', monospace; outline: none; }
+    input:focus { border-color: #555; }
+    input[type=date]::-webkit-calendar-picker-indicator { filter: invert(1); }
+    .form-row { display: flex; gap: 10px; }
+    .form-row button { flex: 1; }
+    .btn-cancel { flex: 1; padding: 12px; background: transparent; color: #666; border: 1px solid #333; border-radius: 10px; cursor: pointer; font-family: 'Courier New', monospace; font-size: 14px; }
+    .cards-list { display: flex; flex-direction: column; gap: 14px; }
+    .card { border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; transition: transform 0.2s; cursor: default; animation: fadeIn 0.3s ease; }
+    .card:hover { transform: translateX(4px); }
+    .card-number { width: 32px; height: 32px; border-radius: 50%; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin-right: 18px; flex-shrink: 0; }
+    .card-info { flex: 1; }
+    .card-subject { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
+    .card-pages { color: #aaa; font-size: 13px; }
+    .card-pages span { color: #fff; font-weight: bold; }
+    .card-due { text-align: right; margin-right: 0; }
+    .card-due.has-delete { margin-right: 16px; }
+    .card-urgency { font-weight: bold; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; }
+    .card-date { color: #555; font-size: 12px; margin-top: 3px; }
+    .delete-btn { background: transparent; border: 1px solid #333; color: #555; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; line-height: 1; }
+    .delete-btn:hover { border-color: #ff2d55; color: #ff2d55; }
+    .empty { text-align: center; padding: 80px 0; }
+    .empty-emoji { font-size: 48px; margin-bottom: 16px; }
+    .empty-text { color: #444; font-size: 16px; }
+    .empty-sub { color: #333; font-size: 13px; margin-top: 8px; }
+    .total-count { text-align: center; margin-top: 40px; color: #333; font-size: 12px; letter-spacing: 2px; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); z-index: 999; }
+    .modal { background: #111; border: 1px solid #333; border-radius: 20px; padding: 32px; width: 320px; }
+    .modal-title { font-weight: bold; font-size: 18px; margin-bottom: 6px; }
+    .modal-sub { color: #555; font-size: 13px; margin-bottom: 24px; }
+    .modal-error { color: #ff2d55; font-size: 12px; margin-bottom: 8px; margin-top: -4px; }
+    .hidden { display: none; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 500px) { header { padding: 16px; flex-wrap: wrap; gap: 10px; } .card { padding: 16px; } .card-subject { font-size: 15px; } }
+  </style>
+</head>
+<body>
 
-  !-- Firebase --
-  script src=httpswww.gstatic.comfirebasejs9.23.0firebase-app-compat.jsscript
-  script src=httpswww.gstatic.comfirebasejs9.23.0firebase-firestore-compat.jsscript
+<header>
+  <div>
+    <div class="header-title-label">Class Portal</div>
+    <div class="header-title">📚 Homework Tracker</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline" id="notifBtn" onclick="requestNotif()">🔔 Enable Alerts</button>
+    <span class="notif-on hidden" id="notifOn">🔔 Alerts On</span>
+    <button class="btn btn-white" id="adminBtn" onclick="toggleAdmin()">Admin</button>
+  </div>
+</header>
 
-  style
-     { box-sizing border-box; margin 0; padding 0; }
+<main>
+  <button class="add-btn-dashed hidden" id="addBtn" onclick="showForm()">+ Add Homework</button>
+  <div class="add-form hidden" id="addForm">
+    <div class="add-form-title">NEW ASSIGNMENT</div>
+    <input type="text" id="subjectInput" placeholder="Subject (e.g. Math)" />
+    <input type="text" id="pagesInput" placeholder="Pages (e.g. 45-67)" />
+    <input type="date" id="dateInput" />
+    <div class="form-row">
+      <button class="btn-full" style="flex:1;margin-top:0" onclick="addCard()">Add</button>
+      <button class="btn-cancel" onclick="hideForm()">Cancel</button>
+    </div>
+  </div>
+  <div class="cards-list" id="cardsList"></div>
+  <div class="empty hidden" id="emptyState">
+    <div class="empty-emoji">✨</div>
+    <div class="empty-text">No homework yet.</div>
+    <div class="empty-sub">Enjoy the free time!</div>
+  </div>
+  <div class="total-count hidden" id="totalCount"></div>
+</main>
 
-    body {
-      min-height 100vh;
-      background #0a0a0f;
-      font-family 'Courier New', monospace;
-      background-image
-        radial-gradient(ellipse at 20% 50%, #0d1a2a 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 20%, #1a0d1a 0%, transparent 60%);
-      color #fff;
-    }
+<div class="modal-overlay hidden" id="loginModal" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Admin Login</div>
+    <div class="modal-sub">Enter password to manage homework</div>
+    <input type="password" id="passInput" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()" />
+    <div class="modal-error hidden" id="passError">Wrong password</div>
+    <button class="btn-full" onclick="doLogin()">Login</button>
+  </div>
+</div>
 
-     HEADER 
-    header {
-      border-bottom 1px solid #222;
-      padding 20px 28px;
-      display flex;
-      justify-content space-between;
-      align-items center;
-      background rgba(255,255,255,0.02);
-      position sticky;
-      top 0;
-      z-index 100;
-    }
-
-    .header-title-label {
-      font-size 11px;
-      letter-spacing 4px;
-      color #555;
-      margin-bottom 4px;
-      text-transform uppercase;
-    }
-
-    .header-title {
-      font-size 24px;
-      font-weight bold;
-      letter-spacing -1px;
-    }
-
-    .header-actions {
-      display flex;
-      gap 10px;
-      align-items center;
-    }
-
-     BUTTONS 
-    .btn {
-      padding 8px 16px;
-      border-radius 8px;
-      cursor pointer;
-      font-size 12px;
-      letter-spacing 1px;
-      font-family 'Courier New', monospace;
-      transition all 0.2s;
-    }
-
-    .btn-white {
-      background #fff;
-      color #000;
-      border none;
-      font-weight bold;
-    }
-
-    .btn-outline {
-      background transparent;
-      border 1px solid #333;
-      color #888;
-    }
-
-    .btn-outlinehover { border-color #fff; color #fff; }
-
-    .btn-danger {
-      background transparent;
-      border 1px solid #ff2d55;
-      color #ff2d55;
-    }
-
-    .btn-full {
-      width 100%;
-      padding 14px;
-      background #fff;
-      color #000;
-      border none;
-      border-radius 10px;
-      cursor pointer;
-      font-weight bold;
-      font-size 14px;
-      letter-spacing 1px;
-      font-family 'Courier New', monospace;
-      margin-top 8px;
-    }
-
-    .notif-on { color #30d158; font-size 12px; }
-
-     MAIN 
-    main {
-      max-width 700px;
-      margin 0 auto;
-      padding 40px 20px;
-    }
-
-     ADD FORM 
-    .add-btn-dashed {
-      width 100%;
-      padding 16px;
-      background transparent;
-      border 2px dashed #333;
-      color #666;
-      border-radius 16px;
-      cursor pointer;
-      font-size 15px;
-      font-family 'Courier New', monospace;
-      transition all 0.2s;
-      margin-bottom 28px;
-    }
-
-    .add-btn-dashedhover { border-color #fff; color #fff; }
-
-    .add-form {
-      background #111;
-      border 1px solid #333;
-      border-radius 16px;
-      padding 24px;
-      margin-bottom 28px;
-      display flex;
-      flex-direction column;
-      gap 12px;
-    }
-
-    .add-form-title {
-      font-weight bold;
-      letter-spacing 1px;
-      margin-bottom 4px;
-    }
-
-    input {
-      width 100%;
-      padding 12px 14px;
-      background #0a0a0f;
-      border 1px solid #333;
-      border-radius 10px;
-      color #fff;
-      font-size 14px;
-      font-family 'Courier New', monospace;
-      outline none;
-    }
-
-    inputfocus { border-color #555; }
-    input[type=date]-webkit-calendar-picker-indicator { filter invert(1); }
-
-    .form-row { display flex; gap 10px; }
-    .form-row button { flex 1; }
-
-    .btn-cancel {
-      flex 1;
-      padding 12px;
-      background transparent;
-      color #666;
-      border 1px solid #333;
-      border-radius 10px;
-      cursor pointer;
-      font-family 'Courier New', monospace;
-      font-size 14px;
-    }
-
-     CARDS 
-    .cards-list {
-      display flex;
-      flex-direction column;
-      gap 14px;
-    }
-
-    .card {
-      border-radius 16px;
-      padding 20px 24px;
-      display flex;
-      align-items center;
-      transition transform 0.2s;
-      cursor default;
-      animation fadeIn 0.3s ease;
-    }
-
-    .cardhover { transform translateX(4px); }
-
-    .card-number {
-      width 32px;
-      height 32px;
-      border-radius 50%;
-      font-size 13px;
-      font-weight bold;
-      display flex;
-      align-items center;
-      justify-content center;
-      margin-right 18px;
-      flex-shrink 0;
-    }
-
-    .card-info { flex 1; }
-
-    .card-subject {
-      font-size 18px;
-      font-weight bold;
-      margin-bottom 4px;
-    }
-
-    .card-pages { color #aaa; font-size 13px; }
-    .card-pages span { color #fff; font-weight bold; }
-
-    .card-due { text-align right; margin-right 0; }
-    .card-due.has-delete { margin-right 16px; }
-
-    .card-urgency {
-      font-weight bold;
-      font-size 13px;
-      letter-spacing 1px;
-      text-transform uppercase;
-    }
-
-    .card-date { color #555; font-size 12px; margin-top 3px; }
-
-    .delete-btn {
-      background transparent;
-      border 1px solid #333;
-      color #555;
-      width 32px;
-      height 32px;
-      border-radius 8px;
-      cursor pointer;
-      font-size 18px;
-      display flex;
-      align-items center;
-      justify-content center;
-      flex-shrink 0;
-      transition all 0.2s;
-      line-height 1;
-    }
-
-    .delete-btnhover { border-color #ff2d55; color #ff2d55; }
-
-     EMPTY 
-    .empty {
-      text-align center;
-      padding 80px 0;
-    }
-
-    .empty-emoji { font-size 48px; margin-bottom 16px; }
-    .empty-text { color #444; font-size 16px; }
-    .empty-sub { color #333; font-size 13px; margin-top 8px; }
-
-    .total-count {
-      text-align center;
-      margin-top 40px;
-      color #333;
-      font-size 12px;
-      letter-spacing 2px;
-    }
-
-     MODAL 
-    .modal-overlay {
-      position fixed;
-      inset 0;
-      background rgba(0,0,0,0.85);
-      display flex;
-      align-items center;
-      justify-content center;
-      backdrop-filter blur(10px);
-      z-index 999;
-    }
-
-    .modal {
-      background #111;
-      border 1px solid #333;
-      border-radius 20px;
-      padding 32px;
-      width 320px;
-    }
-
-    .modal-title { font-weight bold; font-size 18px; margin-bottom 6px; }
-    .modal-sub { color #555; font-size 13px; margin-bottom 24px; }
-    .modal-error { color #ff2d55; font-size 12px; margin-bottom 8px; margin-top -4px; }
-
-    .hidden { display none; }
-
-    @keyframes fadeIn {
-      from { opacity 0; transform translateY(-8px); }
-      to { opacity 1; transform translateY(0); }
-    }
-
-    @media (max-width 500px) {
-      header { padding 16px; flex-wrap wrap; gap 10px; }
-      .card { padding 16px; }
-      .card-subject { font-size 15px; }
-    }
-  style
-head
-body
-
-header
-  div
-    div class=header-title-labelClass Portaldiv
-    div class=header-title📚 Homework Trackerdiv
-  div
-  div class=header-actions
-    button class=btn btn-outline id=notifBtn onclick=requestNotif()🔔 Enable Alertsbutton
-    span class=notif-on hidden id=notifOn🔔 Alerts Onspan
-    button class=btn btn-white id=adminBtn onclick=toggleAdmin()Adminbutton
-  div
-header
-
-main
-  !-- Add button (admin only) --
-  button class=add-btn-dashed hidden id=addBtn onclick=showForm()+ Add Homeworkbutton
-
-  !-- Add form (admin only) --
-  div class=add-form hidden id=addForm
-    div class=add-form-titleNEW ASSIGNMENTdiv
-    input type=text id=subjectInput placeholder=Subject (e.g. Math) 
-    input type=text id=pagesInput placeholder=Pages (e.g. 45–67) 
-    input type=date id=dateInput 
-    div class=form-row
-      button class=btn-full style=flex1;margin-top0 onclick=addCard()Addbutton
-      button class=btn-cancel onclick=hideForm()Cancelbutton
-    div
-  div
-
-  !-- Cards list --
-  div class=cards-list id=cardsListdiv
-  div class=empty hidden id=emptyState
-    div class=empty-emoji✨div
-    div class=empty-textNo homework yet.div
-    div class=empty-subEnjoy the free time!div
-  div
-  div class=total-count hidden id=totalCountdiv
-main
-
-!-- Login Modal --
-div class=modal-overlay hidden id=loginModal onclick=closeModal(event)
-  div class=modal onclick=event.stopPropagation()
-    div class=modal-titleAdmin Logindiv
-    div class=modal-subEnter password to manage homeworkdiv
-    input type=password id=passInput placeholder=Password onkeydown=if(event.key==='Enter')doLogin() 
-    div class=modal-error hidden id=passErrorWrong passworddiv
-    button class=btn-full onclick=doLogin()Loginbutton
-  div
-div
-
-script
-  // ======================================================
-  // 🔥 PASTE YOUR FIREBASE CONFIG HERE
-  // ======================================================
+<script>
   const firebaseConfig = {
     apiKey: "AIzaSyB2TwGFKtyye9-QwIUnSXh2W4ggZ_AIIoE",
     authDomain: "hw-app-15b8f.firebaseapp.com",
@@ -368,171 +114,154 @@ script
     messagingSenderId: "87867834430",
     appId: "1:87867834430:web:4a6c9ceb3e44cffa44116f"
   };
-  // ======================================================
+
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-
-  const ADMIN_PASSWORD = homework123;
+  const ADMIN_PASSWORD = "homework123";
   let isAdmin = false;
   let cards = [];
 
-   ---- URGENCY ----
   function getDaysUntil(dateStr) {
     const today = new Date(); today.setHours(0,0,0,0);
     const due = new Date(dateStr); due.setHours(0,0,0,0);
-    return Math.round((due - today)  86400000);
+    return Math.round((due - today) / 86400000);
   }
 
   function getUrgency(days) {
-    if (days  0)  return { label Overdue!,       color #ff2d55, bg #2a0a10, border #ff2d55, glow 0 0 20px #ff2d5566 };
-    if (days === 0) return { label Due Today!,     color #ff6b35, bg #2a1200, border #ff6b35, glow 0 0 20px #ff6b3566 };
-    if (days === 1) return { label Due Tomorrow,   color #ffcc02, bg #2a2000, border #ffcc02, glow 0 0 20px #ffcc0244 };
-    if (days = 3)  return { label days+ days left,color #ff9f0a, bg #201500, border #ff9f0a, glow 0 0 15px #ff9f0a33 };
-    if (days = 7)  return { label days+ days left,color #30d158, bg #0a1f10, border #30d158, glow 0 0 15px #30d15833 };
-    return           { label days+ days left,      color #64d2ff, bg #001a2a, border #64d2ff44, glow none };
+    if (days < 0)   return { label: "Overdue!",        color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55", glow: "0 0 20px #ff2d5566" };
+    if (days === 0) return { label: "Due Today!",      color: "#ff6b35", bg: "#2a1200", border: "#ff6b35", glow: "0 0 20px #ff6b3566" };
+    if (days === 1) return { label: "Due Tomorrow",    color: "#ffcc02", bg: "#2a2000", border: "#ffcc02", glow: "0 0 20px #ffcc0244" };
+    if (days <= 3)  return { label: days+" days left", color: "#ff9f0a", bg: "#201500", border: "#ff9f0a", glow: "0 0 15px #ff9f0a33" };
+    if (days <= 7)  return { label: days+" days left", color: "#30d158", bg: "#0a1f10", border: "#30d158", glow: "0 0 15px #30d15833" };
+    return           { label: days+" days left",       color: "#64d2ff", bg: "#001a2a", border: "#64d2ff44", glow: "none" };
   }
 
   function formatDate(dateStr) {
-    return new Date(dateStr).toLocaleDateString(en-US, { weekdayshort, monthshort, daynumeric });
+    return new Date(dateStr).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
   }
 
-   ---- RENDER ----
   function render() {
-    const list = document.getElementById(cardsList);
-    const empty = document.getElementById(emptyState);
-    const total = document.getElementById(totalCount);
-    list.innerHTML = ;
-
-    const sorted = [...cards].sort((a,b) = new Date(a.dueDate) - new Date(b.dueDate));
-
+    const list = document.getElementById("cardsList");
+    const empty = document.getElementById("emptyState");
+    const total = document.getElementById("totalCount");
+    list.innerHTML = "";
+    const sorted = [...cards].sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate));
     if (sorted.length === 0) {
-      empty.classList.remove(hidden);
-      total.classList.add(hidden);
+      empty.classList.remove("hidden");
+      total.classList.add("hidden");
     } else {
-      empty.classList.add(hidden);
-      total.classList.remove(hidden);
-      total.textContent = sorted.length +  ASSIGNMENT + (sorted.length !== 1  S  ) +  TOTAL;
-
-      sorted.forEach((card, i) = {
+      empty.classList.add("hidden");
+      total.classList.remove("hidden");
+      total.textContent = sorted.length + " ASSIGNMENT" + (sorted.length !== 1 ? "S" : "") + " TOTAL";
+      sorted.forEach((card, i) => {
         const days = getDaysUntil(card.dueDate);
         const u = getUrgency(days);
-        const div = document.createElement(div);
-        div.className = card;
-        div.style.cssText = `background${u.bg};border1px solid ${u.border};box-shadow${u.glow}`;
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.cssText = `background:${u.bg};border:1px solid ${u.border};box-shadow:${u.glow}`;
         div.innerHTML = `
-          div class=card-number style=border1px solid ${u.color}44;color${u.color}#${i+1}div
-          div class=card-info
-            div class=card-subject${card.subject}div
-            div class=card-pagesPages span${card.pages}spandiv
-          div
-          div class=card-due ${isAdmin  'has-delete'  ''}
-            div class=card-urgency style=color${u.color}${u.label}div
-            div class=card-date${formatDate(card.dueDate)}div
-          div
-          ${isAdmin  `button class=delete-btn onclick=deleteCard('${card.id}')×button`  }
+          <div class="card-number" style="border:1px solid ${u.color}44;color:${u.color}">#${i+1}</div>
+          <div class="card-info">
+            <div class="card-subject">${card.subject}</div>
+            <div class="card-pages">Pages <span>${card.pages}</span></div>
+          </div>
+          <div class="card-due ${isAdmin ? 'has-delete' : ''}">
+            <div class="card-urgency" style="color:${u.color}">${u.label}</div>
+            <div class="card-date">${formatDate(card.dueDate)}</div>
+          </div>
+          ${isAdmin ? `<button class="delete-btn" onclick="deleteCard('${card.id}')">&#215;</button>` : ""}
         `;
         list.appendChild(div);
       });
     }
   }
 
-   ---- FIREBASE LISTENER ----
   let prevCount = null;
-  db.collection(homework).orderBy(dueDate).onSnapshot(snapshot = {
-    cards = snapshot.docs.map(doc = ({ id doc.id, ...doc.data() }));
-
-     Notify if new cards added
-    if (prevCount !== null && cards.length  prevCount && Notification.permission === granted) {
-      new Notification(📚 New Homework Added!, {
-        body `${cards.length - prevCount} new assignment(s) added!`
-      });
+  db.collection("homework").orderBy("dueDate").onSnapshot(snapshot => {
+    cards = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    if (prevCount !== null && cards.length > prevCount && Notification.permission === "granted") {
+      new Notification("📚 New Homework Added!", { body: `${cards.length - prevCount} new assignment(s) added!` });
     }
     prevCount = cards.length;
     render();
   });
 
-   ---- ADD CARD ----
   async function addCard() {
-    const subject = document.getElementById(subjectInput).value.trim();
-    const pages = document.getElementById(pagesInput).value.trim();
-    const dueDate = document.getElementById(dateInput).value;
-    if (!subject  !pages  !dueDate) return alert(Please fill in all fields!);
-    await db.collection(homework).add({ subject, pages, dueDate });
-    document.getElementById(subjectInput).value = ;
-    document.getElementById(pagesInput).value = ;
-    document.getElementById(dateInput).value = ;
+    const subject = document.getElementById("subjectInput").value.trim();
+    const pages = document.getElementById("pagesInput").value.trim();
+    const dueDate = document.getElementById("dateInput").value;
+    if (!subject || !pages || !dueDate) return alert("Please fill in all fields!");
+    await db.collection("homework").add({ subject, pages, dueDate });
+    document.getElementById("subjectInput").value = "";
+    document.getElementById("pagesInput").value = "";
+    document.getElementById("dateInput").value = "";
     hideForm();
   }
 
-   ---- DELETE CARD ----
   async function deleteCard(id) {
-    if (confirm(Delete this assignment)) {
-      await db.collection(homework).doc(id).delete();
+    if (confirm("Delete this assignment?")) {
+      await db.collection("homework").doc(id).delete();
     }
   }
 
-   ---- ADMIN ----
   function toggleAdmin() {
     if (isAdmin) {
       isAdmin = false;
-      document.getElementById(adminBtn).textContent = Admin;
-      document.getElementById(adminBtn).className = btn btn-white;
-      document.getElementById(addBtn).classList.add(hidden);
-      hideForm();
-      render();
+      document.getElementById("adminBtn").textContent = "Admin";
+      document.getElementById("adminBtn").className = "btn btn-white";
+      document.getElementById("addBtn").classList.add("hidden");
+      hideForm(); render();
     } else {
-      document.getElementById(loginModal).classList.remove(hidden);
-      setTimeout(() = document.getElementById(passInput).focus(), 100);
+      document.getElementById("loginModal").classList.remove("hidden");
+      setTimeout(() => document.getElementById("passInput").focus(), 100);
     }
   }
 
   function doLogin() {
-    const pass = document.getElementById(passInput).value;
+    const pass = document.getElementById("passInput").value;
     if (pass === ADMIN_PASSWORD) {
       isAdmin = true;
-      document.getElementById(loginModal).classList.add(hidden);
-      document.getElementById(passInput).value = ;
-      document.getElementById(passError).classList.add(hidden);
-      document.getElementById(adminBtn).textContent = Logout;
-      document.getElementById(adminBtn).className = btn btn-danger;
-      document.getElementById(addBtn).classList.remove(hidden);
+      document.getElementById("loginModal").classList.add("hidden");
+      document.getElementById("passInput").value = "";
+      document.getElementById("passError").classList.add("hidden");
+      document.getElementById("adminBtn").textContent = "Logout";
+      document.getElementById("adminBtn").className = "btn btn-danger";
+      document.getElementById("addBtn").classList.remove("hidden");
       render();
     } else {
-      document.getElementById(passError).classList.remove(hidden);
+      document.getElementById("passError").classList.remove("hidden");
     }
   }
 
   function closeModal(e) {
-    document.getElementById(loginModal).classList.add(hidden);
-    document.getElementById(passInput).value = ;
-    document.getElementById(passError).classList.add(hidden);
+    document.getElementById("loginModal").classList.add("hidden");
+    document.getElementById("passInput").value = "";
+    document.getElementById("passError").classList.add("hidden");
   }
 
-   ---- FORM ----
   function showForm() {
-    document.getElementById(addForm).classList.remove(hidden);
-    document.getElementById(addBtn).classList.add(hidden);
+    document.getElementById("addForm").classList.remove("hidden");
+    document.getElementById("addBtn").classList.add("hidden");
   }
 
   function hideForm() {
-    document.getElementById(addForm).classList.add(hidden);
-    if (isAdmin) document.getElementById(addBtn).classList.remove(hidden);
+    document.getElementById("addForm").classList.add("hidden");
+    if (isAdmin) document.getElementById("addBtn").classList.remove("hidden");
   }
 
-   ---- NOTIFICATIONS ----
   function requestNotif() {
-    Notification.requestPermission().then(p = {
-      if (p === granted) {
-        document.getElementById(notifBtn).classList.add(hidden);
-        document.getElementById(notifOn).classList.remove(hidden);
+    Notification.requestPermission().then(p => {
+      if (p === "granted") {
+        document.getElementById("notifBtn").classList.add("hidden");
+        document.getElementById("notifOn").classList.remove("hidden");
       }
     });
   }
 
-  if (Notification.permission === granted) {
-    document.getElementById(notifBtn).classList.add(hidden);
-    document.getElementById(notifOn).classList.remove(hidden);
+  if (Notification.permission === "granted") {
+    document.getElementById("notifBtn").classList.add("hidden");
+    document.getElementById("notifOn").classList.remove("hidden");
   }
-script
-body
-html
+</script>
+</body>
+</html>
