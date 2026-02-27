@@ -134,6 +134,7 @@
   <div class="header-actions">
     <span class="user-badge hidden" id="userBadge"></span>
     <button class="btn btn-ghost hidden" id="logoutBtn" onclick="logout()">יציאה</button>
+    <button class="btn btn-ghost" onclick="openLeaderboard()">🏆 טבלת מובילים</button>
     <button class="btn btn-white" id="adminBtn" onclick="toggleAdmin()">כניסת מנהל</button>
   </div>
 </header>
@@ -242,6 +243,17 @@
         <div class="no-photos hidden" id="noPhotos">אין תשובות עדיין — היה הראשון להעלות!</div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- LEADERBOARD MODAL -->
+<div class="modal-overlay hidden" id="leaderboardModal" onclick="closeLeaderboard(event)">
+  <div class="modal" style="max-width:420px" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div class="modal-title">🏆 טבלת מובילים</div>
+      <button class="close-btn" onclick="closeLeaderboard()"><!-- LIGHTBOX -->#215;</button>
+    </div>
+    <div id="leaderboardList"><div style="text-align:center;color:#444;padding:20px;font-size:13px">טוען...</div></div>
   </div>
 </div>
 
@@ -569,30 +581,34 @@
     photosUnsubscribe = db.collection("homework").doc(cardId).collection("photos")
       .orderBy("timestamp", "desc")
       .onSnapshot(snapshot => {
-        const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
           .sort((a, b) => (b.likes?.length || 0) - (a.likes?.length || 0));
         grid.innerHTML = "";
-        if (photos.length === 0) {
+        if (posts.length === 0) {
           noPhotos.classList.remove("hidden");
         } else {
           noPhotos.classList.add("hidden");
-          photos.forEach(photo => {
-            const liked = currentUser && photo.likes && photo.likes.includes(currentUser.username);
-            const likeCount = photo.likes ? photo.likes.length : 0;
-            const time = photo.timestamp ? new Date(photo.timestamp.toDate()).toLocaleDateString("he-IL", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" }) : "";
+          posts.forEach(post => {
+            const liked = currentUser && post.likes && post.likes.includes(currentUser.username);
+            const likeCount = post.likes ? post.likes.length : 0;
+            const time = post.timestamp ? new Date(post.timestamp.toDate()).toLocaleDateString("he-IL", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" }) : "";
+            const urls = post.urls || (post.url ? [post.url] : []);
+            const imagesHTML = urls.map(url =>
+              `<img class="photo-img" src="${url}" loading="lazy" onclick="openLightbox('${url}')" />`
+            ).join('<div style="height:2px;background:#0a0a0f"></div>');
             const div = document.createElement("div");
             div.className = "photo-card";
             div.innerHTML = `
               <div class="photo-card-header">
-                <span class="photo-uploader">👤 ${photo.uploader}</span>
-                <span class="photo-time">${time}</span>
+                <span class="photo-uploader">👤 ${post.uploader}</span>
+                <span class="photo-time">${time}${urls.length > 1 ? ` · ${urls.length} תמונות` : ""}</span>
               </div>
-              <img class="photo-img" src="${photo.url}" loading="lazy" onclick="openLightbox('${photo.url}')" />
+              ${imagesHTML}
               <div class="photo-actions">
-                <button class="like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${photo.id}')">
+                <button class="like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
                   ❤️ ${likeCount > 0 ? likeCount : "לייק"}
                 </button>
-                ${isAdmin ? `<button class="photo-delete-btn" onclick="deletePhoto('${photo.id}')">🗑️ מחק</button>` : ""}
+                ${isAdmin ? `<button class="photo-delete-btn" onclick="deletePhoto('${post.id}')">🗑️ מחק</button>` : ""}
               </div>
             `;
             grid.appendChild(div);
@@ -667,13 +683,17 @@
     btn.disabled = true;
     uploadingText.classList.remove("hidden");
     try {
+      // Upload all files and collect URLs into one bundle
+      const urls = [];
       for (const file of pendingFiles) {
         const url = await uploadToImgBB(file);
-        await db.collection("homework").doc(currentCardId).collection("photos").add({
-          url, uploader: currentUser.username, likes: [],
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        urls.push(url);
       }
+      // Save as a single post with all URLs
+      await db.collection("homework").doc(currentCardId).collection("photos").add({
+        urls, uploader: currentUser.username, likes: [],
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
       pendingFiles = [];
       renderPreviews();
       document.getElementById("fileInput").value = "";
@@ -696,6 +716,49 @@
   }
 
   // ── INIT ──
+
+  // ── LEADERBOARD ──
+  async function openLeaderboard() {
+    document.getElementById("leaderboardModal").classList.remove("hidden");
+    const listEl = document.getElementById("leaderboardList");
+    listEl.innerHTML = '<div style="text-align:center;color:#444;padding:20px;font-size:13px">טוען...</div>';
+    try {
+      const hwSnap = await db.collection("homework").get();
+      const totals = {};
+      for (const hwDoc of hwSnap.docs) {
+        const photosSnap = await db.collection("homework").doc(hwDoc.id).collection("photos").get();
+        photosSnap.forEach(p => {
+          const data = p.data();
+          const user = data.uploader || "?";
+          const likes = data.likes ? data.likes.length : 0;
+          totals[user] = (totals[user] || 0) + likes;
+        });
+      }
+      const sorted = Object.entries(totals).sort((a,b) => b[1]-a[1]);
+      if (sorted.length === 0) {
+        listEl.innerHTML = '<div style="text-align:center;color:#333;padding:30px;font-size:14px">אין נתונים עדיין</div>';
+        return;
+      }
+      const medals = ["🥇","🥈","🥉"];
+      listEl.innerHTML = sorted.map(([user, likes], i) => {
+        const medal = medals[i] || (i+1)+".";
+        const isMe = currentUser && currentUser.username === user;
+        return `<div style="display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid #1a1a1a;border-radius:8px;background:${isMe?'rgba(100,210,255,0.05)':'transparent'}">
+          <span style="font-size:20px;width:32px;text-align:center">${medal}</span>
+          <span style="flex:1;font-size:15px;font-weight:bold;color:${isMe?'#64d2ff':'#fff'}">${user}${isMe?' (את/ה)':''}</span>
+          <span style="color:#ff2d55;font-size:14px">❤️ ${likes}</span>
+        </div>`;
+      }).join("");
+    } catch(e) {
+      listEl.innerHTML = '<div style="color:#ff2d55;text-align:center;padding:20px">שגיאה בטעינה</div>';
+    }
+  }
+
+  function closeLeaderboard(e) {
+    if (e && e.target !== document.getElementById("leaderboardModal")) return;
+    document.getElementById("leaderboardModal").classList.add("hidden");
+  }
+
   loadSavedUser();
   deleteExpiredCards();
   // Re-check every minute
