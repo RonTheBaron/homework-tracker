@@ -70,6 +70,17 @@
     .card-time-badge { font-size: 11px; margin-top: 4px; padding: 2px 8px; border-radius: 6px; display: inline-block; }
     .delete-btn { background: transparent; border: 1px solid #333; color: #555; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; line-height: 1; margin-top: 3px; }
     .delete-btn:hover { border-color: #ff2d55; color: #ff2d55; }
+
+    /* ── DIFFICULTY BADGE on card ── */
+    .card-difficulty-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 6px; padding: 3px 9px;
+      border-radius: 20px; font-size: 11px; font-weight: bold;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      letter-spacing: 0.5px;
+    }
+
     .empty { text-align: center; padding: 80px 0; }
     .empty-emoji { font-size: 48px; margin-bottom: 16px; }
     .empty-text { color: #444; font-size: 16px; }
@@ -120,7 +131,136 @@
     .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 9999; cursor: pointer; }
     .lightbox img { max-width: 95vw; max-height: 95vh; object-fit: contain; border-radius: 8px; }
     .hidden { display: none; }
+
+    /* ── DIFFICULTY VOTING PANEL ── */
+    .difficulty-section {
+      margin-bottom: 24px;
+      background: #111217;
+      border: 1px solid #2a2a35;
+      border-radius: 14px;
+      padding: 18px 20px;
+    }
+    .difficulty-section-title {
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #555;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .difficulty-avg-display {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .difficulty-avg-number {
+      font-size: 36px;
+      font-weight: bold;
+      line-height: 1;
+      transition: color 0.4s;
+    }
+    .difficulty-avg-outof {
+      font-size: 14px;
+      color: #444;
+    }
+    .difficulty-avg-label {
+      font-size: 12px;
+      color: #444;
+      margin-right: 8px;
+    }
+    .difficulty-avg-voters {
+      font-size: 11px;
+      color: #333;
+      margin-top: 2px;
+    }
+    .difficulty-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: #1e1e28;
+      border-radius: 3px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .difficulty-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1), background 0.4s;
+    }
+    .difficulty-buttons {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .diff-btn {
+      flex: 1;
+      min-width: 28px;
+      padding: 8px 4px;
+      border-radius: 8px;
+      border: 1px solid #2a2a35;
+      background: #0a0a0f;
+      color: #555;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+      transition: all 0.18s;
+      text-align: center;
+      position: relative;
+    }
+    .diff-btn:hover {
+      border-color: #555;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .diff-btn.selected {
+      color: #000;
+      font-weight: bold;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .diff-btn.selected::after {
+      content: '✓';
+      position: absolute;
+      top: -6px;
+      right: -4px;
+      font-size: 9px;
+      background: #fff;
+      color: #000;
+      border-radius: 50%;
+      width: 12px;
+      height: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    .difficulty-login-hint {
+      font-size: 12px;
+      color: #333;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .difficulty-login-hint span {
+      color: #64d2ff;
+      cursor: pointer;
+    }
+    .difficulty-login-hint span:hover { text-decoration: underline; }
+    .difficulty-voted-msg {
+      font-size: 11px;
+      color: #444;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .difficulty-divider {
+      height: 1px;
+      background: #1a1a22;
+      margin: 20px 0;
+    }
+
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     @media (max-width: 500px) { header { padding: 16px; flex-wrap: wrap; gap: 10px; } .card { padding: 16px; } .card-subject { font-size: 15px; } .form-row-2 { flex-direction: column; } }
   </style>
 </head>
@@ -228,6 +368,38 @@
       <button class="close-btn" onclick="closeAnswers()">&#215;</button>
     </div>
     <div class="answers-body">
+
+      <!-- ── DIFFICULTY VOTING ── -->
+      <div class="difficulty-section" id="difficultySection">
+        <div class="difficulty-section-title">
+          <span>🔥 דרגת קושי</span>
+          <span id="diffVotersCount" style="color:#333;font-size:11px"></span>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:12px">
+          <div>
+            <div class="difficulty-avg-display">
+              <span class="difficulty-avg-number" id="diffAvgNumber">—</span>
+              <span class="difficulty-avg-outof" id="diffAvgOutof">/10</span>
+            </div>
+            <div class="difficulty-avg-voters" id="diffAvgSub">אין הצבעות עדיין</div>
+          </div>
+          <div style="flex:1;padding-bottom:6px">
+            <div class="difficulty-bar-bg">
+              <div class="difficulty-bar-fill" id="diffBarFill" style="width:0%;background:#444"></div>
+            </div>
+          </div>
+        </div>
+        <div class="difficulty-buttons" id="diffButtons">
+          <!-- 1–10 buttons rendered by JS -->
+        </div>
+        <div class="difficulty-login-hint hidden" id="diffLoginHint">
+          <span onclick="openAuthForDiff()">התחבר</span> כדי להצביע
+        </div>
+        <div class="difficulty-voted-msg hidden" id="diffVotedMsg"></div>
+      </div>
+
+      <div class="difficulty-divider"></div>
+
       <div id="uploadSection">
         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
           <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(event)" />
@@ -251,7 +423,7 @@
   <div class="modal" style="max-width:420px" onclick="event.stopPropagation()">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
       <div class="modal-title">🏆 טבלת מובילים</div>
-      <button class="close-btn" onclick="closeLeaderboard()"><!-- LIGHTBOX -->#215;</button>
+      <button class="close-btn" onclick="closeLeaderboard()">&#215;</button>
     </div>
     <div id="leaderboardList"><div style="text-align:center;color:#444;padding:20px;font-size:13px">טוען...</div></div>
   </div>
@@ -285,6 +457,157 @@
   let currentUser = null;
   let pendingFiles = [];
   let photosUnsubscribe = null;
+  let diffUnsubscribe = null;
+
+  // ── DIFFICULTY HELPERS ──
+  function getDiffColor(score) {
+    if (!score || score === 0) return "#444";
+    if (score <= 3) return "#30d158";
+    if (score <= 5) return "#64d2ff";
+    if (score <= 7) return "#ff9f0a";
+    if (score <= 9) return "#ff6b35";
+    return "#ff2d55";
+  }
+
+  function getDiffLabel(score) {
+    if (!score || score === 0) return "";
+    if (score <= 2) return "קל מאוד";
+    if (score <= 4) return "קל";
+    if (score <= 6) return "בינוני";
+    if (score <= 8) return "קשה";
+    if (score <= 9) return "קשה מאוד";
+    return "בלתי אפשרי 💀";
+  }
+
+  function renderDiffButtons(myVote) {
+    const container = document.getElementById("diffButtons");
+    container.innerHTML = "";
+    for (let i = 1; i <= 10; i++) {
+      const btn = document.createElement("button");
+      btn.className = "diff-btn" + (myVote === i ? " selected" : "");
+      btn.textContent = i;
+      const color = getDiffColor(i);
+      if (myVote === i) {
+        btn.style.background = color;
+        btn.style.borderColor = color;
+        btn.style.color = "#000";
+      } else {
+        btn.style.borderColor = color + "44";
+        btn.style.color = color + "99";
+      }
+      btn.onmouseenter = () => {
+        if (myVote !== i) {
+          btn.style.borderColor = color;
+          btn.style.color = color;
+        }
+      };
+      btn.onmouseleave = () => {
+        if (myVote !== i) {
+          btn.style.borderColor = color + "44";
+          btn.style.color = color + "99";
+        }
+      };
+      btn.onclick = () => submitDiffVote(i);
+      container.appendChild(btn);
+    }
+    // Login hint / voted message
+    const hintEl = document.getElementById("diffLoginHint");
+    const votedEl = document.getElementById("diffVotedMsg");
+    if (!currentUser) {
+      hintEl.classList.remove("hidden");
+      votedEl.classList.add("hidden");
+      container.style.opacity = "0.4";
+      container.style.pointerEvents = "none";
+    } else {
+      hintEl.classList.add("hidden");
+      container.style.opacity = "1";
+      container.style.pointerEvents = "auto";
+      if (myVote) {
+        votedEl.textContent = "הצבעת " + myVote + "/10 · לחץ שוב כדי לשנות";
+        votedEl.classList.remove("hidden");
+      } else {
+        votedEl.classList.add("hidden");
+      }
+    }
+  }
+
+  function updateDiffDisplay(votes) {
+    const vals = Object.values(votes);
+    const count = vals.length;
+    const avg = count > 0 ? vals.reduce((a, b) => a + b, 0) / count : 0;
+    const avgRounded = count > 0 ? Math.round(avg * 10) / 10 : null;
+    const color = getDiffColor(avgRounded);
+
+    const numEl = document.getElementById("diffAvgNumber");
+    const subEl = document.getElementById("diffAvgSub");
+    const barEl = document.getElementById("diffBarFill");
+    const votersEl = document.getElementById("diffVotersCount");
+
+    if (avgRounded !== null) {
+      numEl.textContent = avgRounded;
+      numEl.style.color = color;
+      subEl.textContent = getDiffLabel(avgRounded);
+      subEl.style.color = color + "99";
+      barEl.style.width = (avg / 10 * 100) + "%";
+      barEl.style.background = color;
+      votersEl.textContent = count + " הצבעות";
+    } else {
+      numEl.textContent = "—";
+      numEl.style.color = "#444";
+      subEl.textContent = "אין הצבעות עדיין";
+      subEl.style.color = "#333";
+      barEl.style.width = "0%";
+      votersEl.textContent = "";
+    }
+  }
+
+  function loadDiffVotes(cardId) {
+    if (diffUnsubscribe) { diffUnsubscribe(); diffUnsubscribe = null; }
+    const ref = db.collection("homework").doc(cardId).collection("votes").doc("data");
+    diffUnsubscribe = ref.onSnapshot(doc => {
+      const votes = doc.exists ? (doc.data().votes || {}) : {};
+      updateDiffDisplay(votes);
+      const myVote = currentUser ? (votes[currentUser.username] || null) : null;
+      renderDiffButtons(myVote);
+    });
+  }
+
+  async function submitDiffVote(score) {
+    if (!currentUser || !currentCardId) return;
+    const ref = db.collection("homework").doc(currentCardId).collection("votes").doc("data");
+    const doc = await ref.get();
+    const votes = doc.exists ? (doc.data().votes || {}) : {};
+    // If same value clicked again — remove vote (toggle off)
+    if (votes[currentUser.username] === score) {
+      delete votes[currentUser.username];
+    } else {
+      votes[currentUser.username] = score;
+    }
+    await ref.set({ votes });
+  }
+
+  function openAuthForDiff() {
+    openAuthModal();
+  }
+
+  // ── DIFFICULTY on cards: cache votes keyed by cardId ──
+  const cardDiffCache = {};
+
+  function watchCardDiff(cardId) {
+    if (cardDiffCache[cardId] && cardDiffCache[cardId].unsub) return;
+    cardDiffCache[cardId] = { avg: null, count: 0, unsub: null };
+    const ref = db.collection("homework").doc(cardId).collection("votes").doc("data");
+    const unsub = ref.onSnapshot(doc => {
+      const votes = doc.exists ? (doc.data().votes || {}) : {};
+      const vals = Object.values(votes);
+      const count = vals.length;
+      const avg = count > 0 ? vals.reduce((a, b) => a + b, 0) / count : null;
+      cardDiffCache[cardId].avg = avg ? Math.round(avg * 10) / 10 : null;
+      cardDiffCache[cardId].count = count;
+      render();
+    });
+    cardDiffCache[cardId].unsub = unsub;
+  }
 
   // ── AUTO DELETE EXPIRED ──
   async function deleteExpiredCards() {
@@ -511,6 +834,19 @@
       sorted.forEach((card, i) => {
         const minutes = getMinutesUntil(card.dueDate, card.dueTime);
         const u = getUrgency(minutes);
+
+        // Start watching difficulty if not already
+        watchCardDiff(card.id);
+        const diffData = cardDiffCache[card.id];
+        let diffBadgeHTML = "";
+        if (diffData && diffData.count > 0) {
+          const color = getDiffColor(diffData.avg);
+          const label = getDiffLabel(diffData.avg);
+          diffBadgeHTML = `<div class="card-difficulty-badge" style="color:${color};border-color:${color}33">🔥 קושי ${diffData.avg}/10 <span style="color:#333;font-weight:normal">·</span> <span style="color:#444;font-weight:normal">${label}</span></div>`;
+        } else if (diffData) {
+          diffBadgeHTML = `<div class="card-difficulty-badge" style="color:#333">🔥 לא דורג עדיין</div>`;
+        }
+
         const div = document.createElement("div");
         div.className = "card";
         div.style.cssText = `background:${u.bg};border:1px solid ${u.border};box-shadow:${u.glow}`;
@@ -527,6 +863,7 @@
             <div class="card-subject">${card.subject}</div>
             <div class="card-pages">עמודים <span>${card.pages}</span></div>
             ${questionsHTML}
+            ${diffBadgeHTML}
             <div class="card-hint">לחץ לצפייה בתשובות ✦</div>
           </div>
           <div class="card-due ${isAdmin ? 'has-delete' : ''}">
@@ -561,11 +898,13 @@
     document.getElementById("uploadBtn").disabled = true;
     document.getElementById("uploadingText").classList.add("hidden");
     loadPhotos(cardId);
+    loadDiffVotes(cardId);
   }
 
   function closeAnswers() {
     document.getElementById("answersModal").classList.add("hidden");
     if (photosUnsubscribe) { photosUnsubscribe(); photosUnsubscribe = null; }
+    if (diffUnsubscribe) { diffUnsubscribe(); diffUnsubscribe = null; }
     currentCardId = null;
     document.getElementById("fileInput").value = "";
     pendingFiles = [];
@@ -683,13 +1022,11 @@
     btn.disabled = true;
     uploadingText.classList.remove("hidden");
     try {
-      // Upload all files and collect URLs into one bundle
       const urls = [];
       for (const file of pendingFiles) {
         const url = await uploadToImgBB(file);
         urls.push(url);
       }
-      // Save as a single post with all URLs
       await db.collection("homework").doc(currentCardId).collection("photos").add({
         urls, uploader: currentUser.username, likes: [],
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -714,8 +1051,6 @@
     document.getElementById("lightbox").classList.add("hidden");
     document.getElementById("lightboxImg").src = "";
   }
-
-  // ── INIT ──
 
   // ── LEADERBOARD ──
   async function openLeaderboard() {
@@ -761,7 +1096,6 @@
 
   loadSavedUser();
   deleteExpiredCards();
-  // Re-check every minute
   setInterval(deleteExpiredCards, 60000);
 </script>
 </body>
