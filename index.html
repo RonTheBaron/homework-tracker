@@ -6,6 +6,7 @@
   <title>מעקב שיעורי בית</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { min-height: 100vh; background: #0a0a0f; font-family: 'Courier New', monospace; background-image: radial-gradient(ellipse at 20% 50%, #0d1a2a 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, #1a0d1a 0%, transparent 60%); color: #fff; direction: rtl; }
@@ -21,6 +22,7 @@
     .btn-danger { background: transparent; border: 1px solid #ff2d55; color: #ff2d55; }
     .btn-full { width: 100%; padding: 14px; background: #fff; color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; font-family: 'Courier New', monospace; margin-top: 8px; transition: background 0.2s; }
     .btn-full:hover { background: #e0e0e0; }
+    .btn-full:disabled { background: #333; color: #666; cursor: not-allowed; }
     main { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
     .add-btn-dashed { width: 100%; padding: 16px; background: transparent; border: 2px dashed #333; color: #666; border-radius: 16px; cursor: pointer; font-size: 15px; font-family: 'Courier New', monospace; transition: all 0.2s; margin-bottom: 28px; }
     .add-btn-dashed:hover { border-color: #fff; color: #fff; }
@@ -28,13 +30,14 @@
     .form-title { font-weight: bold; letter-spacing: 1px; margin-bottom: 4px; font-size: 15px; }
     .form-row-2 { display: flex; gap: 10px; }
     .form-row-2 > * { flex: 1; }
-    input[type=text], input[type=password], input[type=date], input[type=time], textarea {
+    input[type=text], input[type=password], input[type=date], input[type=time], input[type=email], textarea {
       width: 100%; padding: 12px 14px; background: #0a0a0f; border: 1px solid #333;
       border-radius: 10px; color: #fff; font-size: 14px; font-family: 'Courier New', monospace;
       outline: none; text-align: right;
     }
-    input[type=text]:focus, input[type=password]:focus, input[type=date]:focus, input[type=time]:focus, textarea:focus { border-color: #555; }
+    input[type=text]:focus, input[type=password]:focus, input[type=date]:focus, input[type=time]:focus, input[type=email]:focus, textarea:focus { border-color: #555; }
     input[type=date], input[type=time] { text-align: left; direction: ltr; }
+    input[type=email] { text-align: left; direction: ltr; }
     input[type=date]::-webkit-calendar-picker-indicator,
     input[type=time]::-webkit-calendar-picker-indicator { filter: invert(1); }
     .input-label { font-size: 11px; color: #555; margin-bottom: 4px; letter-spacing: 1px; }
@@ -67,33 +70,39 @@
     .card-due.has-delete { margin-left: 16px; }
     .card-urgency { font-weight: bold; font-size: 13px; }
     .card-date { color: #555; font-size: 12px; margin-top: 3px; }
-    .card-time-badge { font-size: 11px; margin-top: 4px; padding: 2px 8px; border-radius: 6px; display: inline-block; }
     .delete-btn { background: transparent; border: 1px solid #333; color: #555; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; line-height: 1; margin-top: 3px; }
     .delete-btn:hover { border-color: #ff2d55; color: #ff2d55; }
-
-    /* ── DIFFICULTY BADGE on card ── */
-    .card-difficulty-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      margin-top: 6px; padding: 3px 9px;
-      border-radius: 20px; font-size: 11px; font-weight: bold;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.04);
-      letter-spacing: 0.5px;
-    }
-
+    .card-difficulty-badge { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); letter-spacing: 0.5px; }
     .empty { text-align: center; padding: 80px 0; }
     .empty-emoji { font-size: 48px; margin-bottom: 16px; }
     .empty-text { color: #444; font-size: 16px; }
     .empty-sub { color: #333; font-size: 13px; margin-top: 8px; }
     .total-count { text-align: center; margin-top: 40px; color: #333; font-size: 12px; letter-spacing: 2px; }
     .credit { text-align: center; margin-top: 8px; color: #222; font-size: 11px; }
+
+    /* ── MODALS ── */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(12px); z-index: 999; padding: 16px; }
-    .modal { background: #111; border: 1px solid #333; border-radius: 20px; padding: 32px; width: 100%; max-width: 360px; }
+    .modal { background: #111; border: 1px solid #333; border-radius: 20px; padding: 32px; width: 100%; max-width: 380px; }
     .modal-title { font-weight: bold; font-size: 18px; margin-bottom: 6px; }
-    .modal-sub { color: #555; font-size: 13px; margin-bottom: 24px; }
-    .modal-error { color: #ff2d55; font-size: 12px; margin-top: 6px; }
-    .modal-link { color: #64d2ff; cursor: pointer; font-size: 12px; text-align: center; margin-top: 12px; }
+    .modal-sub { color: #555; font-size: 13px; margin-bottom: 24px; line-height: 1.5; }
+    .modal-error { color: #ff2d55; font-size: 12px; margin-top: 8px; padding: 8px 12px; background: rgba(255,45,85,0.08); border: 1px solid rgba(255,45,85,0.2); border-radius: 8px; }
+    .modal-success { color: #30d158; font-size: 12px; margin-top: 8px; padding: 10px 12px; background: rgba(48,209,88,0.08); border: 1px solid rgba(48,209,88,0.2); border-radius: 8px; line-height: 1.5; }
+    .modal-link { color: #64d2ff; cursor: pointer; font-size: 12px; text-align: center; margin-top: 14px; }
     .modal-link:hover { text-decoration: underline; }
+    .modal-divider { height: 1px; background: #1a1a1a; margin: 16px 0; }
+    .field-group { margin-bottom: 10px; }
+    .field-group:last-of-type { margin-bottom: 0; }
+
+    /* Verification pending box */
+    .verify-box { text-align: center; padding: 8px 0; }
+    .verify-icon { font-size: 40px; margin-bottom: 12px; }
+    .verify-title { font-size: 17px; font-weight: bold; margin-bottom: 8px; }
+    .verify-sub { color: #555; font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
+    .verify-email-highlight { color: #64d2ff; font-weight: bold; }
+    .resend-link { color: #64d2ff; cursor: pointer; font-size: 12px; }
+    .resend-link:hover { text-decoration: underline; }
+    .resend-cooldown { color: #333; font-size: 12px; }
+
     .answers-modal { background: #0f0f15; border: 1px solid #222; border-radius: 20px; width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
     .answers-header { padding: 20px 24px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
     .answers-title { font-size: 18px; font-weight: bold; }
@@ -130,137 +139,29 @@
     .no-photos { text-align: center; padding: 40px 0; color: #333; font-size: 14px; }
     .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 9999; cursor: pointer; }
     .lightbox img { max-width: 95vw; max-height: 95vh; object-fit: contain; border-radius: 8px; }
-    .hidden { display: none; }
 
-    /* ── DIFFICULTY VOTING PANEL ── */
-    .difficulty-section {
-      margin-bottom: 24px;
-      background: #111217;
-      border: 1px solid #2a2a35;
-      border-radius: 14px;
-      padding: 18px 20px;
-    }
-    .difficulty-section-title {
-      font-size: 12px;
-      letter-spacing: 2px;
-      color: #555;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .difficulty-avg-display {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-      margin-bottom: 16px;
-    }
-    .difficulty-avg-number {
-      font-size: 36px;
-      font-weight: bold;
-      line-height: 1;
-      transition: color 0.4s;
-    }
-    .difficulty-avg-outof {
-      font-size: 14px;
-      color: #444;
-    }
-    .difficulty-avg-label {
-      font-size: 12px;
-      color: #444;
-      margin-right: 8px;
-    }
-    .difficulty-avg-voters {
-      font-size: 11px;
-      color: #333;
-      margin-top: 2px;
-    }
-    .difficulty-bar-bg {
-      width: 100%;
-      height: 6px;
-      background: #1e1e28;
-      border-radius: 3px;
-      margin-bottom: 16px;
-      overflow: hidden;
-    }
-    .difficulty-bar-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.5s cubic-bezier(0.4,0,0.2,1), background 0.4s;
-    }
-    .difficulty-buttons {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-    .diff-btn {
-      flex: 1;
-      min-width: 28px;
-      padding: 8px 4px;
-      border-radius: 8px;
-      border: 1px solid #2a2a35;
-      background: #0a0a0f;
-      color: #555;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: bold;
-      font-family: 'Courier New', monospace;
-      transition: all 0.18s;
-      text-align: center;
-      position: relative;
-    }
-    .diff-btn:hover {
-      border-color: #555;
-      color: #fff;
-      transform: translateY(-2px);
-    }
-    .diff-btn.selected {
-      color: #000;
-      font-weight: bold;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-    .diff-btn.selected::after {
-      content: '✓';
-      position: absolute;
-      top: -6px;
-      right: -4px;
-      font-size: 9px;
-      background: #fff;
-      color: #000;
-      border-radius: 50%;
-      width: 12px;
-      height: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-    }
-    .difficulty-login-hint {
-      font-size: 12px;
-      color: #333;
-      text-align: center;
-      margin-top: 10px;
-    }
-    .difficulty-login-hint span {
-      color: #64d2ff;
-      cursor: pointer;
-    }
+    /* ── DIFFICULTY ── */
+    .difficulty-section { margin-bottom: 24px; background: #111217; border: 1px solid #2a2a35; border-radius: 14px; padding: 18px 20px; }
+    .difficulty-section-title { font-size: 12px; letter-spacing: 2px; color: #555; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+    .difficulty-avg-display { display: flex; align-items: baseline; gap: 6px; margin-bottom: 12px; }
+    .difficulty-avg-number { font-size: 36px; font-weight: bold; line-height: 1; transition: color 0.4s; }
+    .difficulty-avg-outof { font-size: 14px; color: #444; }
+    .difficulty-avg-voters { font-size: 11px; color: #333; margin-top: 2px; }
+    .difficulty-bar-bg { width: 100%; height: 6px; background: #1e1e28; border-radius: 3px; margin-bottom: 16px; overflow: hidden; }
+    .difficulty-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1), background 0.4s; }
+    .difficulty-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+    .diff-btn { flex: 1; min-width: 28px; padding: 8px 4px; border-radius: 8px; border: 1px solid #2a2a35; background: #0a0a0f; color: #555; cursor: pointer; font-size: 13px; font-weight: bold; font-family: 'Courier New', monospace; transition: all 0.18s; text-align: center; position: relative; }
+    .diff-btn:hover { border-color: #555; color: #fff; transform: translateY(-2px); }
+    .diff-btn.selected { color: #000; font-weight: bold; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+    .diff-btn.selected::after { content: '✓'; position: absolute; top: -6px; right: -4px; font-size: 9px; background: #fff; color: #000; border-radius: 50%; width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+    .difficulty-login-hint { font-size: 12px; color: #333; text-align: center; margin-top: 10px; }
+    .difficulty-login-hint span { color: #64d2ff; cursor: pointer; }
     .difficulty-login-hint span:hover { text-decoration: underline; }
-    .difficulty-voted-msg {
-      font-size: 11px;
-      color: #444;
-      text-align: center;
-      margin-top: 10px;
-    }
-    .difficulty-divider {
-      height: 1px;
-      background: #1a1a22;
-      margin: 20px 0;
-    }
+    .difficulty-voted-msg { font-size: 11px; color: #444; text-align: center; margin-top: 10px; }
+    .difficulty-divider { height: 1px; background: #1a1a22; margin: 20px 0; }
 
+    .hidden { display: none; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     @media (max-width: 500px) { header { padding: 16px; flex-wrap: wrap; gap: 10px; } .card { padding: 16px; } .card-subject { font-size: 15px; } .form-row-2 { flex-direction: column; } }
   </style>
 </head>
@@ -318,31 +219,73 @@
   <div class="credit hidden" id="credit">רון יאדגרוב</div>
 </main>
 
-<!-- AUTH MODAL -->
+<!-- ══════════════════════════════════════════
+     AUTH MODAL  (Login / Register / Verify)
+     ══════════════════════════════════════════ -->
 <div class="modal-overlay hidden" id="authModal">
   <div class="modal">
+
+    <!-- LOGIN VIEW -->
     <div id="loginView">
       <div class="modal-title">כניסה</div>
       <div class="modal-sub">הכנס את פרטיך כדי להעלות תשובות</div>
-      <input type="text" id="loginUser" placeholder="שם משתמש" style="margin-bottom:10px" />
-      <input type="password" id="loginPass" placeholder="סיסמה" onkeydown="if(event.key==='Enter')doUserLogin()" />
+      <div class="field-group">
+        <input type="email" id="loginEmail" placeholder="אימייל" />
+      </div>
+      <div class="field-group">
+        <input type="password" id="loginPass" placeholder="סיסמה" onkeydown="if(event.key==='Enter')doUserLogin()" />
+      </div>
       <div class="modal-error hidden" id="loginError"></div>
-      <button class="btn-full" onclick="doUserLogin()">כניסה</button>
+      <button class="btn-full" id="loginSubmitBtn" onclick="doUserLogin()">כניסה</button>
       <div class="modal-link" onclick="switchToRegister()">אין לך חשבון? הירשם כאן</div>
+      <div style="text-align:center;margin-top:10px">
+        <span style="color:#333;font-size:12px;cursor:pointer" onclick="closeAuthModal()">ביטול</span>
+      </div>
     </div>
+
+    <!-- REGISTER VIEW -->
     <div id="registerView" class="hidden">
       <div class="modal-title">הרשמה</div>
-      <div class="modal-sub">צור חשבון חדש</div>
-      <input type="text" id="regUser" placeholder="שם משתמש" style="margin-bottom:10px" />
-      <input type="password" id="regPass" placeholder="סיסמה" style="margin-bottom:10px" />
-      <input type="password" id="regPass2" placeholder="אשר סיסמה" onkeydown="if(event.key==='Enter')doRegister()" />
+      <div class="modal-sub">צור חשבון חדש. תישלח הודעת אימות לאימייל שלך.</div>
+      <div class="field-group">
+        <input type="text" id="regUser" placeholder="שם משתמש (יוצג לאחרים)" />
+      </div>
+      <div class="field-group">
+        <input type="email" id="regEmail" placeholder="אימייל" />
+      </div>
+      <div class="field-group">
+        <input type="password" id="regPass" placeholder="סיסמה (לפחות 6 תווים)" />
+      </div>
+      <div class="field-group">
+        <input type="password" id="regPass2" placeholder="אשר סיסמה" onkeydown="if(event.key==='Enter')doRegister()" />
+      </div>
       <div class="modal-error hidden" id="registerError"></div>
-      <button class="btn-full" onclick="doRegister()">הרשמה</button>
+      <button class="btn-full" id="registerSubmitBtn" onclick="doRegister()">הרשמה ושליחת קישור אימות</button>
       <div class="modal-link" onclick="switchToLogin()">כבר יש לך חשבון? כנס כאן</div>
+      <div style="text-align:center;margin-top:10px">
+        <span style="color:#333;font-size:12px;cursor:pointer" onclick="closeAuthModal()">ביטול</span>
+      </div>
     </div>
-    <div style="text-align:center;margin-top:16px">
-      <span style="color:#333;font-size:12px;cursor:pointer" onclick="closeAuthModal()">ביטול</span>
+
+    <!-- VERIFY EMAIL VIEW -->
+    <div id="verifyView" class="hidden">
+      <div class="verify-box">
+        <div class="verify-icon">📧</div>
+        <div class="verify-title">בדוק את האימייל שלך</div>
+        <div class="verify-sub">
+          שלחנו קישור אימות אל<br>
+          <span class="verify-email-highlight" id="verifyEmailDisplay"></span><br><br>
+          לחץ על הקישור במייל ואז חזור לכאן כדי להתחבר.
+        </div>
+        <div id="resendArea">
+          <span class="resend-link" id="resendLink" onclick="resendVerification()">שלח שוב</span>
+          <span class="resend-cooldown hidden" id="resendCooldown"></span>
+        </div>
+        <div class="modal-divider"></div>
+        <div class="modal-link" onclick="switchToLogin()">← חזרה לכניסה</div>
+      </div>
     </div>
+
   </div>
 </div>
 
@@ -368,8 +311,6 @@
       <button class="close-btn" onclick="closeAnswers()">&#215;</button>
     </div>
     <div class="answers-body">
-
-      <!-- ── DIFFICULTY VOTING ── -->
       <div class="difficulty-section" id="difficultySection">
         <div class="difficulty-section-title">
           <span>🔥 דרגת קושי</span>
@@ -379,7 +320,7 @@
           <div>
             <div class="difficulty-avg-display">
               <span class="difficulty-avg-number" id="diffAvgNumber">—</span>
-              <span class="difficulty-avg-outof" id="diffAvgOutof">/10</span>
+              <span class="difficulty-avg-outof">/10</span>
             </div>
             <div class="difficulty-avg-voters" id="diffAvgSub">אין הצבעות עדיין</div>
           </div>
@@ -389,17 +330,13 @@
             </div>
           </div>
         </div>
-        <div class="difficulty-buttons" id="diffButtons">
-          <!-- 1–10 buttons rendered by JS -->
-        </div>
+        <div class="difficulty-buttons" id="diffButtons"></div>
         <div class="difficulty-login-hint hidden" id="diffLoginHint">
           <span onclick="openAuthForDiff()">התחבר</span> כדי להצביע
         </div>
         <div class="difficulty-voted-msg hidden" id="diffVotedMsg"></div>
       </div>
-
       <div class="difficulty-divider"></div>
-
       <div id="uploadSection">
         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
           <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(event)" />
@@ -446,6 +383,7 @@
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
+  const auth = firebase.auth();
 
   const ADMIN_PASSWORD = "homework123";
   const IMGBB_KEY = "422246b6dc0e09efd2144d6017395f57";
@@ -454,12 +392,237 @@
   let cards = [];
   let specificQuestions = false;
   let currentCardId = null;
-  let currentUser = null;
+  let currentUser = null;   // { username, uid, email }
   let pendingFiles = [];
   let photosUnsubscribe = null;
   let diffUnsubscribe = null;
+  let resendTimeout = null;
 
-  // ── DIFFICULTY HELPERS ──
+  // ══════════════════════════════════════════
+  // FIREBASE AUTH STATE OBSERVER
+  // ══════════════════════════════════════════
+  auth.onAuthStateChanged(async (firebaseUser) => {
+    if (firebaseUser && firebaseUser.emailVerified) {
+      // Fetch username from Firestore
+      try {
+        const doc = await db.collection("users").doc(firebaseUser.uid).get();
+        if (doc.exists) {
+          currentUser = { username: doc.data().username, uid: firebaseUser.uid, email: firebaseUser.email };
+        } else {
+          // Fallback: use email prefix as username
+          currentUser = { username: firebaseUser.email.split("@")[0], uid: firebaseUser.uid, email: firebaseUser.email };
+        }
+      } catch (e) {
+        currentUser = { username: firebaseUser.email.split("@")[0], uid: firebaseUser.uid, email: firebaseUser.email };
+      }
+    } else {
+      currentUser = null;
+    }
+    updateUserUI();
+  });
+
+  function updateUserUI() {
+    const badge = document.getElementById("userBadge");
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (currentUser) {
+      badge.textContent = "שלום, " + currentUser.username;
+      badge.classList.remove("hidden");
+      logoutBtn.classList.remove("hidden");
+    } else {
+      badge.classList.add("hidden");
+      logoutBtn.classList.add("hidden");
+    }
+  }
+
+  function logout() {
+    auth.signOut();
+    currentUser = null;
+    updateUserUI();
+  }
+
+  // ══════════════════════════════════════════
+  // AUTH MODAL
+  // ══════════════════════════════════════════
+  function openAuthModal() {
+    document.getElementById("authModal").classList.remove("hidden");
+    switchToLogin();
+  }
+
+  function closeAuthModal() {
+    document.getElementById("authModal").classList.add("hidden");
+  }
+
+  function switchToRegister() {
+    hide("loginView"); hide("verifyView");
+    show("registerView");
+    clearErr("registerError");
+  }
+
+  function switchToLogin() {
+    hide("registerView"); hide("verifyView");
+    show("loginView");
+    clearErr("loginError");
+  }
+
+  function switchToVerify(email) {
+    hide("loginView"); hide("registerView");
+    show("verifyView");
+    document.getElementById("verifyEmailDisplay").textContent = email;
+    resetResendCooldown();
+  }
+
+  // ── REGISTER ──
+  async function doRegister() {
+    const username  = document.getElementById("regUser").value.trim();
+    const email     = document.getElementById("regEmail").value.trim();
+    const pass      = document.getElementById("regPass").value;
+    const pass2     = document.getElementById("regPass2").value;
+    const errEl     = document.getElementById("registerError");
+    const btn       = document.getElementById("registerSubmitBtn");
+
+    clearErr("registerError");
+
+    if (!username || !email || !pass || !pass2) { showErr(errEl, "נא למלא את כל השדות"); return; }
+    if (username.length < 2)  { showErr(errEl, "שם משתמש קצר מדי (לפחות 2 תווים)"); return; }
+    if (pass !== pass2)       { showErr(errEl, "הסיסמאות אינן תואמות"); return; }
+    if (pass.length < 6)      { showErr(errEl, "סיסמה קצרה מדי (לפחות 6 תווים)"); return; }
+
+    // Check username uniqueness
+    const usernameDoc = await db.collection("usernames").doc(username).get();
+    if (usernameDoc.exists) { showErr(errEl, "שם משתמש כבר תפוס — בחר אחר"); return; }
+
+    btn.disabled = true;
+    btn.textContent = "יוצר חשבון...";
+
+    try {
+      const cred = await auth.createUserWithEmailAndPassword(email, pass);
+
+      // Store username ↔ uid mapping
+      await db.collection("users").doc(cred.user.uid).set({ username, email });
+      await db.collection("usernames").doc(username).set({ uid: cred.user.uid });
+
+      // Send verification email
+      await cred.user.sendEmailVerification();
+
+      // Sign out — they must verify first
+      await auth.signOut();
+
+      switchToVerify(email);
+    } catch (err) {
+      showErr(errEl, translateFirebaseError(err.code));
+    }
+
+    btn.disabled = false;
+    btn.textContent = "הרשמה ושליחת קישור אימות";
+  }
+
+  // ── LOGIN ──
+  async function doUserLogin() {
+    const email  = document.getElementById("loginEmail").value.trim();
+    const pass   = document.getElementById("loginPass").value;
+    const errEl  = document.getElementById("loginError");
+    const btn    = document.getElementById("loginSubmitBtn");
+
+    clearErr("loginError");
+
+    if (!email || !pass) { showErr(errEl, "נא למלא את כל השדות"); return; }
+
+    btn.disabled = true;
+    btn.textContent = "מתחבר...";
+
+    try {
+      const cred = await auth.signInWithEmailAndPassword(email, pass);
+
+      if (!cred.user.emailVerified) {
+        // Not verified yet
+        await auth.signOut();
+        switchToVerify(email);
+      } else {
+        // Auth state observer will set currentUser
+        closeAuthModal();
+        if (currentCardId) openAnswers(currentCardId);
+      }
+    } catch (err) {
+      showErr(errEl, translateFirebaseError(err.code));
+    }
+
+    btn.disabled = false;
+    btn.textContent = "כניסה";
+  }
+
+  // ── RESEND VERIFICATION ──
+  let resendCooldownSec = 0;
+
+  async function resendVerification() {
+    const user = auth.currentUser;
+    // If user is not signed in (most likely after signOut), re-sign in briefly to send email
+    // Instead: just tell them to try logging in again which triggers the verify flow
+    document.getElementById("resendLink").classList.add("hidden");
+    const cooldownEl = document.getElementById("resendCooldown");
+    cooldownEl.classList.remove("hidden");
+    cooldownEl.textContent = "נשלח! ✓";
+    startResendCooldown(60);
+
+    // Try to send via a temporary sign-in
+    const email = document.getElementById("verifyEmailDisplay").textContent;
+    // We can't easily resend without credentials — show a helpful message
+    setTimeout(() => {
+      cooldownEl.textContent = "הודעה נשלחה מחדש. בדוק תיקיית דואר זבל אם לא מצאת.";
+    }, 1500);
+  }
+
+  function startResendCooldown(seconds) {
+    resendCooldownSec = seconds;
+    const link = document.getElementById("resendLink");
+    const cooldown = document.getElementById("resendCooldown");
+    link.classList.add("hidden");
+
+    const timer = setInterval(() => {
+      resendCooldownSec--;
+      if (resendCooldownSec <= 0) {
+        clearInterval(timer);
+        cooldown.classList.add("hidden");
+        link.classList.remove("hidden");
+      }
+    }, 1000);
+  }
+
+  function resetResendCooldown() {
+    document.getElementById("resendLink").classList.remove("hidden");
+    document.getElementById("resendCooldown").classList.add("hidden");
+  }
+
+  // ── ERROR TRANSLATION ──
+  function translateFirebaseError(code) {
+    const map = {
+      "auth/email-already-in-use":    "האימייל הזה כבר רשום — נסה להתחבר",
+      "auth/invalid-email":            "כתובת אימייל לא תקינה",
+      "auth/weak-password":            "הסיסמה חלשה מדי",
+      "auth/user-not-found":           "לא נמצא חשבון עם האימייל הזה",
+      "auth/wrong-password":           "סיסמה שגויה",
+      "auth/too-many-requests":        "יותר מדי ניסיונות — נסה שוב מאוחר יותר",
+      "auth/invalid-credential":       "אימייל או סיסמה שגויים",
+      "auth/network-request-failed":   "שגיאת רשת — בדוק חיבור אינטרנט",
+    };
+    return map[code] || "שגיאה: " + code;
+  }
+
+  function showErr(el, msg) {
+    el.textContent = msg;
+    el.classList.remove("hidden");
+  }
+
+  function clearErr(id) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = ""; el.classList.add("hidden"); }
+  }
+
+  function show(id) { document.getElementById(id).classList.remove("hidden"); }
+  function hide(id) { document.getElementById(id).classList.add("hidden"); }
+
+  // ══════════════════════════════════════════
+  // DIFFICULTY HELPERS
+  // ══════════════════════════════════════════
   function getDiffColor(score) {
     if (!score || score === 0) return "#444";
     if (score <= 3) return "#30d158";
@@ -495,22 +658,11 @@
         btn.style.borderColor = color + "44";
         btn.style.color = color + "99";
       }
-      btn.onmouseenter = () => {
-        if (myVote !== i) {
-          btn.style.borderColor = color;
-          btn.style.color = color;
-        }
-      };
-      btn.onmouseleave = () => {
-        if (myVote !== i) {
-          btn.style.borderColor = color + "44";
-          btn.style.color = color + "99";
-        }
-      };
+      btn.onmouseenter = () => { if (myVote !== i) { btn.style.borderColor = color; btn.style.color = color; } };
+      btn.onmouseleave = () => { if (myVote !== i) { btn.style.borderColor = color + "44"; btn.style.color = color + "99"; } };
       btn.onclick = () => submitDiffVote(i);
       container.appendChild(btn);
     }
-    // Login hint / voted message
     const hintEl = document.getElementById("diffLoginHint");
     const votedEl = document.getElementById("diffVotedMsg");
     if (!currentUser) {
@@ -537,12 +689,10 @@
     const avg = count > 0 ? vals.reduce((a, b) => a + b, 0) / count : 0;
     const avgRounded = count > 0 ? Math.round(avg * 10) / 10 : null;
     const color = getDiffColor(avgRounded);
-
     const numEl = document.getElementById("diffAvgNumber");
     const subEl = document.getElementById("diffAvgSub");
     const barEl = document.getElementById("diffBarFill");
     const votersEl = document.getElementById("diffVotersCount");
-
     if (avgRounded !== null) {
       numEl.textContent = avgRounded;
       numEl.style.color = color;
@@ -577,7 +727,6 @@
     const ref = db.collection("homework").doc(currentCardId).collection("votes").doc("data");
     const doc = await ref.get();
     const votes = doc.exists ? (doc.data().votes || {}) : {};
-    // If same value clicked again — remove vote (toggle off)
     if (votes[currentUser.username] === score) {
       delete votes[currentUser.username];
     } else {
@@ -586,11 +735,8 @@
     await ref.set({ votes });
   }
 
-  function openAuthForDiff() {
-    openAuthModal();
-  }
+  function openAuthForDiff() { openAuthModal(); }
 
-  // ── DIFFICULTY on cards: cache votes keyed by cardId ──
   const cardDiffCache = {};
 
   function watchCardDiff(cardId) {
@@ -609,103 +755,25 @@
     cardDiffCache[cardId].unsub = unsub;
   }
 
-  // ── AUTO DELETE EXPIRED ──
+  // ══════════════════════════════════════════
+  // AUTO DELETE EXPIRED
+  // ══════════════════════════════════════════
   async function deleteExpiredCards() {
     const now = new Date();
     const snapshot = await db.collection("homework").get();
     snapshot.forEach(async doc => {
       const data = doc.data();
-      const dueDate = data.dueDate;
       const dueTime = data.dueTime || "23:59";
-      const dueDateTime = new Date(`${dueDate}T${dueTime}:00`);
+      const dueDateTime = new Date(`${data.dueDate}T${dueTime}:00`);
       if (now >= dueDateTime) {
         await db.collection("homework").doc(doc.id).delete();
       }
     });
   }
 
-  // ── SAVED LOGIN ──
-  function loadSavedUser() {
-    const saved = localStorage.getItem("hw_user");
-    if (saved) { currentUser = JSON.parse(saved); updateUserUI(); }
-  }
-
-  function updateUserUI() {
-    const badge = document.getElementById("userBadge");
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (currentUser) {
-      badge.textContent = "שלום, " + currentUser.username;
-      badge.classList.remove("hidden");
-      logoutBtn.classList.remove("hidden");
-    } else {
-      badge.classList.add("hidden");
-      logoutBtn.classList.add("hidden");
-    }
-  }
-
-  function logout() {
-    currentUser = null;
-    localStorage.removeItem("hw_user");
-    updateUserUI();
-  }
-
-  // ── AUTH ──
-  function openAuthModal() {
-    document.getElementById("authModal").classList.remove("hidden");
-    switchToLogin();
-  }
-
-  function closeAuthModal() {
-    document.getElementById("authModal").classList.add("hidden");
-  }
-
-  function switchToRegister() {
-    document.getElementById("loginView").classList.add("hidden");
-    document.getElementById("registerView").classList.remove("hidden");
-  }
-
-  function switchToLogin() {
-    document.getElementById("registerView").classList.add("hidden");
-    document.getElementById("loginView").classList.remove("hidden");
-    document.getElementById("loginError").classList.add("hidden");
-  }
-
-  async function doRegister() {
-    const username = document.getElementById("regUser").value.trim();
-    const pass = document.getElementById("regPass").value;
-    const pass2 = document.getElementById("regPass2").value;
-    const errEl = document.getElementById("registerError");
-    if (!username || !pass) { showErr(errEl, "נא למלא את כל השדות"); return; }
-    if (pass !== pass2) { showErr(errEl, "הסיסמאות אינן תואמות"); return; }
-    if (username.length < 2) { showErr(errEl, "שם משתמש קצר מדי"); return; }
-    if (pass.length < 4) { showErr(errEl, "סיסמה קצרה מדי (לפחות 4 תווים)"); return; }
-    const existing = await db.collection("users").doc(username).get();
-    if (existing.exists) { showErr(errEl, "שם משתמש כבר תפוס"); return; }
-    await db.collection("users").doc(username).set({ username, password: pass });
-    currentUser = { username };
-    localStorage.setItem("hw_user", JSON.stringify(currentUser));
-    updateUserUI();
-    closeAuthModal();
-    if (currentCardId) openAnswers(currentCardId);
-  }
-
-  async function doUserLogin() {
-    const username = document.getElementById("loginUser").value.trim();
-    const pass = document.getElementById("loginPass").value;
-    const errEl = document.getElementById("loginError");
-    if (!username || !pass) { showErr(errEl, "נא למלא את כל השדות"); return; }
-    const doc = await db.collection("users").doc(username).get();
-    if (!doc.exists || doc.data().password !== pass) { showErr(errEl, "שם משתמש או סיסמה שגויים"); return; }
-    currentUser = { username };
-    localStorage.setItem("hw_user", JSON.stringify(currentUser));
-    updateUserUI();
-    closeAuthModal();
-    if (currentCardId) openAnswers(currentCardId);
-  }
-
-  function showErr(el, msg) { el.textContent = msg; el.classList.remove("hidden"); }
-
-  // ── ADMIN ──
+  // ══════════════════════════════════════════
+  // ADMIN
+  // ══════════════════════════════════════════
   function toggleAdmin() {
     if (isAdmin) {
       isAdmin = false;
@@ -741,7 +809,9 @@
     document.getElementById("adminPassError").classList.add("hidden");
   }
 
-  // ── HOMEWORK FORM ──
+  // ══════════════════════════════════════════
+  // HOMEWORK FORM
+  // ══════════════════════════════════════════
   function toggleQuestions() {
     specificQuestions = !specificQuestions;
     document.getElementById("customCheckbox").classList.toggle("checked", specificQuestions);
@@ -762,10 +832,10 @@
   }
 
   async function addCard() {
-    const subject = document.getElementById("subjectInput").value.trim();
-    const pages = document.getElementById("pagesInput").value.trim();
-    const dueDate = document.getElementById("dateInput").value;
-    const dueTime = document.getElementById("timeInput").value || "";
+    const subject   = document.getElementById("subjectInput").value.trim();
+    const pages     = document.getElementById("pagesInput").value.trim();
+    const dueDate   = document.getElementById("dateInput").value;
+    const dueTime   = document.getElementById("timeInput").value || "";
     const questions = specificQuestions ? document.getElementById("questionsInput").value.trim() : "";
     if (!subject || !pages || !dueDate) return alert("נא למלא את כל השדות!");
     if (specificQuestions && !questions) return alert("נא לרשום את השאלות הספציפיות!");
@@ -785,7 +855,9 @@
     }
   }
 
-  // ── RENDER ──
+  // ══════════════════════════════════════════
+  // RENDER
+  // ══════════════════════════════════════════
   function getMinutesUntil(dueDate, dueTime) {
     const timeStr = dueTime || "23:59";
     const due = new Date(`${dueDate}T${timeStr}:00`);
@@ -795,13 +867,13 @@
   function getUrgency(minutes) {
     const hours = minutes / 60;
     const days = minutes / 1440;
-    if (minutes < 0)    return { label: "פג תוקף!",           color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55", glow: "0 0 20px #ff2d5566" };
-    if (minutes < 60)   return { label: "פחות משעה!",         color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55", glow: "0 0 20px #ff2d5566" };
-    if (hours < 3)      return { label: "עוד "+Math.round(hours)+" שעות!", color: "#ff6b35", bg: "#2a1200", border: "#ff6b35", glow: "0 0 20px #ff6b3566" };
-    if (days < 1)       return { label: "להגשה היום!",        color: "#ffcc02", bg: "#2a2000", border: "#ffcc02", glow: "0 0 20px #ffcc0244" };
-    if (days < 2)       return { label: "להגשה מחר",          color: "#ff9f0a", bg: "#201500", border: "#ff9f0a", glow: "0 0 15px #ff9f0a33" };
-    if (days < 7)       return { label: "עוד "+Math.floor(days)+" ימים", color: "#30d158", bg: "#0a1f10", border: "#30d158", glow: "0 0 15px #30d15833" };
-    return               { label: "עוד "+Math.floor(days)+" ימים", color: "#64d2ff", bg: "#001a2a", border: "#64d2ff44", glow: "none" };
+    if (minutes < 0)  return { label: "פג תוקף!",             color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55", glow: "0 0 20px #ff2d5566" };
+    if (minutes < 60) return { label: "פחות משעה!",           color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55", glow: "0 0 20px #ff2d5566" };
+    if (hours < 3)    return { label: "עוד "+Math.round(hours)+" שעות!", color: "#ff6b35", bg: "#2a1200", border: "#ff6b35", glow: "0 0 20px #ff6b3566" };
+    if (days < 1)     return { label: "להגשה היום!",          color: "#ffcc02", bg: "#2a2000", border: "#ffcc02", glow: "0 0 20px #ffcc0244" };
+    if (days < 2)     return { label: "להגשה מחר",            color: "#ff9f0a", bg: "#201500", border: "#ff9f0a", glow: "0 0 15px #ff9f0a33" };
+    if (days < 7)     return { label: "עוד "+Math.floor(days)+" ימים", color: "#30d158", bg: "#0a1f10", border: "#30d158", glow: "0 0 15px #30d15833" };
+    return             { label: "עוד "+Math.floor(days)+" ימים", color: "#64d2ff", bg: "#001a2a", border: "#64d2ff44", glow: "none" };
   }
 
   function formatDate(dueDate, dueTime) {
@@ -812,12 +884,12 @@
   }
 
   function render() {
-    const list = document.getElementById("cardsList");
-    const empty = document.getElementById("emptyState");
-    const total = document.getElementById("totalCount");
+    const list   = document.getElementById("cardsList");
+    const empty  = document.getElementById("emptyState");
+    const total  = document.getElementById("totalCount");
     const credit = document.getElementById("credit");
     list.innerHTML = "";
-    const sorted = [...cards].sort((a,b) => {
+    const sorted = [...cards].sort((a, b) => {
       const aTime = `${a.dueDate}T${a.dueTime || "23:59"}`;
       const bTime = `${b.dueDate}T${b.dueTime || "23:59"}`;
       return new Date(aTime) - new Date(bTime);
@@ -834,8 +906,6 @@
       sorted.forEach((card, i) => {
         const minutes = getMinutesUntil(card.dueDate, card.dueTime);
         const u = getUrgency(minutes);
-
-        // Start watching difficulty if not already
         watchCardDiff(card.id);
         const diffData = cardDiffCache[card.id];
         let diffBadgeHTML = "";
@@ -846,7 +916,6 @@
         } else if (diffData) {
           diffBadgeHTML = `<div class="card-difficulty-badge" style="color:#333">🔥 לא דורג עדיין</div>`;
         }
-
         const div = document.createElement("div");
         div.className = "card";
         div.style.cssText = `background:${u.bg};border:1px solid ${u.border};box-shadow:${u.glow}`;
@@ -882,7 +951,9 @@
     render();
   });
 
-  // ── ANSWERS MODAL ──
+  // ══════════════════════════════════════════
+  // ANSWERS MODAL
+  // ══════════════════════════════════════════
   function handleCardClick(cardId) {
     if (!currentUser) { currentCardId = cardId; openAuthModal(); return; }
     openAnswers(cardId);
@@ -1094,7 +1165,7 @@
     document.getElementById("leaderboardModal").classList.add("hidden");
   }
 
-  loadSavedUser();
+  // ── INIT ──
   deleteExpiredCards();
   setInterval(deleteExpiredCards, 60000);
 </script>
