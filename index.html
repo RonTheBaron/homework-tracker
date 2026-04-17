@@ -177,6 +177,21 @@
     .difficulty-divider { height: 1px; background: #1a1a22; margin: 20px 0; }
 
     .hidden { display: none; }
+
+    /* ── SETTINGS ── */
+    .settings-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: #0a0a0f; border: 1px solid #222; border-radius: 12px; margin-bottom: 10px; }
+    .settings-color-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+    .settings-row-label { flex: 1; font-size: 13px; color: #aaa; line-height: 1.4; }
+    .settings-row-label strong { display: block; color: #fff; font-size: 14px; margin-bottom: 2px; }
+    .settings-input-wrap { display: flex; align-items: center; gap: 6px; }
+    .settings-num { width: 60px; padding: 8px 10px; background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 14px; font-family: 'Courier New', monospace; outline: none; text-align: center; direction: ltr; }
+    .settings-num:focus { border-color: #555; }
+    .settings-unit { font-size: 12px; color: #555; white-space: nowrap; }
+    .settings-preview { display: flex; gap: 0; border-radius: 10px; overflow: hidden; height: 10px; margin: 14px 0 4px; }
+    .settings-preview-seg { flex: 1; transition: background 0.3s; }
+    .settings-preview-labels { display: flex; justify-content: space-between; font-size: 10px; color: #333; margin-bottom: 16px; }
+    .settings-reset { background: transparent; border: 1px solid #333; color: #555; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'Courier New', monospace; transition: all 0.2s; }
+    .settings-reset:hover { border-color: #888; color: #888; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
     @media (max-width: 500px) { header { padding: 16px; flex-wrap: wrap; gap: 10px; } .card { padding: 16px; } .card-subject { font-size: 15px; } .form-row-2 { flex-direction: column; } }
   </style>
@@ -193,6 +208,7 @@
     <button class="btn btn-ghost hidden" id="logoutBtn" onclick="logout()">יציאה</button>
     <button class="btn btn-ghost" id="loginBtn" onclick="openAuthModal()">כניסה / הרשמה</button>
     <button class="btn btn-ghost" onclick="openLeaderboard()">🏆 טבלת מובילים</button>
+    <button class="btn btn-ghost" onclick="openSettings()" title="הגדרות צבעים">⚙️</button>
     <button class="btn btn-white" id="adminBtn" onclick="toggleAdmin()">כניסת מנהל</button>
   </div>
 </header>
@@ -433,6 +449,82 @@
       <button class="close-btn" onclick="closeLeaderboard()">&#215;</button>
     </div>
     <div id="leaderboardList"><div style="text-align:center;color:#444;padding:20px;font-size:13px">טוען...</div></div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay hidden" id="settingsModal" onclick="closeSettings(event)">
+  <div class="modal" style="max-width:420px" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div class="modal-title">⚙️ הגדרות צבעי דדליין</div>
+      <button class="close-btn" onclick="closeSettings()">&#215;</button>
+    </div>
+    <div class="modal-sub" style="margin-bottom:16px">קבע מתי כל צבע מופעל לפי הזמן שנותר להגשה</div>
+
+    <!-- Live preview bar -->
+    <div class="settings-preview" id="settingsPreview">
+      <div class="settings-preview-seg" id="prev-red"></div>
+      <div class="settings-preview-seg" id="prev-orange"></div>
+      <div class="settings-preview-seg" id="prev-green"></div>
+      <div class="settings-preview-seg" id="prev-blue"></div>
+    </div>
+    <div class="settings-preview-labels">
+      <span>עכשיו</span><span id="prevLabelRed"></span><span id="prevLabelOrange"></span><span id="prevLabelGreen"></span><span>הרחק</span>
+    </div>
+
+    <!-- Red -->
+    <div class="settings-row">
+      <div class="settings-color-dot" style="background:#ff2d55;box-shadow:0 0 6px #ff2d5588"></div>
+      <div class="settings-row-label">
+        <strong style="color:#ff2d55">🔴 אדום — דחוף!</strong>
+        פחות מ...
+      </div>
+      <div class="settings-input-wrap">
+        <input class="settings-num" type="number" id="st-red" min="1" max="999" oninput="updateSettingsPreview()" />
+        <span class="settings-unit">שעות</span>
+      </div>
+    </div>
+
+    <!-- Orange -->
+    <div class="settings-row">
+      <div class="settings-color-dot" style="background:#ff9f0a;box-shadow:0 0 6px #ff9f0a88"></div>
+      <div class="settings-row-label">
+        <strong style="color:#ff9f0a">🟠 כתום — קרוב</strong>
+        פחות מ...
+      </div>
+      <div class="settings-input-wrap">
+        <input class="settings-num" type="number" id="st-orange" min="1" max="999" oninput="updateSettingsPreview()" />
+        <span class="settings-unit">ימים</span>
+      </div>
+    </div>
+
+    <!-- Green -->
+    <div class="settings-row">
+      <div class="settings-color-dot" style="background:#30d158;box-shadow:0 0 6px #30d15888"></div>
+      <div class="settings-row-label">
+        <strong style="color:#30d158">🟢 ירוק — יש זמן</strong>
+        פחות מ...
+      </div>
+      <div class="settings-input-wrap">
+        <input class="settings-num" type="number" id="st-green" min="1" max="999" oninput="updateSettingsPreview()" />
+        <span class="settings-unit">ימים</span>
+      </div>
+    </div>
+
+    <!-- Blue (auto) -->
+    <div class="settings-row" style="opacity:0.5">
+      <div class="settings-color-dot" style="background:#64d2ff"></div>
+      <div class="settings-row-label">
+        <strong style="color:#64d2ff">🔵 כחול — רחוק</strong>
+        כל מה שמעבר לירוק
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="settings-reset" onclick="resetSettings()">↺ איפוס לברירת מחדל</button>
+      <button class="btn-full" style="margin-top:0;flex:1" onclick="saveSettings()">שמור</button>
+    </div>
+    <div class="modal-error hidden" id="settingsError"></div>
   </div>
 </div>
 
@@ -1046,16 +1138,102 @@
     return Math.round((due - new Date()) / 60000);
   }
 
+  // ══════════════════════════════════════════
+  // DEADLINE COLOR SETTINGS
+  // ══════════════════════════════════════════
+  const DEFAULT_SETTINGS = { redHours: 3, orangeDays: 2, greenDays: 7 };
+  let colorSettings = loadColorSettings();
+
+  function loadColorSettings() {
+    try {
+      const saved = localStorage.getItem("hwColorSettings");
+      if (saved) return { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
+    } catch(e) {}
+    return { ...DEFAULT_SETTINGS };
+  }
+
+  function openSettings() {
+    document.getElementById("st-red").value    = colorSettings.redHours;
+    document.getElementById("st-orange").value = colorSettings.orangeDays;
+    document.getElementById("st-green").value  = colorSettings.greenDays;
+    clearErr("settingsError");
+    updateSettingsPreview();
+    document.getElementById("settingsModal").classList.remove("hidden");
+  }
+
+  function closeSettings(e) {
+    if (e && e.target !== document.getElementById("settingsModal")) return;
+    document.getElementById("settingsModal").classList.add("hidden");
+  }
+
+  function updateSettingsPreview() {
+    const redH   = Math.max(1, parseFloat(document.getElementById("st-red").value)   || DEFAULT_SETTINGS.redHours);
+    const orangeD= Math.max(1, parseFloat(document.getElementById("st-orange").value)|| DEFAULT_SETTINGS.orangeDays);
+    const greenD = Math.max(1, parseFloat(document.getElementById("st-green").value) || DEFAULT_SETTINGS.greenDays);
+
+    // Scale segments proportionally (max shown = greenDays * 1.5)
+    const total = greenD * 1.5;
+    const redW    = Math.min((redH / 24) / total * 100, 33);
+    const orangeW = Math.min(((orangeD - redH/24) / total) * 100, 33);
+    const greenW  = Math.min(((greenD - orangeD) / total) * 100, 34);
+    const blueW   = 100 - redW - orangeW - greenW;
+
+    document.getElementById("prev-red").style.background    = "#ff2d55";
+    document.getElementById("prev-orange").style.background = "#ff9f0a";
+    document.getElementById("prev-green").style.background  = "#30d158";
+    document.getElementById("prev-blue").style.background   = "#64d2ff";
+    document.getElementById("prev-red").style.flex    = redW;
+    document.getElementById("prev-orange").style.flex = Math.max(orangeW, 0);
+    document.getElementById("prev-green").style.flex  = Math.max(greenW, 0);
+    document.getElementById("prev-blue").style.flex   = Math.max(blueW, 0);
+
+    document.getElementById("prevLabelRed").textContent    = redH + "ש'";
+    document.getElementById("prevLabelOrange").textContent = orangeD + "י'";
+    document.getElementById("prevLabelGreen").textContent  = greenD + "י'";
+  }
+
+  function saveSettings() {
+    const redH   = parseFloat(document.getElementById("st-red").value);
+    const orangeD= parseFloat(document.getElementById("st-orange").value);
+    const greenD = parseFloat(document.getElementById("st-green").value);
+    const errEl  = document.getElementById("settingsError");
+    clearErr("settingsError");
+
+    if (!redH || !orangeD || !greenD || redH < 1 || orangeD < 1 || greenD < 1) {
+      showErr(errEl, "כל הערכים חייבים להיות לפחות 1"); return;
+    }
+    if (redH / 24 >= orangeD) {
+      showErr(errEl, "הכתום חייב להיות יותר זמן מהאדום"); return;
+    }
+    if (orangeD >= greenD) {
+      showErr(errEl, "הירוק חייב להיות יותר זמן מהכתום"); return;
+    }
+
+    colorSettings = { redHours: redH, orangeDays: orangeD, greenDays: greenD };
+    localStorage.setItem("hwColorSettings", JSON.stringify(colorSettings));
+    document.getElementById("settingsModal").classList.add("hidden");
+    render();
+  }
+
+  function resetSettings() {
+    colorSettings = { ...DEFAULT_SETTINGS };
+    localStorage.removeItem("hwColorSettings");
+    document.getElementById("st-red").value    = colorSettings.redHours;
+    document.getElementById("st-orange").value = colorSettings.orangeDays;
+    document.getElementById("st-green").value  = colorSettings.greenDays;
+    updateSettingsPreview();
+    clearErr("settingsError");
+  }
+
   function getUrgency(minutes) {
+    const { redHours, orangeDays, greenDays } = colorSettings;
     const hours = minutes / 60;
-    const days = minutes / 1440;
-    if (minutes < 0)  return { label: "פג תוקף!",             color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55", glow: "0 0 20px #ff2d5566" };
-    if (minutes < 60) return { label: "פחות משעה!",           color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55", glow: "0 0 20px #ff2d5566" };
-    if (hours < 3)    return { label: "עוד "+Math.round(hours)+" שעות!", color: "#ff6b35", bg: "#2a1200", border: "#ff6b35", glow: "0 0 20px #ff6b3566" };
-    if (days < 1)     return { label: "להגשה היום!",          color: "#ffcc02", bg: "#2a2000", border: "#ffcc02", glow: "0 0 20px #ffcc0244" };
-    if (days < 2)     return { label: "להגשה מחר",            color: "#ff9f0a", bg: "#201500", border: "#ff9f0a", glow: "0 0 15px #ff9f0a33" };
-    if (days < 7)     return { label: "עוד "+Math.floor(days)+" ימים", color: "#30d158", bg: "#0a1f10", border: "#30d158", glow: "0 0 15px #30d15833" };
-    return             { label: "עוד "+Math.floor(days)+" ימים", color: "#64d2ff", bg: "#001a2a", border: "#64d2ff44", glow: "none" };
+    const days  = minutes / 1440;
+    if (minutes < 0)           return { label: "פג תוקף!",                          color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55",   glow: "0 0 20px #ff2d5566" };
+    if (hours < redHours)      return { label: "פחות מ-"+redHours+" שעות!",         color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55",   glow: "0 0 20px #ff2d5566" };
+    if (days  < orangeDays)    return { label: "עוד "+Math.round(hours)+" שעות",     color: "#ff9f0a", bg: "#201500", border: "#ff9f0a",   glow: "0 0 15px #ff9f0a44" };
+    if (days  < greenDays)     return { label: "עוד "+Math.floor(days)+" ימים",      color: "#30d158", bg: "#0a1f10", border: "#30d158",   glow: "0 0 15px #30d15833" };
+    return                            { label: "עוד "+Math.floor(days)+" ימים",      color: "#64d2ff", bg: "#001a2a", border: "#64d2ff44", glow: "none" };
   }
 
   function formatDate(dueDate, dueTime) {
