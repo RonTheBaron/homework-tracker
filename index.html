@@ -191,6 +191,7 @@
   <div class="header-actions">
     <span class="user-badge hidden" id="userBadge"></span>
     <button class="btn btn-ghost hidden" id="logoutBtn" onclick="logout()">יציאה</button>
+    <button class="btn btn-ghost" id="loginBtn" onclick="openAuthModal()">כניסה / הרשמה</button>
     <button class="btn btn-ghost" onclick="openLeaderboard()">🏆 טבלת מובילים</button>
     <button class="btn btn-white" id="adminBtn" onclick="toggleAdmin()">כניסת מנהל</button>
   </div>
@@ -501,13 +502,16 @@
   function updateUserUI() {
     const badge = document.getElementById("userBadge");
     const logoutBtn = document.getElementById("logoutBtn");
+    const loginBtn = document.getElementById("loginBtn");
     if (currentUser) {
       badge.textContent = "שלום, " + currentUser.username;
       badge.classList.remove("hidden");
       logoutBtn.classList.remove("hidden");
+      loginBtn.classList.add("hidden");
     } else {
       badge.classList.add("hidden");
       logoutBtn.classList.add("hidden");
+      loginBtn.classList.remove("hidden");
     }
   }
 
