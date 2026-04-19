@@ -1,406 +1,633 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>מעקב שיעורי בית</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { min-height: 100vh; background: #0a0a0f; font-family: 'Courier New', monospace; background-image: radial-gradient(ellipse at 20% 50%, #0d1a2a 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, #1a0d1a 0%, transparent 60%); color: #fff; direction: rtl; }
-    header { border-bottom: 1px solid #222; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); position: sticky; top: 0; z-index: 100; }
-    .header-title-label { font-size: 11px; letter-spacing: 2px; color: #555; margin-bottom: 4px; }
-    .header-title { font-size: 24px; font-weight: bold; }
-    .header-actions { display: flex; gap: 10px; align-items: center; }
-    .user-badge { font-size: 12px; color: #888; padding: 6px 12px; border: 1px solid #222; border-radius: 8px; }
-    .btn { padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'Courier New', monospace; transition: all 0.2s; border: none; }
-    .btn-white { background: #fff; color: #000; font-weight: bold; }
-    .btn-ghost { background: transparent; border: 1px solid #333; color: #888; }
-    .btn-ghost:hover { border-color: #fff; color: #fff; }
-    .btn-danger { background: transparent; border: 1px solid #ff2d55; color: #ff2d55; }
-    .btn-full { width: 100%; padding: 14px; background: #fff; color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; font-family: 'Courier New', monospace; margin-top: 8px; transition: background 0.2s; }
-    .btn-full:hover { background: #e0e0e0; }
-    .btn-full:disabled { background: #333; color: #666; cursor: not-allowed; }
-    main { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
-    .add-btn-dashed { width: 100%; padding: 16px; background: transparent; border: 2px dashed #333; color: #666; border-radius: 16px; cursor: pointer; font-size: 15px; font-family: 'Courier New', monospace; transition: all 0.2s; margin-bottom: 28px; }
-    .add-btn-dashed:hover { border-color: #fff; color: #fff; }
-    .add-form { background: #111; border: 1px solid #333; border-radius: 16px; padding: 24px; margin-bottom: 28px; display: flex; flex-direction: column; gap: 12px; }
-    .form-title { font-weight: bold; letter-spacing: 1px; margin-bottom: 4px; font-size: 15px; }
-    .form-row-2 { display: flex; gap: 10px; }
-    .form-row-2 > * { flex: 1; }
-    input[type=text], input[type=password], input[type=date], input[type=time], input[type=email], textarea {
-      width: 100%; padding: 12px 14px; background: #0a0a0f; border: 1px solid #333;
-      border-radius: 10px; color: #fff; font-size: 14px; font-family: 'Courier New', monospace;
-      outline: none; text-align: right;
+    /* ── THEME VARIABLES ── light/dark toggled by <body class="light"> */
+    body {
+      --bg:       #0a0a0f;
+      --bg2:      #111;
+      --bg3:      #161620;
+      --border:   #222;
+      --border2:  #333;
+      --text:     #fff;
+      --text2:    #aaa;
+      --text3:    #555;
+      --text4:    #333;
+      --accent:   #64d2ff;
+      --card-hint:#444;
     }
-    input[type=text]:focus, input[type=password]:focus, input[type=date]:focus, input[type=time]:focus, input[type=email]:focus, textarea:focus { border-color: #555; }
-    input[type=date], input[type=time] { text-align: left; direction: ltr; }
-    input[type=email] { text-align: left; direction: ltr; }
+    body.light {
+      --bg:       #f0f2f5;
+      --bg2:      #fff;
+      --bg3:      #f8f9fb;
+      --border:   #dde1e7;
+      --border2:  #c8cdd6;
+      --text:     #111;
+      --text2:    #555;
+      --text3:    #888;
+      --text4:    #bbb;
+      --accent:   #0a84ff;
+      --card-hint:#999;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height:100vh; background:var(--bg); font-family:'Courier New',monospace;
+           background-image:radial-gradient(ellipse at 20% 50%,rgba(13,26,42,.6) 0%,transparent 60%),
+                            radial-gradient(ellipse at 80% 20%,rgba(26,13,26,.4) 0%,transparent 60%);
+           color:var(--text); direction:rtl; transition:background .3s,color .3s; }
+    body.light { background-image:none; }
+
+    header { border-bottom:1px solid var(--border); padding:20px 28px; display:flex;
+             justify-content:space-between; align-items:center;
+             background:rgba(255,255,255,0.02); position:sticky; top:0; z-index:100; }
+    body.light header { background:rgba(255,255,255,0.85); backdrop-filter:blur(10px); }
+    .header-title-label { font-size:11px; letter-spacing:2px; color:var(--text3); margin-bottom:4px; }
+    .header-title { font-size:24px; font-weight:bold; }
+    .header-actions { display:flex; gap:10px; align-items:center; }
+    .user-badge { font-size:12px; color:var(--text2); padding:6px 12px;
+                  border:1px solid var(--border); border-radius:8px; }
+
+    /* Settings gear button */
+    .btn-gear { background:transparent; border:1px solid var(--border2); color:var(--text2);
+                padding:8px 14px; border-radius:8px; cursor:pointer; font-size:16px;
+                font-family:'Courier New',monospace; transition:all .2s; }
+    .btn-gear:hover { border-color:var(--text); color:var(--text); }
+
+    .btn { padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px;
+           font-family:'Courier New',monospace; transition:all .2s; border:none; }
+    .btn-full { width:100%; padding:14px; background:var(--text); color:var(--bg);
+                border:none; border-radius:10px; cursor:pointer; font-weight:bold;
+                font-size:14px; font-family:'Courier New',monospace; margin-top:8px; transition:all .2s; }
+    .btn-full:hover { opacity:.88; }
+    .btn-full:disabled { background:var(--border2); color:var(--text3); cursor:not-allowed; }
+
+    main { max-width:700px; margin:0 auto; padding:40px 20px; }
+    .add-btn-dashed { width:100%; padding:16px; background:transparent;
+                      border:2px dashed var(--border2); color:var(--text3);
+                      border-radius:16px; cursor:pointer; font-size:15px;
+                      font-family:'Courier New',monospace; transition:all .2s; margin-bottom:28px; }
+    .add-btn-dashed:hover { border-color:var(--text); color:var(--text); }
+    .add-form { background:var(--bg2); border:1px solid var(--border2); border-radius:16px;
+                padding:24px; margin-bottom:28px; display:flex; flex-direction:column; gap:12px; }
+    .form-title { font-weight:bold; letter-spacing:1px; margin-bottom:4px; font-size:15px; }
+    .form-row-2 { display:flex; gap:10px; }
+    .form-row-2 > * { flex:1; }
+    input[type=text],input[type=password],input[type=date],input[type=time],input[type=email],textarea {
+      width:100%; padding:12px 14px; background:var(--bg); border:1px solid var(--border2);
+      border-radius:10px; color:var(--text); font-size:14px; font-family:'Courier New',monospace;
+      outline:none; text-align:right; transition:border-color .2s; }
+    input:focus,textarea:focus { border-color:var(--text3); }
+    input[type=date],input[type=time] { text-align:left; direction:ltr; }
+    input[type=email] { text-align:left; direction:ltr; }
     input[type=date]::-webkit-calendar-picker-indicator,
-    input[type=time]::-webkit-calendar-picker-indicator { filter: invert(1); }
-    .input-label { font-size: 11px; color: #555; margin-bottom: 4px; letter-spacing: 1px; }
-    textarea { resize: none; height: 70px; }
-    .checkbox-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #0a0a0f; border: 1px solid #333; border-radius: 10px; cursor: pointer; user-select: none; transition: border-color 0.2s; }
-    .checkbox-row:hover { border-color: #555; }
-    .checkbox-row.active { border-color: #64d2ff; }
-    .custom-checkbox { width: 20px; height: 20px; border-radius: 6px; border: 2px solid #444; background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
-    .custom-checkbox.checked { background: #64d2ff; border-color: #64d2ff; }
-    .custom-checkbox.checked::after { content: '✓'; font-size: 13px; color: #000; font-weight: bold; }
-    .checkbox-label { color: #aaa; font-size: 13px; transition: color 0.2s; }
-    .checkbox-row.active .checkbox-label { color: #fff; }
-    .questions-box { overflow: hidden; max-height: 0; transition: max-height 0.3s ease, opacity 0.3s ease; opacity: 0; }
-    .questions-box.open { max-height: 120px; opacity: 1; }
-    .form-row { display: flex; gap: 10px; }
-    .form-row button { flex: 1; }
-    .btn-cancel { flex: 1; padding: 12px; background: transparent; color: #666; border: 1px solid #333; border-radius: 10px; cursor: pointer; font-family: 'Courier New', monospace; font-size: 14px; }
-    .cards-list { display: flex; flex-direction: column; gap: 14px; }
-    .card { border-radius: 16px; padding: 20px 24px; display: flex; align-items: flex-start; transition: transform 0.2s; cursor: pointer; animation: fadeIn 0.3s ease; }
-    .card:hover { transform: translateX(-4px); }
-    .card-number { width: 32px; height: 32px; border-radius: 50%; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin-left: 18px; flex-shrink: 0; margin-top: 3px; }
-    .card-info { flex: 1; }
-    .card-subject { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
-    .card-pages { color: #aaa; font-size: 13px; }
-    .card-pages span { color: #fff; font-weight: bold; }
-    .card-questions { margin-top: 8px; padding: 8px 12px; background: rgba(100,210,255,0.08); border: 1px solid rgba(100,210,255,0.2); border-radius: 8px; font-size: 12px; color: #64d2ff; line-height: 1.5; }
-    .card-questions-label { color: #3a8fa8; margin-left: 4px; }
-    .card-hint { font-size: 11px; color: #444; margin-top: 6px; }
-    .card-due { text-align: left; margin-left: 0; flex-shrink: 0; }
-    .card-due.has-delete { margin-left: 16px; }
-    .card-urgency { font-weight: bold; font-size: 13px; }
-    .card-date { color: #555; font-size: 12px; margin-top: 3px; }
-    .delete-btn { background: transparent; border: 1px solid #333; color: #555; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; line-height: 1; margin-top: 3px; }
-    .delete-btn:hover { border-color: #ff2d55; color: #ff2d55; }
-    .card-difficulty-badge { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); letter-spacing: 0.5px; }
-    .empty { text-align: center; padding: 80px 0; }
-    .empty-emoji { font-size: 48px; margin-bottom: 16px; }
-    .empty-text { color: #444; font-size: 16px; }
-    .empty-sub { color: #333; font-size: 13px; margin-top: 8px; }
-    .total-count { text-align: center; margin-top: 40px; color: #333; font-size: 12px; letter-spacing: 2px; }
-    .credit { text-align: center; margin-top: 8px; color: #222; font-size: 11px; }
+    input[type=time]::-webkit-calendar-picker-indicator { filter:invert(1); }
+    body.light input[type=date]::-webkit-calendar-picker-indicator,
+    body.light input[type=time]::-webkit-calendar-picker-indicator { filter:none; }
+    .input-label { font-size:11px; color:var(--text3); margin-bottom:4px; letter-spacing:1px; }
+    textarea { resize:none; height:70px; }
+    .checkbox-row { display:flex; align-items:center; gap:10px; padding:12px 14px;
+                    background:var(--bg); border:1px solid var(--border2); border-radius:10px;
+                    cursor:pointer; user-select:none; transition:border-color .2s; }
+    .checkbox-row:hover { border-color:var(--text3); }
+    .checkbox-row.active { border-color:var(--accent); }
+    .custom-checkbox { width:20px; height:20px; border-radius:6px; border:2px solid var(--border2);
+                       background:transparent; display:flex; align-items:center; justify-content:center;
+                       flex-shrink:0; transition:all .2s; }
+    .custom-checkbox.checked { background:var(--accent); border-color:var(--accent); }
+    .custom-checkbox.checked::after { content:'✓'; font-size:13px; color:#000; font-weight:bold; }
+    .checkbox-label { color:var(--text2); font-size:13px; transition:color .2s; }
+    .checkbox-row.active .checkbox-label { color:var(--text); }
+    .questions-box { overflow:hidden; max-height:0; transition:max-height .3s ease,opacity .3s ease; opacity:0; }
+    .questions-box.open { max-height:120px; opacity:1; }
+    .form-row { display:flex; gap:10px; }
+    .form-row button { flex:1; }
+    .btn-cancel { flex:1; padding:12px; background:transparent; color:var(--text3);
+                  border:1px solid var(--border2); border-radius:10px; cursor:pointer;
+                  font-family:'Courier New',monospace; font-size:14px; }
+    .cards-list { display:flex; flex-direction:column; gap:14px; }
+    .card { border-radius:16px; padding:20px 24px; display:flex; align-items:flex-start;
+            transition:transform .2s; cursor:pointer; animation:fadeIn .3s ease; }
+    .card:hover { transform:translateX(-4px); }
+    .card-number { width:32px; height:32px; border-radius:50%; font-size:13px; font-weight:bold;
+                   display:flex; align-items:center; justify-content:center;
+                   margin-left:18px; flex-shrink:0; margin-top:3px; }
+    .card-info { flex:1; }
+    .card-subject { font-size:18px; font-weight:bold; margin-bottom:4px; }
+    .card-pages { color:var(--text2); font-size:13px; }
+    .card-pages span { color:var(--text); font-weight:bold; }
+    .card-questions { margin-top:8px; padding:8px 12px; background:rgba(100,210,255,.08);
+                      border:1px solid rgba(100,210,255,.2); border-radius:8px;
+                      font-size:12px; color:var(--accent); line-height:1.5; }
+    .card-questions-label { color:#3a8fa8; margin-left:4px; }
+    .card-hint { font-size:11px; color:var(--card-hint); margin-top:6px; }
+    .card-due { text-align:left; flex-shrink:0; }
+    .card-due.has-delete { margin-left:16px; }
+    .card-urgency { font-weight:bold; font-size:13px; }
+    .card-date { color:var(--text3); font-size:12px; margin-top:3px; }
+    .delete-btn { background:transparent; border:1px solid var(--border2); color:var(--text3);
+                  width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:18px;
+                  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+                  transition:all .2s; line-height:1; margin-top:3px; }
+    .delete-btn:hover { border-color:#ff2d55; color:#ff2d55; }
+    .card-difficulty-badge { display:inline-flex; align-items:center; gap:5px; margin-top:6px;
+                             padding:3px 9px; border-radius:20px; font-size:11px; font-weight:bold;
+                             border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); }
+    body.light .card-difficulty-badge { background:rgba(0,0,0,.04); border-color:rgba(0,0,0,.1); }
+    .empty { text-align:center; padding:80px 0; }
+    .empty-emoji { font-size:48px; margin-bottom:16px; }
+    .empty-text { color:var(--text3); font-size:16px; }
+    .empty-sub  { color:var(--text4); font-size:13px; margin-top:8px; }
+    .total-count { text-align:center; margin-top:40px; color:var(--text4); font-size:12px; letter-spacing:2px; }
+    .credit { text-align:center; margin-top:8px; color:var(--text4); font-size:11px; opacity:.5; }
 
     /* ── MODALS ── */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(12px); z-index: 999; padding: 16px; }
-    .modal { background: #111; border: 1px solid #333; border-radius: 20px; padding: 32px; width: 100%; max-width: 380px; }
-    .modal-title { font-weight: bold; font-size: 18px; margin-bottom: 6px; }
-    .modal-sub { color: #555; font-size: 13px; margin-bottom: 24px; line-height: 1.5; }
-    .modal-error { color: #ff2d55; font-size: 12px; margin-top: 8px; padding: 8px 12px; background: rgba(255,45,85,0.08); border: 1px solid rgba(255,45,85,0.2); border-radius: 8px; }
-    .modal-success { color: #30d158; font-size: 12px; margin-top: 8px; padding: 10px 12px; background: rgba(48,209,88,0.08); border: 1px solid rgba(48,209,88,0.2); border-radius: 8px; line-height: 1.5; }
-    .modal-link { color: #64d2ff; cursor: pointer; font-size: 12px; text-align: center; margin-top: 14px; }
-    .modal-link:hover { text-decoration: underline; }
-    .modal-divider { height: 1px; background: #1a1a1a; margin: 16px 0; }
-    .field-group { margin-bottom: 10px; }
-    .field-group:last-of-type { margin-bottom: 0; }
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.88); display:flex;
+                     align-items:center; justify-content:center; backdrop-filter:blur(12px);
+                     z-index:999; padding:16px; }
+    .modal { background:var(--bg2); border:1px solid var(--border2); border-radius:20px;
+             padding:32px; width:100%; max-width:380px; }
+    .modal-title { font-weight:bold; font-size:18px; margin-bottom:6px; }
+    .modal-sub   { color:var(--text3); font-size:13px; margin-bottom:24px; line-height:1.5; }
+    .modal-error { color:#ff2d55; font-size:12px; margin-top:8px; padding:8px 12px;
+                   background:rgba(255,45,85,.08); border:1px solid rgba(255,45,85,.2); border-radius:8px; }
+    .modal-link  { color:var(--accent); cursor:pointer; font-size:12px; text-align:center; margin-top:14px; }
+    .modal-link:hover { text-decoration:underline; }
+    .modal-divider { height:1px; background:var(--border); margin:16px 0; }
+    .field-group { margin-bottom:10px; }
+    .btn-google { width:100%; padding:12px 16px; background:#fff; color:#333; border:none;
+                  border-radius:10px; cursor:pointer; font-size:14px; font-family:'Courier New',monospace;
+                  font-weight:bold; display:flex; align-items:center; justify-content:center;
+                  gap:10px; transition:background .2s; margin-bottom:4px; }
+    .btn-google:hover { background:#f0f0f0; }
+    .btn-google:disabled { background:#ccc; color:#888; cursor:not-allowed; }
+    .auth-divider { display:flex; align-items:center; gap:10px; margin:14px 0; }
+    .auth-divider-line { flex:1; height:1px; background:var(--border); }
+    .auth-divider-text { color:var(--text3); font-size:11px; letter-spacing:1px; }
+    .verify-box { text-align:center; padding:8px 0; }
+    .verify-icon { font-size:40px; margin-bottom:12px; }
+    .verify-title { font-size:17px; font-weight:bold; margin-bottom:8px; }
+    .verify-sub { color:var(--text3); font-size:13px; line-height:1.6; margin-bottom:20px; }
+    .verify-email-highlight { color:var(--accent); font-weight:bold; }
+    .resend-link    { color:var(--accent); cursor:pointer; font-size:12px; }
+    .resend-link:hover { text-decoration:underline; }
+    .resend-cooldown { color:var(--text3); font-size:12px; }
+    .resend-success  { color:#30d158; font-size:12px; }
 
-    /* Google button */
-    .btn-google {
-      width: 100%; padding: 12px 16px; background: #fff; color: #333;
-      border: none; border-radius: 10px; cursor: pointer;
-      font-size: 14px; font-family: 'Courier New', monospace; font-weight: bold;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      transition: background 0.2s; margin-bottom: 4px;
-    }
-    .btn-google:hover { background: #f0f0f0; }
-    .btn-google:disabled { background: #333; color: #666; cursor: not-allowed; }
-    .btn-google svg { flex-shrink: 0; }
-    .auth-divider { display: flex; align-items: center; gap: 10px; margin: 14px 0; }
-    .auth-divider-line { flex: 1; height: 1px; background: #222; }
-    .auth-divider-text { color: #444; font-size: 11px; letter-spacing: 1px; }
-
-    /* Verification pending box */
-    .verify-box { text-align: center; padding: 8px 0; }
-    .verify-icon { font-size: 40px; margin-bottom: 12px; }
-    .verify-title { font-size: 17px; font-weight: bold; margin-bottom: 8px; }
-    .verify-sub { color: #555; font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
-    .verify-email-highlight { color: #64d2ff; font-weight: bold; }
-    .resend-link { color: #64d2ff; cursor: pointer; font-size: 12px; }
-    .resend-link:hover { text-decoration: underline; }
-    .resend-cooldown { color: #555; font-size: 12px; }
-    .resend-success { color: #30d158; font-size: 12px; }
-
-    .answers-modal { background: #0f0f15; border: 1px solid #222; border-radius: 20px; width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
-    .answers-header { padding: 20px 24px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-    .answers-title { font-size: 18px; font-weight: bold; }
-    .answers-subject { font-size: 12px; color: #555; margin-top: 2px; }
-    .close-btn { background: transparent; border: 1px solid #333; color: #666; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
-    .close-btn:hover { border-color: #fff; color: #fff; }
-    .answers-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
-    .upload-area { border: 2px dashed #333; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 16px; }
-    .upload-area:hover { border-color: #64d2ff; }
-    .upload-area input { display: none; }
-    .upload-area-text { color: #555; font-size: 13px; }
-    .upload-area-text span { color: #64d2ff; }
-    .upload-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-    .upload-preview { position: relative; width: 70px; height: 70px; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
-    .upload-preview img { width: 100%; height: 100%; object-fit: cover; }
-    .upload-preview-remove { position: absolute; top: 2px; left: 2px; background: rgba(0,0,0,0.7); border: none; color: #fff; width: 18px; height: 18px; border-radius: 4px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
-    .upload-btn { width: 100%; padding: 12px; background: #64d2ff; color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; font-family: 'Courier New', monospace; transition: background 0.2s; }
-    .upload-btn:hover { background: #4ab8e8; }
-    .upload-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
-    .uploading-text { text-align: center; color: #64d2ff; font-size: 13px; margin-top: 8px; }
-    .photos-grid { display: flex; flex-direction: column; gap: 16px; }
-    .photo-card { background: #161620; border: 1px solid #222; border-radius: 14px; overflow: hidden; }
-    .photo-card-header { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
-    .photo-uploader { font-size: 13px; font-weight: bold; color: #fff; }
-    .photo-time { font-size: 11px; color: #444; }
-    .photo-img { width: 100%; max-height: 400px; object-fit: contain; background: #0a0a0f; cursor: pointer; display: block; }
-    .photo-img:hover { opacity: 0.9; }
-    .photo-actions { padding: 10px 14px; display: flex; align-items: center; gap: 10px; }
-    .like-btn { background: transparent; border: 1px solid #333; border-radius: 8px; padding: 6px 14px; color: #888; cursor: pointer; font-size: 13px; font-family: 'Courier New', monospace; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
-    .like-btn:hover { border-color: #ff2d55; color: #ff2d55; }
-    .like-btn.liked { border-color: #ff2d55; color: #ff2d55; background: rgba(255,45,85,0.1); }
-    .photo-delete-btn { background: transparent; border: 1px solid #333; border-radius: 8px; padding: 6px 12px; color: #555; cursor: pointer; font-size: 12px; font-family: 'Courier New', monospace; transition: all 0.2s; margin-right: auto; }
-    .photo-delete-btn:hover { border-color: #ff2d55; color: #ff2d55; background: rgba(255,45,85,0.1); }
-    .no-photos { text-align: center; padding: 40px 0; color: #333; font-size: 14px; }
-    .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 9999; cursor: pointer; }
-    .lightbox img { max-width: 95vw; max-height: 95vh; object-fit: contain; border-radius: 8px; }
+    /* ── ANSWERS MODAL ── */
+    .answers-modal { background:var(--bg); border:1px solid var(--border); border-radius:20px;
+                     width:100%; max-width:600px; max-height:90vh; display:flex;
+                     flex-direction:column; overflow:hidden; }
+    .answers-header { padding:20px 24px; border-bottom:1px solid var(--border);
+                      display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+    .answers-title   { font-size:18px; font-weight:bold; }
+    .answers-subject { font-size:12px; color:var(--text3); margin-top:2px; }
+    .close-btn { background:transparent; border:1px solid var(--border2); color:var(--text3);
+                 width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:18px;
+                 display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
+    .close-btn:hover { border-color:var(--text); color:var(--text); }
+    .answers-body { flex:1; overflow-y:auto; padding:20px 24px; }
+    .upload-area { border:2px dashed var(--border2); border-radius:12px; padding:20px;
+                   text-align:center; cursor:pointer; transition:all .2s; margin-bottom:16px; }
+    .upload-area:hover { border-color:var(--accent); }
+    .upload-area input { display:none; }
+    .upload-area-text { color:var(--text3); font-size:13px; }
+    .upload-area-text span { color:var(--accent); }
+    .upload-previews { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+    .upload-preview { position:relative; width:70px; height:70px; border-radius:8px;
+                      overflow:hidden; border:1px solid var(--border2); }
+    .upload-preview img { width:100%; height:100%; object-fit:cover; }
+    .upload-preview-remove { position:absolute; top:2px; left:2px; background:rgba(0,0,0,.7);
+                             border:none; color:#fff; width:18px; height:18px; border-radius:4px;
+                             cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; }
+    .upload-btn { width:100%; padding:12px; background:var(--accent); color:#000; border:none;
+                  border-radius:10px; cursor:pointer; font-weight:bold; font-size:14px;
+                  font-family:'Courier New',monospace; transition:opacity .2s; }
+    .upload-btn:hover { opacity:.85; }
+    .upload-btn:disabled { background:var(--border2); color:var(--text3); cursor:not-allowed; }
+    .uploading-text { text-align:center; color:var(--accent); font-size:13px; margin-top:8px; }
+    .photos-grid { display:flex; flex-direction:column; gap:16px; }
+    .photo-card { background:var(--bg3); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+    .photo-card-header { padding:10px 14px; display:flex; justify-content:space-between; align-items:center; }
+    .photo-uploader { font-size:13px; font-weight:bold; }
+    .photo-time { font-size:11px; color:var(--text3); }
+    .photo-img { width:100%; max-height:400px; object-fit:contain; background:var(--bg); cursor:pointer; display:block; }
+    .photo-img:hover { opacity:.9; }
+    .photo-actions { padding:10px 14px; display:flex; align-items:center; gap:10px; }
+    .like-btn { background:transparent; border:1px solid var(--border2); border-radius:8px;
+                padding:6px 14px; color:var(--text2); cursor:pointer; font-size:13px;
+                font-family:'Courier New',monospace; display:flex; align-items:center; gap:6px; transition:all .2s; }
+    .like-btn:hover,.like-btn.liked { border-color:#ff2d55; color:#ff2d55; }
+    .like-btn.liked { background:rgba(255,45,85,.1); }
+    .photo-delete-btn { background:transparent; border:1px solid var(--border2); border-radius:8px;
+                        padding:6px 12px; color:var(--text3); cursor:pointer; font-size:12px;
+                        font-family:'Courier New',monospace; transition:all .2s; margin-right:auto; }
+    .photo-delete-btn:hover { border-color:#ff2d55; color:#ff2d55; background:rgba(255,45,85,.1); }
+    .no-photos { text-align:center; padding:40px 0; color:var(--text4); font-size:14px; }
+    .lightbox { position:fixed; inset:0; background:rgba(0,0,0,.95); display:flex;
+                align-items:center; justify-content:center; z-index:9999; cursor:pointer; }
+    .lightbox img { max-width:95vw; max-height:95vh; object-fit:contain; border-radius:8px; }
 
     /* ── DIFFICULTY ── */
-    .difficulty-section { margin-bottom: 24px; background: #111217; border: 1px solid #2a2a35; border-radius: 14px; padding: 18px 20px; }
-    .difficulty-section-title { font-size: 12px; letter-spacing: 2px; color: #555; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
-    .difficulty-avg-display { display: flex; align-items: baseline; gap: 6px; margin-bottom: 12px; }
-    .difficulty-avg-number { font-size: 36px; font-weight: bold; line-height: 1; transition: color 0.4s; }
-    .difficulty-avg-outof { font-size: 14px; color: #444; }
-    .difficulty-avg-voters { font-size: 11px; color: #333; margin-top: 2px; }
-    .difficulty-bar-bg { width: 100%; height: 6px; background: #1e1e28; border-radius: 3px; margin-bottom: 16px; overflow: hidden; }
-    .difficulty-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1), background 0.4s; }
-    .difficulty-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
-    .diff-btn { flex: 1; min-width: 28px; padding: 8px 4px; border-radius: 8px; border: 1px solid #2a2a35; background: #0a0a0f; color: #555; cursor: pointer; font-size: 13px; font-weight: bold; font-family: 'Courier New', monospace; transition: all 0.18s; text-align: center; position: relative; }
-    .diff-btn:hover { border-color: #555; color: #fff; transform: translateY(-2px); }
-    .diff-btn.selected { color: #000; font-weight: bold; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-    .diff-btn.selected::after { content: '✓'; position: absolute; top: -6px; right: -4px; font-size: 9px; background: #fff; color: #000; border-radius: 50%; width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-    .difficulty-login-hint { font-size: 12px; color: #333; text-align: center; margin-top: 10px; }
-    .difficulty-login-hint span { color: #64d2ff; cursor: pointer; }
-    .difficulty-login-hint span:hover { text-decoration: underline; }
-    .difficulty-voted-msg { font-size: 11px; color: #444; text-align: center; margin-top: 10px; }
-    .difficulty-divider { height: 1px; background: #1a1a22; margin: 20px 0; }
+    .difficulty-section { margin-bottom:24px; background:var(--bg3); border:1px solid var(--border);
+                          border-radius:14px; padding:18px 20px; }
+    .difficulty-section-title { font-size:12px; letter-spacing:2px; color:var(--text3); margin-bottom:14px;
+                                 display:flex; align-items:center; justify-content:space-between; }
+    .difficulty-avg-display { display:flex; align-items:baseline; gap:6px; margin-bottom:12px; }
+    .difficulty-avg-number { font-size:36px; font-weight:bold; line-height:1; transition:color .4s; }
+    .difficulty-avg-outof  { font-size:14px; color:var(--text3); }
+    .difficulty-avg-voters { font-size:11px; color:var(--text4); margin-top:2px; }
+    .difficulty-bar-bg { width:100%; height:6px; background:var(--border); border-radius:3px;
+                         margin-bottom:16px; overflow:hidden; }
+    .difficulty-bar-fill { height:100%; border-radius:3px; transition:width .5s cubic-bezier(.4,0,.2,1),background .4s; }
+    .difficulty-buttons { display:flex; gap:6px; flex-wrap:wrap; }
+    .diff-btn { flex:1; min-width:28px; padding:8px 4px; border-radius:8px; border:1px solid var(--border);
+                background:var(--bg); color:var(--text3); cursor:pointer; font-size:13px; font-weight:bold;
+                font-family:'Courier New',monospace; transition:all .18s; text-align:center; position:relative; }
+    .diff-btn:hover { transform:translateY(-2px); }
+    .diff-btn.selected { color:#000; font-weight:bold; transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.5); }
+    .diff-btn.selected::after { content:'✓'; position:absolute; top:-6px; right:-4px; font-size:9px;
+                                background:#fff; color:#000; border-radius:50%; width:12px; height:12px;
+                                display:flex; align-items:center; justify-content:center; font-weight:bold; }
+    .difficulty-login-hint { font-size:12px; color:var(--text4); text-align:center; margin-top:10px; }
+    .difficulty-login-hint span { color:var(--accent); cursor:pointer; }
+    .difficulty-voted-msg { font-size:11px; color:var(--text3); text-align:center; margin-top:10px; }
+    .difficulty-divider { height:1px; background:var(--border); margin:20px 0; }
 
-    .hidden { display: none; }
+    /* ── SETTINGS DRAWER ── */
+    .settings-drawer-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5);
+                                backdrop-filter:blur(6px); z-index:998;
+                                opacity:0; pointer-events:none; transition:opacity .25s; }
+    .settings-drawer-overlay.open { opacity:1; pointer-events:all; }
+    .settings-drawer { position:fixed; top:0; left:0; height:100%; width:320px; max-width:90vw;
+                       background:var(--bg2); border-right:1px solid var(--border2);
+                       z-index:999; transform:translateX(-100%); transition:transform .28s cubic-bezier(.4,0,.2,1);
+                       display:flex; flex-direction:column; overflow-y:auto; }
+    body[dir=rtl] .settings-drawer { left:auto; right:0; border-right:none;
+                                      border-left:1px solid var(--border2);
+                                      transform:translateX(100%); }
+    .settings-drawer.open { transform:translateX(0); }
+    .drawer-header { padding:24px 20px 16px; border-bottom:1px solid var(--border); display:flex;
+                     justify-content:space-between; align-items:center; flex-shrink:0; }
+    .drawer-title { font-size:17px; font-weight:bold; }
+    .drawer-close { background:transparent; border:1px solid var(--border2); color:var(--text3);
+                    width:30px; height:30px; border-radius:8px; cursor:pointer; font-size:16px;
+                    display:flex; align-items:center; justify-content:center; transition:all .2s; }
+    .drawer-close:hover { border-color:var(--text); color:var(--text); }
+    .drawer-section { padding:16px 20px; border-bottom:1px solid var(--border); }
+    .drawer-section-label { font-size:10px; letter-spacing:2px; color:var(--text3);
+                            margin-bottom:12px; text-transform:uppercase; }
+    .drawer-row { display:flex; align-items:center; justify-content:space-between;
+                  padding:10px 14px; background:var(--bg); border:1px solid var(--border);
+                  border-radius:10px; margin-bottom:8px; cursor:pointer; transition:border-color .2s; }
+    .drawer-row:last-child { margin-bottom:0; }
+    .drawer-row:hover { border-color:var(--border2); }
+    .drawer-row-left { display:flex; align-items:center; gap:10px; }
+    .drawer-row-icon { font-size:16px; width:22px; text-align:center; }
+    .drawer-row-label { font-size:13px; color:var(--text); }
+    .drawer-row-sub { font-size:11px; color:var(--text3); margin-top:1px; }
+    .drawer-row-right { color:var(--text3); font-size:12px; }
+    /* theme toggle pill */
+    .theme-toggle { display:flex; background:var(--bg); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+    .theme-opt { flex:1; padding:9px 6px; text-align:center; font-size:12px; cursor:pointer;
+                 transition:all .2s; color:var(--text3); font-family:'Courier New',monospace; }
+    .theme-opt.active { background:var(--text); color:var(--bg); font-weight:bold; }
+    /* admin section inside drawer */
+    .drawer-admin-badge { display:inline-block; padding:2px 8px; border-radius:20px;
+                          font-size:10px; background:rgba(255,45,85,.12); color:#ff2d55;
+                          border:1px solid rgba(255,45,85,.3); margin-right:6px; }
+    /* deadline colour settings inside drawer */
+    .color-settings-wrap { padding:0; }
+    .color-row { display:flex; align-items:center; gap:10px; padding:10px 0;
+                 border-bottom:1px solid var(--border); }
+    .color-row:last-child { border-bottom:none; }
+    .color-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+    .color-row-label { flex:1; font-size:12px; color:var(--text2); }
+    .color-row-label strong { display:block; font-size:13px; color:var(--text); margin-bottom:1px; }
+    .color-input-wrap { display:flex; align-items:center; gap:5px; }
+    .color-num { width:52px; padding:6px 8px; background:var(--bg2); border:1px solid var(--border2);
+                 border-radius:8px; color:var(--text); font-size:13px; font-family:'Courier New',monospace;
+                 outline:none; text-align:center; direction:ltr; }
+    .color-num:focus { border-color:var(--text3); }
+    .color-unit { font-size:11px; color:var(--text3); white-space:nowrap; }
+    .color-preview-bar { display:flex; border-radius:8px; overflow:hidden; height:8px; margin:12px 0 4px; }
+    .color-preview-seg { flex:1; transition:all .3s; }
+    .color-preview-labels { display:flex; justify-content:space-between; font-size:10px; color:var(--text4); margin-bottom:8px; }
+    .drawer-btn-row { display:flex; gap:8px; margin-top:4px; }
+    .drawer-btn-sm { flex:1; padding:9px; background:transparent; border:1px solid var(--border2);
+                     color:var(--text2); border-radius:8px; cursor:pointer; font-size:12px;
+                     font-family:'Courier New',monospace; transition:all .2s; }
+    .drawer-btn-sm:hover { border-color:var(--text); color:var(--text); }
+    .drawer-btn-primary { flex:2; padding:9px; background:var(--text); color:var(--bg);
+                          border:none; border-radius:8px; cursor:pointer; font-size:12px; font-weight:bold;
+                          font-family:'Courier New',monospace; transition:opacity .2s; }
+    .drawer-btn-primary:hover { opacity:.85; }
 
-    /* ── SETTINGS ── */
-    .settings-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: #0a0a0f; border: 1px solid #222; border-radius: 12px; margin-bottom: 10px; }
-    .settings-color-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
-    .settings-row-label { flex: 1; font-size: 13px; color: #aaa; line-height: 1.4; }
-    .settings-row-label strong { display: block; color: #fff; font-size: 14px; margin-bottom: 2px; }
-    .settings-input-wrap { display: flex; align-items: center; gap: 6px; }
-    .settings-num { width: 60px; padding: 8px 10px; background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 14px; font-family: 'Courier New', monospace; outline: none; text-align: center; direction: ltr; }
-    .settings-num:focus { border-color: #555; }
-    .settings-unit { font-size: 12px; color: #555; white-space: nowrap; }
-    .settings-preview { display: flex; gap: 0; border-radius: 10px; overflow: hidden; height: 10px; margin: 14px 0 4px; }
-    .settings-preview-seg { flex: 1; transition: background 0.3s; }
-    .settings-preview-labels { display: flex; justify-content: space-between; font-size: 10px; color: #333; margin-bottom: 16px; }
-    .settings-reset { background: transparent; border: 1px solid #333; color: #555; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: 'Courier New', monospace; transition: all 0.2s; }
-    .settings-reset:hover { border-color: #888; color: #888; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 500px) { header { padding: 16px; flex-wrap: wrap; gap: 10px; } .card { padding: 16px; } .card-subject { font-size: 15px; } .form-row-2 { flex-direction: column; } }
+    /* deadline settings sub-panel (hidden until expanded) */
+    .expandable { overflow:hidden; max-height:0; opacity:0; transition:max-height .3s ease,opacity .3s ease; }
+    .expandable.open { max-height:600px; opacity:1; }
+
+    /* settings rows */
+    .settings-row { display:flex; align-items:center; gap:14px; padding:14px 16px; background:var(--bg);
+                    border:1px solid var(--border); border-radius:12px; margin-bottom:10px; }
+    .settings-color-dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; }
+    .settings-row-label { flex:1; font-size:13px; color:var(--text2); line-height:1.4; }
+    .settings-row-label strong { display:block; color:var(--text); font-size:14px; margin-bottom:2px; }
+    .settings-input-wrap { display:flex; align-items:center; gap:6px; }
+    .settings-num { width:60px; padding:8px 10px; background:var(--bg2); border:1px solid var(--border2);
+                    border-radius:8px; color:var(--text); font-size:14px; font-family:'Courier New',monospace;
+                    outline:none; text-align:center; direction:ltr; }
+    .settings-num:focus { border-color:var(--text3); }
+    .settings-unit { font-size:12px; color:var(--text3); white-space:nowrap; }
+    .settings-preview { display:flex; border-radius:10px; overflow:hidden; height:10px; margin:14px 0 4px; }
+    .settings-preview-seg { flex:1; transition:background .3s; }
+    .settings-preview-labels { display:flex; justify-content:space-between; font-size:10px; color:var(--text4); margin-bottom:16px; }
+    .settings-reset { background:transparent; border:1px solid var(--border2); color:var(--text3);
+                      padding:8px 14px; border-radius:8px; cursor:pointer; font-size:12px;
+                      font-family:'Courier New',monospace; transition:all .2s; }
+    .settings-reset:hover { border-color:var(--text2); color:var(--text2); }
+
+    .hidden { display:none; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+    @media(max-width:500px){ header{padding:16px;flex-wrap:wrap;gap:10px} .card{padding:16px} .card-subject{font-size:15px} .form-row-2{flex-direction:column} }
   </style>
 </head>
 <body>
 
 <header>
   <div>
-    <div class="header-title-label">פורטל כיתה</div>
-    <div class="header-title">📚 מעקב שיעורי בית</div>
+    <div class="header-title-label" id="headerLabel"></div>
+    <div class="header-title"       id="headerTitle"></div>
   </div>
   <div class="header-actions">
     <span class="user-badge hidden" id="userBadge"></span>
-    <button class="btn btn-ghost hidden" id="logoutBtn" onclick="logout()">יציאה</button>
-    <button class="btn btn-ghost" id="loginBtn" onclick="openAuthModal()">כניסה / הרשמה</button>
-    <button class="btn btn-ghost" onclick="openLeaderboard()">🏆 טבלת מובילים</button>
-    <button class="btn btn-ghost" onclick="openSettings()" title="הגדרות צבעים">⚙️</button>
-    <button class="btn btn-white" id="adminBtn" onclick="toggleAdmin()">כניסת מנהל</button>
+    <button class="btn-gear" id="settingsBtn" onclick="openDrawer()">⚙️</button>
   </div>
 </header>
 
 <main>
-  <button class="add-btn-dashed hidden" id="addBtn" onclick="showAddForm()">+ הוסף שיעורי בית</button>
+  <button class="add-btn-dashed hidden" id="addBtn" onclick="showAddForm()"></button>
   <div class="add-form hidden" id="addForm">
-    <div class="form-title">משימה חדשה</div>
-    <input type="text" id="subjectInput" placeholder="מקצוע (למשל: מתמטיקה)" />
-    <input type="text" id="pagesInput" placeholder="עמודים (למשל: 45-67)" />
+    <div class="form-title" id="formTitle"></div>
+    <input type="text" id="subjectInput"/>
+    <input type="text" id="pagesInput"/>
     <div class="form-row-2">
-      <div>
-        <div class="input-label">תאריך הגשה</div>
-        <input type="date" id="dateInput" />
-      </div>
-      <div>
-        <div class="input-label">שעת הגשה (אופציונלי)</div>
-        <input type="time" id="timeInput" />
-      </div>
+      <div><div class="input-label" id="labelDueDate"></div><input type="date" id="dateInput"/></div>
+      <div><div class="input-label" id="labelDueTime"></div><input type="time" id="timeInput"/></div>
     </div>
     <div class="checkbox-row" id="checkboxRow" onclick="toggleQuestions()">
       <div class="custom-checkbox" id="customCheckbox"></div>
-      <span class="checkbox-label">שאלות ספציפיות בלבד</span>
+      <span class="checkbox-label" id="checkboxLabel"></span>
     </div>
     <div class="questions-box" id="questionsBox">
-      <textarea id="questionsInput" placeholder="רשום אילו שאלות צריך לעשות (למשל: 1, 3, 5-7, 12)"></textarea>
+      <textarea id="questionsInput"></textarea>
     </div>
     <div class="form-row">
-      <button class="btn-full" style="flex:1;margin-top:0" onclick="addCard()">הוסף</button>
-      <button class="btn-cancel" onclick="hideAddForm()">ביטול</button>
+      <button class="btn-full" id="btnAddCard" style="flex:1;margin-top:0" onclick="addCard()"></button>
+      <button class="btn-cancel" id="btnCancelForm" onclick="hideAddForm()"></button>
     </div>
   </div>
-
   <div class="cards-list" id="cardsList"></div>
   <div class="empty hidden" id="emptyState">
-    <div class="empty-emoji">✨</div>
-    <div class="empty-text">אין שיעורי בית כרגע.</div>
-    <div class="empty-sub">תהנו מהחופש!</div>
+    <div class="empty-emoji" id="emptyEmoji"></div>
+    <div class="empty-text"  id="emptyText"></div>
+    <div class="empty-sub"   id="emptySub"></div>
   </div>
   <div class="total-count hidden" id="totalCount"></div>
-  <div class="credit hidden" id="credit">רון יאדגרוב</div>
+  <div class="credit hidden" id="credit"></div>
 </main>
 
-<!-- ══════════════════════════════════════════
-     AUTH MODAL  (Login / Register / Verify)
-     ══════════════════════════════════════════ -->
+<!-- ══ SETTINGS DRAWER ══ -->
+<div class="settings-drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="settings-drawer" id="settingsDrawer">
+  <div class="drawer-header">
+    <div class="drawer-title" id="drawerTitle"></div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+
+  <!-- ACCOUNT SECTION -->
+  <div class="drawer-section" id="drawerAccountSection">
+    <div class="drawer-section-label" id="drawerAccountLabel"></div>
+    <!-- Logged-in state -->
+    <div id="drawerLoggedIn" class="hidden">
+      <div class="drawer-row" style="cursor:default">
+        <div class="drawer-row-left">
+          <span class="drawer-row-icon">👤</span>
+          <div><div class="drawer-row-label" id="drawerUsername"></div>
+               <div class="drawer-row-sub"  id="drawerEmail"></div></div>
+        </div>
+      </div>
+      <div class="drawer-row" onclick="logout()" style="margin-top:4px">
+        <div class="drawer-row-left">
+          <span class="drawer-row-icon">🚪</span>
+          <div class="drawer-row-label" id="drawerLogoutLabel"></div>
+        </div>
+        <span class="drawer-row-right">›</span>
+      </div>
+    </div>
+    <!-- Logged-out state -->
+    <div id="drawerLoggedOut">
+      <div class="drawer-row" onclick="openAuthFromDrawer()">
+        <div class="drawer-row-left">
+          <span class="drawer-row-icon">🔑</span>
+          <div><div class="drawer-row-label" id="drawerLoginLabel"></div>
+               <div class="drawer-row-sub"  id="drawerLoginSub"></div></div>
+        </div>
+        <span class="drawer-row-right">›</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- THEME SECTION -->
+  <div class="drawer-section">
+    <div class="drawer-section-label" id="drawerThemeLabel"></div>
+    <div class="theme-toggle">
+      <div class="theme-opt" id="themeDark"  onclick="setTheme('dark')"></div>
+      <div class="theme-opt" id="themeLight" onclick="setTheme('light')"></div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD SHORTCUT -->
+  <div class="drawer-section">
+    <div class="drawer-section-label" id="drawerMoreLabel"></div>
+    <div class="drawer-row" onclick="closeDrawer();openLeaderboard()">
+      <div class="drawer-row-left">
+        <span class="drawer-row-icon">🏆</span>
+        <div class="drawer-row-label" id="drawerLeaderboardLabel"></div>
+      </div>
+      <span class="drawer-row-right">›</span>
+    </div>
+  </div>
+
+  <!-- DEADLINE COLOURS SECTION -->
+  <div class="drawer-section">
+    <div class="drawer-section-label" id="drawerColorsLabel"></div>
+    <div class="settings-preview">
+      <div class="settings-preview-seg" id="prev-red"></div>
+      <div class="settings-preview-seg" id="prev-orange"></div>
+      <div class="settings-preview-seg" id="prev-green"></div>
+      <div class="settings-preview-seg" id="prev-blue"></div>
+    </div>
+    <div class="settings-preview-labels">
+      <span id="prevLabelNow"></span><span id="prevLabelRed"></span>
+      <span id="prevLabelOrange"></span><span id="prevLabelGreen"></span>
+      <span id="prevLabelFar"></span>
+    </div>
+    <div class="settings-row">
+      <div class="settings-color-dot" style="background:#ff2d55;box-shadow:0 0 6px #ff2d5588"></div>
+      <div class="settings-row-label"><strong id="settingsRedLabel" style="color:#ff2d55"></strong><span id="settingsLessThan1"></span></div>
+      <div class="settings-input-wrap">
+        <input class="settings-num" type="number" id="st-red" min="1" max="999" oninput="updateSettingsPreview()"/>
+        <span class="settings-unit" id="settingsUnitHours"></span>
+      </div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-color-dot" style="background:#ff9f0a;box-shadow:0 0 6px #ff9f0a88"></div>
+      <div class="settings-row-label"><strong id="settingsOrangeLabel" style="color:#ff9f0a"></strong><span id="settingsLessThan2"></span></div>
+      <div class="settings-input-wrap">
+        <input class="settings-num" type="number" id="st-orange" min="1" max="999" oninput="updateSettingsPreview()"/>
+        <span class="settings-unit" id="settingsUnitDays1"></span>
+      </div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-color-dot" style="background:#30d158;box-shadow:0 0 6px #30d15888"></div>
+      <div class="settings-row-label"><strong id="settingsGreenLabel" style="color:#30d158"></strong><span id="settingsLessThan3"></span></div>
+      <div class="settings-input-wrap">
+        <input class="settings-num" type="number" id="st-green" min="1" max="999" oninput="updateSettingsPreview()"/>
+        <span class="settings-unit" id="settingsUnitDays2"></span>
+      </div>
+    </div>
+    <div class="settings-row" style="opacity:.5">
+      <div class="settings-color-dot" style="background:#64d2ff"></div>
+      <div class="settings-row-label"><strong id="settingsBlueLabel" style="color:#64d2ff"></strong><span id="settingsBlueDesc"></span></div>
+    </div>
+    <div class="modal-error hidden" id="settingsError"></div>
+    <div class="drawer-btn-row" style="margin-top:12px">
+      <button class="settings-reset" id="settingsResetBtn" onclick="resetSettings()"></button>
+      <button class="drawer-btn-primary" id="settingsSaveBtn" onclick="saveSettings()"></button>
+    </div>
+  </div>
+
+  <!-- ADMIN SECTION -->
+  <div class="drawer-section" id="drawerAdminSection">
+    <div class="drawer-section-label" id="drawerAdminLabel"></div>
+    <!-- Not admin -->
+    <div id="drawerAdminLogin">
+      <div class="drawer-row" onclick="showDrawerAdminForm()">
+        <div class="drawer-row-left">
+          <span class="drawer-row-icon">🔐</span>
+          <div><div class="drawer-row-label" id="drawerAdminLoginLabel"></div>
+               <div class="drawer-row-sub"  id="drawerAdminLoginSub"></div></div>
+        </div>
+        <span class="drawer-row-right">›</span>
+      </div>
+      <div id="drawerAdminForm" class="hidden" style="margin-top:10px">
+        <input type="password" id="adminPassInput" style="margin-bottom:8px" onkeydown="if(event.key==='Enter')doAdminLogin()"/>
+        <div class="modal-error hidden" id="adminPassError"></div>
+        <button class="btn-full" id="adminLoginSubmitBtn" onclick="doAdminLogin()" style="margin-top:0"></button>
+      </div>
+    </div>
+    <!-- Is admin -->
+    <div id="drawerAdminActive" class="hidden">
+      <div class="drawer-row" style="cursor:default;border-color:#ff2d5544;background:rgba(255,45,85,.05)">
+        <div class="drawer-row-left">
+          <span class="drawer-row-icon">✅</span>
+          <div class="drawer-row-label" id="drawerAdminActiveLabel"></div>
+        </div>
+      </div>
+      <div class="drawer-row" onclick="exitAdmin()" style="margin-top:4px">
+        <div class="drawer-row-left">
+          <span class="drawer-row-icon">🚪</span>
+          <div class="drawer-row-label" id="drawerAdminExitLabel"></div>
+        </div>
+        <span class="drawer-row-right">›</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AUTH MODAL ══ -->
 <div class="modal-overlay hidden" id="authModal">
   <div class="modal">
-
-    <!-- LOGIN VIEW -->
     <div id="loginView">
-      <div class="modal-title">כניסה</div>
-      <div class="modal-sub">הכנס את פרטיך כדי להעלות תשובות</div>
-
-      <!-- Google Sign-In -->
-      <button class="btn-google" id="googleLoginBtn" onclick="signInWithGoogle()">
-        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-          <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
-          <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
-          <path d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/>
-          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-        </svg>
-        כניסה עם Google
-      </button>
-
-      <div class="auth-divider">
-        <div class="auth-divider-line"></div>
-        <span class="auth-divider-text">או</span>
-        <div class="auth-divider-line"></div>
-      </div>
-
-      <div class="field-group">
-        <input type="email" id="loginEmail" placeholder="אימייל" />
-      </div>
-      <div class="field-group">
-        <input type="password" id="loginPass" placeholder="סיסמה" onkeydown="if(event.key==='Enter')doUserLogin()" />
-      </div>
+      <div class="modal-title" id="loginTitle"></div>
+      <div class="modal-sub"   id="loginSub"></div>
+      <button class="btn-google" id="googleLoginBtn" onclick="signInWithGoogle()"></button>
+      <div class="auth-divider"><div class="auth-divider-line"></div><span class="auth-divider-text" id="authDividerText"></span><div class="auth-divider-line"></div></div>
+      <div class="field-group"><input type="email"    id="loginEmail"/></div>
+      <div class="field-group"><input type="password" id="loginPass"  onkeydown="if(event.key==='Enter')doUserLogin()"/></div>
       <div class="modal-error hidden" id="loginError"></div>
-      <button class="btn-full" id="loginSubmitBtn" onclick="doUserLogin()">כניסה</button>
-      <div class="modal-link" onclick="switchToRegister()">אין לך חשבון? הירשם כאן</div>
-      <div style="text-align:center;margin-top:10px">
-        <span style="color:#333;font-size:12px;cursor:pointer" onclick="closeAuthModal()">ביטול</span>
-      </div>
+      <button class="btn-full" id="loginSubmitBtn" onclick="doUserLogin()"></button>
+      <div class="modal-link" id="switchToRegisterLink" onclick="switchToRegister()"></div>
+      <div style="text-align:center;margin-top:10px"><span style="color:var(--text4);font-size:12px;cursor:pointer" onclick="closeAuthModal()" id="cancelLoginLink"></span></div>
     </div>
-
-    <!-- REGISTER VIEW -->
     <div id="registerView" class="hidden">
-      <div class="modal-title">הרשמה</div>
-      <div class="modal-sub">צור חשבון חדש</div>
-
-      <!-- Google Sign-Up -->
-      <button class="btn-google" id="googleRegisterBtn" onclick="signInWithGoogle()">
-        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-          <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
-          <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
-          <path d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/>
-          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-        </svg>
-        הרשמה עם Google
-      </button>
-
-      <div class="auth-divider">
-        <div class="auth-divider-line"></div>
-        <span class="auth-divider-text">או</span>
-        <div class="auth-divider-line"></div>
-      </div>
-
-      <div class="field-group">
-        <input type="text" id="regUser" placeholder="שם משתמש (יוצג לאחרים)" />
-      </div>
-      <div class="field-group">
-        <input type="email" id="regEmail" placeholder="אימייל" />
-      </div>
-      <div class="field-group">
-        <input type="password" id="regPass" placeholder="סיסמה (לפחות 6 תווים)" />
-      </div>
-      <div class="field-group">
-        <input type="password" id="regPass2" placeholder="אשר סיסמה" onkeydown="if(event.key==='Enter')doRegister()" />
-      </div>
+      <div class="modal-title" id="registerTitle"></div>
+      <div class="modal-sub"   id="registerSub"></div>
+      <button class="btn-google" id="googleRegisterBtn" onclick="signInWithGoogle()"></button>
+      <div class="auth-divider"><div class="auth-divider-line"></div><span class="auth-divider-text" id="authDividerText2"></span><div class="auth-divider-line"></div></div>
+      <div class="field-group"><input type="text"     id="regUser"/></div>
+      <div class="field-group"><input type="email"    id="regEmail"/></div>
+      <div class="field-group"><input type="password" id="regPass"/></div>
+      <div class="field-group"><input type="password" id="regPass2" onkeydown="if(event.key==='Enter')doRegister()"/></div>
       <div class="modal-error hidden" id="registerError"></div>
-      <button class="btn-full" id="registerSubmitBtn" onclick="doRegister()">הרשמה ושליחת קישור אימות</button>
-      <div class="modal-link" onclick="switchToLogin()">כבר יש לך חשבון? כנס כאן</div>
-      <div style="text-align:center;margin-top:10px">
-        <span style="color:#333;font-size:12px;cursor:pointer" onclick="closeAuthModal()">ביטול</span>
-      </div>
+      <button class="btn-full" id="registerSubmitBtn" onclick="doRegister()"></button>
+      <div class="modal-link" id="switchToLoginLink" onclick="switchToLogin()"></div>
+      <div style="text-align:center;margin-top:10px"><span style="color:var(--text4);font-size:12px;cursor:pointer" onclick="closeAuthModal()" id="cancelRegLink"></span></div>
     </div>
-
-    <!-- VERIFY EMAIL VIEW -->
     <div id="verifyView" class="hidden">
       <div class="verify-box">
-        <div class="verify-icon">📧</div>
-        <div class="verify-title">בדוק את האימייל שלך</div>
+        <div class="verify-icon"  id="verifyIcon"></div>
+        <div class="verify-title" id="verifyTitle"></div>
         <div class="verify-sub">
-          שלחנו קישור אימות אל<br>
+          <span id="verifySentLabel"></span><br>
           <span class="verify-email-highlight" id="verifyEmailDisplay"></span><br><br>
-          לחץ על הקישור במייל ואז חזור לכאן כדי להתחבר.<br>
-          <span style="color:#333;font-size:11px">לא מצאת? בדוק בתיקיית ספאם/דואר זבל</span>
+          <span id="verifyClickLabel"></span><br>
+          <span id="verifySpamNote" style="font-size:11px;color:var(--text4)"></span>
         </div>
-        <div id="resendArea">
-          <span class="resend-link" id="resendLink" onclick="resendVerification()">שלח מחדש</span>
-          <span class="hidden" id="resendCooldown" class="resend-cooldown"></span>
-          <span class="hidden" id="resendSuccess" class="resend-success"></span>
+        <div id="resendArea" style="margin-top:16px">
+          <span class="resend-link" id="resendLink" onclick="resendVerification()"></span>
+          <span class="hidden resend-cooldown" id="resendCooldown"></span>
+          <span class="hidden resend-success"  id="resendSuccess"></span>
         </div>
         <div class="modal-divider"></div>
-        <div class="modal-link" onclick="switchToLogin()">← חזרה לכניסה</div>
+        <div class="modal-link" id="backToLoginLink" onclick="switchToLogin()"></div>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     GOOGLE USERNAME MODAL (new Google users)
-     ══════════════════════════════════════════ -->
+<!-- ══ GOOGLE USERNAME MODAL ══ -->
 <div class="modal-overlay hidden" id="usernameModal">
   <div class="modal">
-    <div class="modal-title">בחר שם משתמש</div>
-    <div class="modal-sub">שם זה יוצג לאחרים בעת העלאת תשובות</div>
-    <div class="field-group">
-      <input type="text" id="googleUsernameInput" placeholder="שם משתמש (לפחות 2 תווים)" onkeydown="if(event.key==='Enter')saveGoogleUsername()" />
-    </div>
+    <div class="modal-title" id="usernameModalTitle"></div>
+    <div class="modal-sub"   id="usernameModalSub"></div>
+    <div class="field-group"><input type="text" id="googleUsernameInput" onkeydown="if(event.key==='Enter')saveGoogleUsername()"/></div>
     <div class="modal-error hidden" id="usernameError"></div>
-    <button class="btn-full" id="usernameSubmitBtn" onclick="saveGoogleUsername()">המשך</button>
+    <button class="btn-full" id="usernameSubmitBtn" onclick="saveGoogleUsername()"></button>
   </div>
 </div>
 
-<!-- ADMIN LOGIN MODAL -->
-<div class="modal-overlay hidden" id="adminModal" onclick="closeAdminModal(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title">כניסת מנהל</div>
-    <div class="modal-sub">הכנס סיסמה לניהול שיעורי הבית</div>
-    <input type="password" id="adminPassInput" placeholder="סיסמה" onkeydown="if(event.key==='Enter')doAdminLogin()" />
-    <div class="modal-error hidden" id="adminPassError">סיסמה שגויה</div>
-    <button class="btn-full" onclick="doAdminLogin()">כניסה</button>
-  </div>
-</div>
-
-<!-- ANSWERS MODAL -->
+<!-- ══ ANSWERS MODAL ══ -->
 <div class="modal-overlay hidden" id="answersModal">
   <div class="answers-modal">
     <div class="answers-header">
       <div>
-        <div class="answers-title">תשובות</div>
+        <div class="answers-title"   id="answersTitle"></div>
         <div class="answers-subject" id="answersSubject"></div>
       </div>
       <button class="close-btn" onclick="closeAnswers()">&#215;</button>
     </div>
     <div class="answers-body">
-      <div class="difficulty-section" id="difficultySection">
+      <div class="difficulty-section">
         <div class="difficulty-section-title">
-          <span> דרגת קושי</span>
-          <span id="diffVotersCount" style="color:#333;font-size:11px"></span>
+          <span id="diffSectionTitle"></span>
+          <span id="diffVotersCount" style="color:var(--text4);font-size:11px"></span>
         </div>
         <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:12px">
           <div>
@@ -408,1126 +635,796 @@
               <span class="difficulty-avg-number" id="diffAvgNumber">—</span>
               <span class="difficulty-avg-outof">/10</span>
             </div>
-            <div class="difficulty-avg-voters" id="diffAvgSub">אין הצבעות עדיין</div>
+            <div class="difficulty-avg-voters" id="diffAvgSub"></div>
           </div>
           <div style="flex:1;padding-bottom:6px">
-            <div class="difficulty-bar-bg">
-              <div class="difficulty-bar-fill" id="diffBarFill" style="width:0%;background:#444"></div>
-            </div>
+            <div class="difficulty-bar-bg"><div class="difficulty-bar-fill" id="diffBarFill" style="width:0%;background:#444"></div></div>
           </div>
         </div>
         <div class="difficulty-buttons" id="diffButtons"></div>
-        <div class="difficulty-login-hint hidden" id="diffLoginHint">
-          <span onclick="openAuthForDiff()">התחבר</span> כדי להצביע
-        </div>
-        <div class="difficulty-voted-msg hidden" id="diffVotedMsg"></div>
+        <div class="difficulty-login-hint hidden" id="diffLoginHint"></div>
+        <div class="difficulty-voted-msg  hidden" id="diffVotedMsg"></div>
       </div>
       <div class="difficulty-divider"></div>
       <div id="uploadSection">
         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-          <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(event)" />
-          <div class="upload-area-text">לחץ כדי לבחור תמונות<br><span>ניתן לבחור מספר תמונות</span></div>
+          <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(event)"/>
+          <div class="upload-area-text" id="uploadAreaText"></div>
         </div>
         <div class="upload-previews" id="uploadPreviews"></div>
-        <button class="upload-btn" id="uploadBtn" onclick="uploadPhotos()" disabled>העלה תשובות</button>
-        <div class="uploading-text hidden" id="uploadingText">מעלה תמונות... אנא המתן</div>
+        <button class="upload-btn" id="uploadBtn" onclick="uploadPhotos()" disabled></button>
+        <div class="uploading-text hidden" id="uploadingText"></div>
       </div>
       <div style="margin-top:24px">
-        <div style="font-size:12px;color:#444;margin-bottom:12px;letter-spacing:1px">תשובות שהועלו</div>
+        <div id="uploadedSectionHeader" style="font-size:12px;color:var(--text4);margin-bottom:12px;letter-spacing:1px"></div>
         <div class="photos-grid" id="photosGrid"></div>
-        <div class="no-photos hidden" id="noPhotos">אין תשובות עדיין — היה הראשון להעלות!</div>
+        <div class="no-photos hidden" id="noPhotos"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- LEADERBOARD MODAL -->
+<!-- ══ LEADERBOARD MODAL ══ -->
 <div class="modal-overlay hidden" id="leaderboardModal" onclick="closeLeaderboard(event)">
   <div class="modal" style="max-width:420px" onclick="event.stopPropagation()">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-      <div class="modal-title">🏆 טבלת מובילים</div>
+      <div class="modal-title" id="leaderboardTitle"></div>
       <button class="close-btn" onclick="closeLeaderboard()">&#215;</button>
     </div>
-    <div id="leaderboardList"><div style="text-align:center;color:#444;padding:20px;font-size:13px">טוען...</div></div>
+    <div id="leaderboardList"></div>
   </div>
 </div>
 
-<!-- SETTINGS MODAL -->
-<div class="modal-overlay hidden" id="settingsModal" onclick="closeSettings(event)">
-  <div class="modal" style="max-width:420px" onclick="event.stopPropagation()">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <div class="modal-title">⚙️ הגדרות צבעי דדליין</div>
-      <button class="close-btn" onclick="closeSettings()">&#215;</button>
-    </div>
-    <div class="modal-sub" style="margin-bottom:16px">קבע מתי כל צבע מופעל לפי הזמן שנותר להגשה</div>
-
-    <!-- Live preview bar -->
-    <div class="settings-preview" id="settingsPreview">
-      <div class="settings-preview-seg" id="prev-red"></div>
-      <div class="settings-preview-seg" id="prev-orange"></div>
-      <div class="settings-preview-seg" id="prev-green"></div>
-      <div class="settings-preview-seg" id="prev-blue"></div>
-    </div>
-    <div class="settings-preview-labels">
-      <span>עכשיו</span><span id="prevLabelRed"></span><span id="prevLabelOrange"></span><span id="prevLabelGreen"></span><span>הרחק</span>
-    </div>
-
-    <!-- Red -->
-    <div class="settings-row">
-      <div class="settings-color-dot" style="background:#ff2d55;box-shadow:0 0 6px #ff2d5588"></div>
-      <div class="settings-row-label">
-        <strong style="color:#ff2d55">🔴 אדום — דחוף!</strong>
-        פחות מ...
-      </div>
-      <div class="settings-input-wrap">
-        <input class="settings-num" type="number" id="st-red" min="1" max="999" oninput="updateSettingsPreview()" />
-        <span class="settings-unit">שעות</span>
-      </div>
-    </div>
-
-    <!-- Orange -->
-    <div class="settings-row">
-      <div class="settings-color-dot" style="background:#ff9f0a;box-shadow:0 0 6px #ff9f0a88"></div>
-      <div class="settings-row-label">
-        <strong style="color:#ff9f0a">🟠 כתום — קרוב</strong>
-        פחות מ...
-      </div>
-      <div class="settings-input-wrap">
-        <input class="settings-num" type="number" id="st-orange" min="1" max="999" oninput="updateSettingsPreview()" />
-        <span class="settings-unit">ימים</span>
-      </div>
-    </div>
-
-    <!-- Green -->
-    <div class="settings-row">
-      <div class="settings-color-dot" style="background:#30d158;box-shadow:0 0 6px #30d15888"></div>
-      <div class="settings-row-label">
-        <strong style="color:#30d158">🟢 ירוק — יש זמן</strong>
-        פחות מ...
-      </div>
-      <div class="settings-input-wrap">
-        <input class="settings-num" type="number" id="st-green" min="1" max="999" oninput="updateSettingsPreview()" />
-        <span class="settings-unit">ימים</span>
-      </div>
-    </div>
-
-    <!-- Blue (auto) -->
-    <div class="settings-row" style="opacity:0.5">
-      <div class="settings-color-dot" style="background:#64d2ff"></div>
-      <div class="settings-row-label">
-        <strong style="color:#64d2ff">🔵 כחול — רחוק</strong>
-        כל מה שמעבר לירוק
-      </div>
-    </div>
-
-    <div style="display:flex;gap:10px;margin-top:4px">
-      <button class="settings-reset" onclick="resetSettings()">↺ איפוס לברירת מחדל</button>
-      <button class="btn-full" style="margin-top:0;flex:1" onclick="saveSettings()">שמור</button>
-    </div>
-    <div class="modal-error hidden" id="settingsError"></div>
-  </div>
-</div>
-
-<!-- LIGHTBOX -->
+<!-- ══ LIGHTBOX ══ -->
 <div class="lightbox hidden" id="lightbox" onclick="closeLightbox()">
-  <img id="lightboxImg" src="" />
+  <img id="lightboxImg" src=""/>
 </div>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyB2TwGFKtyye9-QwIUnSXh2W4ggZ_AIIoE",
-    authDomain: "hw-app-15b8f.firebaseapp.com",
-    projectId: "hw-app-15b8f",
-    storageBucket: "hw-app-15b8f.firebasestorage.app",
-    messagingSenderId: "87867834430",
-    appId: "1:87867834430:web:4a6c9ceb3e44cffa44116f"
+  // ══════════════════════════════════════════════════════════════════════
+  //  ✏️  TEXT CONFIG — edit all visible strings here, nowhere else
+  // ══════════════════════════════════════════════════════════════════════
+  const TEXT = {
+    // Page & header
+    pageTitle:        "מעקב שיעורי בית",
+    headerLabel:      "פורטל כיתה",
+    headerTitle:      "📚 מעקב שיעורי בית",
+    // Settings drawer
+    drawerTitle:      "⚙️ הגדרות",
+    drawerAccountLabel:"חשבון",
+    drawerLogoutLabel:"התנתקות",
+    drawerLoginLabel: "כניסה / הרשמה",
+    drawerLoginSub:   "כדי להעלות תשובות",
+    drawerThemeLabel: "ערכת נושא",
+    themeDark:        "🌙 כהה",
+    themeLight:       "☀️ בהיר",
+    drawerMoreLabel:  "עוד",
+    drawerLeaderboardLabel:"🏆 טבלת מובילים",
+    drawerColorsLabel:"צבעי דדליין",
+    drawerAdminLabel: "ניהול",
+    drawerAdminLoginLabel:"כניסת מנהל",
+    drawerAdminLoginSub:  "גישה לעריכת משימות",
+    drawerAdminActiveLabel:"מצב מנהל פעיל",
+    drawerAdminExitLabel: "יציאה ממצב מנהל",
+    // Add-homework form
+    btnAddHomework:   "+ הוסף שיעורי בית",
+    formTitle:        "משימה חדשה",
+    phSubject:        "מקצוע (למשל: מתמטיקה)",
+    phPages:          "עמודים (למשל: 45-67)",
+    labelDueDate:     "תאריך הגשה",
+    labelDueTime:     "שעת הגשה (אופציונלי)",
+    checkboxQuestions:"שאלות ספציפיות בלבד",
+    phQuestions:      "רשום אילו שאלות צריך לעשות (למשל: 1, 3, 5-7, 12)",
+    btnAdd:           "הוסף",
+    btnCancel:        "ביטול",
+    // Empty state
+    emptyEmoji:       "✨",
+    emptyText:        "אין שיעורי בית כרגע.",
+    emptySub:         "תהנו מהחופש!",
+    credit:           "רון יאדגרוב",
+    // Cards
+    cardPagesPrefix:  "עמודים",
+    cardQuestionsLabel:"שאלות:",
+    cardHint:         "לחץ לצפייה בתשובות ✦",
+    cardNotRated:     "🔥 לא דורג עדיין",
+    totalCount:       "סה\"כ {n} משימות",
+    // Urgency labels  ({h}=hours, {d}=days)
+    urgencyExpired:   "פג תוקף!",
+    urgencyRed:       "פחות מ-{h} שעות!",
+    urgencyOrange:    "עוד {h} שעות",
+    urgencyGreen:     "עוד {d} ימים",
+    urgencyBlue:      "עוד {d} ימים",
+    // Difficulty
+    diffSectionTitle: "🔥 דרגת קושי",
+    diffNoVotes:      "אין הצבעות עדיין",
+    diffVotesSuffix:  "הצבעות",
+    diffVotedMsg:     "הצבעת {v}/10 · לחץ שוב כדי לשנות",
+    diffLoginWord:    "התחבר",
+    diffLoginSuffix:  " כדי להצביע",
+    diffLabels:{ veryEasy:"קל מאוד", easy:"קל", medium:"בינוני", hard:"קשה", veryHard:"קשה מאוד", impossible:"בלתי אפשרי 💀" },
+    // Answers modal
+    answersTitle:     "תשובות",
+    answersSubjectSep:" — עמ' ",
+    uploadAreaLine1:  "לחץ כדי לבחור תמונות",
+    uploadAreaLine2:  "ניתן לבחור מספר תמונות",
+    btnUpload:        "העלה תשובות",
+    uploadingMsg:     "מעלה תמונות... אנא המתן",
+    uploadedHeader:   "תשובות שהועלו",
+    noPhotos:         "אין תשובות עדיין — היה הראשון להעלות!",
+    photoUploaderIcon:"👤 ",
+    photoLikeDefault: "לייק",
+    photoCountSuffix: "תמונות",
+    btnPhotoDelete:   "🗑️ מחק",
+    confirmDeletePhoto:"למחוק תמונה זו?",
+    // Auth modal
+    loginTitle:       "כניסה",
+    loginSub:         "הכנס את פרטיך כדי להעלות תשובות",
+    btnGoogleLogin:   "כניסה עם Google",
+    authDivider:      "או",
+    phEmail:          "אימייל",
+    phPassword:       "סיסמה",
+    btnLoginSubmit:   "כניסה",
+    loginBusy:        "מתחבר...",
+    switchToRegister: "אין לך חשבון? הירשם כאן",
+    cancelAuth:       "ביטול",
+    registerTitle:    "הרשמה",
+    registerSub:      "צור חשבון חדש",
+    btnGoogleRegister:"הרשמה עם Google",
+    phUsername:       "שם משתמש (יוצג לאחרים)",
+    phPasswordNew:    "סיסמה (לפחות 6 תווים)",
+    phPasswordConfirm:"אשר סיסמה",
+    btnRegisterSubmit:"הרשמה ושליחת קישור אימות",
+    registerBusy:     "יוצר חשבון...",
+    switchToLogin:    "כבר יש לך חשבון? כנס כאן",
+    googleBusy:       "מתחבר...",
+    verifyIcon:       "📧",
+    verifyTitle:      "בדוק את האימייל שלך",
+    verifySentLabel:  "שלחנו קישור אימות אל",
+    verifyClickLabel: "לחץ על הקישור במייל ואז חזור לכאן כדי להתחבר.",
+    verifySpamNote:   "לא מצאת? בדוק בתיקיית ספאם/דואר זבל",
+    resendLink:       "שלח מחדש",
+    resendSending:    "שולח...",
+    resendSuccess:    "✓ נשלח! בדוק תיקיית ספאם אם לא מצאת",
+    resendError:      "שגיאה בשליחה — נסה שוב",
+    resendNoCreds:    "נסה להתחבר שוב — תקבל הוראות אימות",
+    backToLogin:      "← חזרה לכניסה",
+    // Google username modal
+    usernameModalTitle:"בחר שם משתמש",
+    usernameModalSub:  "שם זה יוצג לאחרים בעת העלאת תשובות",
+    phGoogleUsername:  "שם משתמש (לפחות 2 תווים)",
+    btnUsernameSave:   "המשך",
+    usernameSaving:    "שומר...",
+    // Admin
+    phAdminPass:      "סיסמה",
+    btnAdminLogin:    "כניסה",
+    adminWrongPass:   "סיסמה שגויה",
+    confirmDeleteCard:"למחוק משימה זו?",
+    // Validation errors
+    errFillAll:       "נא למלא את כל השדות",
+    errUsernameTooShort:"שם משתמש קצר מדי (לפחות 2 תווים)",
+    errPasswordMismatch:"הסיסמאות אינן תואמות",
+    errPasswordTooShort:"סיסמה קצרה מדי (לפחות 6 תווים)",
+    errUsernameTaken: "שם משתמש כבר תפוס — בחר אחר",
+    errUsernameEmpty: "נא להכניס שם משתמש",
+    errSaveFailed:    "שגיאה בשמירה: ",
+    errMissingFields: "נא למלא את כל השדות!",
+    errMissingQuestions:"נא לרשום את השאלות הספציפיות!",
+    errUploadFailed:  "שגיאה בהעלאת תמונות: ",
+    errUploadInternal:"שגיאה בהעלאה",
+    // Settings colours
+    settingsNow:      "עכשיו",
+    settingsFar:      "הרחק",
+    settingsHoursAbbr:"ש'",
+    settingsDaysAbbr: "י'",
+    settingsLessThan: "פחות מ...",
+    settingsUnitHours:"שעות",
+    settingsUnitDays: "ימים",
+    settingsRedLabel: "🔴 אדום — דחוף!",
+    settingsOrangeLabel:"🟠 כתום — קרוב",
+    settingsGreenLabel:"🟢 ירוק — יש זמן",
+    settingsBlueLabel:"🔵 כחול — רחוק",
+    settingsBlueDesc: "כל מה שמעבר לירוק",
+    btnSettingsReset: "↺ איפוס",
+    btnSettingsSave:  "שמור",
+    errSettingsMinOne:"כל הערכים חייבים להיות לפחות 1",
+    errSettingsOrangeGtRed:"הכתום חייב להיות יותר זמן מהאדום",
+    errSettingsGreenGtOrange:"הירוק חייב להיות יותר זמן מהכתום",
+    // Leaderboard
+    leaderboardTitle: "🏆 טבלת מובילים",
+    leaderboardLoading:"טוען...",
+    leaderboardEmpty: "אין נתונים עדיין",
+    leaderboardError: "שגיאה בטעינה",
+    leaderboardMe:    " (את/ה)",
+    greetingPrefix:   "שלום, ",
+    // Firebase errors
+    firebaseErrors:{
+      "auth/email-already-in-use":   "האימייל הזה כבר רשום — נסה להתחבר",
+      "auth/invalid-email":           "כתובת אימייל לא תקינה",
+      "auth/weak-password":           "הסיסמה חלשה מדי",
+      "auth/user-not-found":          "לא נמצא חשבון עם האימייל הזה",
+      "auth/wrong-password":          "סיסמה שגויה",
+      "auth/too-many-requests":       "יותר מדי ניסיונות — נסה שוב מאוחר יותר",
+      "auth/invalid-credential":      "אימייל או סיסמה שגויים",
+      "auth/network-request-failed":  "שגיאת רשת — בדוק חיבור אינטרנט",
+      "auth/popup-blocked":           "חלון קופץ נחסם — אפשר חלונות קופצים בדפדפן",
+      "auth/cancelled-popup-request": "הכניסה בוטלה",
+      "auth/account-exists-with-different-credential":"כתובת אימייל זו כבר רשומה בשיטה אחרת",
+    },
   };
 
+  // ══ FIREBASE ══
+  const firebaseConfig = {
+    apiKey:"AIzaSyB2TwGFKtyye9-QwIUnSXh2W4ggZ_AIIoE",
+    authDomain:"hw-app-15b8f.firebaseapp.com",
+    projectId:"hw-app-15b8f",
+    storageBucket:"hw-app-15b8f.firebasestorage.app",
+    messagingSenderId:"87867834430",
+    appId:"1:87867834430:web:4a6c9ceb3e44cffa44116f"
+  };
   firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
+  const db = firebase.firestore(), auth = firebase.auth();
 
   const ADMIN_PASSWORD = "homework123";
-  const IMGBB_KEY = "422246b6dc0e09efd2144d6017395f57";
+  const IMGBB_KEY      = "422246b6dc0e09efd2144d6017395f57";
 
-  let isAdmin = false;
-  let cards = [];
-  let specificQuestions = false;
-  let currentCardId = null;
-  let currentUser = null;
-  let pendingFiles = [];
-  let photosUnsubscribe = null;
-  let diffUnsubscribe = null;
+  // Runtime state
+  let isAdmin=false, cards=[], specificQuestions=false, currentCardId=null, currentUser=null;
+  let pendingFiles=[], photosUnsubscribe=null, diffUnsubscribe=null;
+  let pendingVerifyEmail=null, pendingVerifyPass=null, pendingGoogleFirebaseUser=null;
 
-  // Stored temporarily for resend verification
-  let pendingVerifyEmail = null;
-  let pendingVerifyPass = null;
+  // ══ APPLY TEXTS ══
+  const G_SVG = `<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>`;
 
-  // Stored for new Google users awaiting username
-  let pendingGoogleFirebaseUser = null;
-
-  // ══════════════════════════════════════════
-  // FIREBASE AUTH STATE OBSERVER
-  // ══════════════════════════════════════════
-  auth.onAuthStateChanged(async (firebaseUser) => {
-    if (firebaseUser && (firebaseUser.emailVerified || isGoogleProvider(firebaseUser))) {
-      try {
-        const doc = await db.collection("users").doc(firebaseUser.uid).get();
-        if (doc.exists) {
-          currentUser = { username: doc.data().username, uid: firebaseUser.uid, email: firebaseUser.email };
-        } else {
-          currentUser = { username: firebaseUser.email.split("@")[0], uid: firebaseUser.uid, email: firebaseUser.email };
-        }
-      } catch (e) {
-        currentUser = { username: firebaseUser.email.split("@")[0], uid: firebaseUser.uid, email: firebaseUser.email };
-      }
-    } else {
-      currentUser = null;
-    }
-    updateUserUI();
-  });
-
-  function isGoogleProvider(user) {
-    return user.providerData && user.providerData.some(p => p.providerId === "google.com");
+  function applyTexts() {
+    document.title = TEXT.pageTitle;
+    s("headerLabel",TEXT.headerLabel); s("headerTitle",TEXT.headerTitle);
+    s("drawerTitle",TEXT.drawerTitle);
+    s("drawerAccountLabel",TEXT.drawerAccountLabel);
+    s("drawerLogoutLabel",TEXT.drawerLogoutLabel);
+    s("drawerLoginLabel",TEXT.drawerLoginLabel); s("drawerLoginSub",TEXT.drawerLoginSub);
+    s("drawerThemeLabel",TEXT.drawerThemeLabel);
+    s("themeDark",TEXT.themeDark); s("themeLight",TEXT.themeLight);
+    s("drawerMoreLabel",TEXT.drawerMoreLabel);
+    s("drawerLeaderboardLabel",TEXT.drawerLeaderboardLabel);
+    s("drawerColorsLabel",TEXT.drawerColorsLabel);
+    s("drawerAdminLabel",TEXT.drawerAdminLabel);
+    s("drawerAdminLoginLabel",TEXT.drawerAdminLoginLabel); s("drawerAdminLoginSub",TEXT.drawerAdminLoginSub);
+    s("drawerAdminActiveLabel",TEXT.drawerAdminActiveLabel); s("drawerAdminExitLabel",TEXT.drawerAdminExitLabel);
+    s("addBtn",TEXT.btnAddHomework); s("formTitle",TEXT.formTitle);
+    p("subjectInput",TEXT.phSubject); p("pagesInput",TEXT.phPages);
+    s("labelDueDate",TEXT.labelDueDate); s("labelDueTime",TEXT.labelDueTime);
+    s("checkboxLabel",TEXT.checkboxQuestions); p("questionsInput",TEXT.phQuestions);
+    s("btnAddCard",TEXT.btnAdd); s("btnCancelForm",TEXT.btnCancel);
+    s("emptyEmoji",TEXT.emptyEmoji); s("emptyText",TEXT.emptyText); s("emptySub",TEXT.emptySub);
+    s("credit",TEXT.credit);
+    s("loginTitle",TEXT.loginTitle); s("loginSub",TEXT.loginSub);
+    document.getElementById("googleLoginBtn").innerHTML = G_SVG+" "+TEXT.btnGoogleLogin;
+    s("authDividerText",TEXT.authDivider); p("loginEmail",TEXT.phEmail); p("loginPass",TEXT.phPassword);
+    s("loginSubmitBtn",TEXT.btnLoginSubmit); s("switchToRegisterLink",TEXT.switchToRegister); s("cancelLoginLink",TEXT.cancelAuth);
+    s("registerTitle",TEXT.registerTitle); s("registerSub",TEXT.registerSub);
+    document.getElementById("googleRegisterBtn").innerHTML = G_SVG+" "+TEXT.btnGoogleRegister;
+    s("authDividerText2",TEXT.authDivider); p("regUser",TEXT.phUsername); p("regEmail",TEXT.phEmail);
+    p("regPass",TEXT.phPasswordNew); p("regPass2",TEXT.phPasswordConfirm);
+    s("registerSubmitBtn",TEXT.btnRegisterSubmit); s("switchToLoginLink",TEXT.switchToLogin); s("cancelRegLink",TEXT.cancelAuth);
+    s("verifyIcon",TEXT.verifyIcon); s("verifyTitle",TEXT.verifyTitle);
+    s("verifySentLabel",TEXT.verifySentLabel); s("verifyClickLabel",TEXT.verifyClickLabel); s("verifySpamNote",TEXT.verifySpamNote);
+    s("resendLink",TEXT.resendLink); s("backToLoginLink",TEXT.backToLogin);
+    s("usernameModalTitle",TEXT.usernameModalTitle); s("usernameModalSub",TEXT.usernameModalSub);
+    p("googleUsernameInput",TEXT.phGoogleUsername); s("usernameSubmitBtn",TEXT.btnUsernameSave);
+    p("adminPassInput",TEXT.phAdminPass); s("adminPassError",TEXT.adminWrongPass); s("adminLoginSubmitBtn",TEXT.btnAdminLogin);
+    s("answersTitle",TEXT.answersTitle); s("diffSectionTitle",TEXT.diffSectionTitle); s("diffAvgSub",TEXT.diffNoVotes);
+    document.getElementById("diffLoginHint").innerHTML=`<span onclick="openAuthForDiff()">${TEXT.diffLoginWord}</span>${TEXT.diffLoginSuffix}`;
+    s("uploadAreaText",TEXT.uploadAreaLine1+`<br><span>`+TEXT.uploadAreaLine2+`</span>`);
+    s("uploadBtn",TEXT.btnUpload); s("uploadingText",TEXT.uploadingMsg); s("uploadedSectionHeader",TEXT.uploadedHeader); s("noPhotos",TEXT.noPhotos);
+    s("leaderboardTitle",TEXT.leaderboardTitle);
+    s("prevLabelNow",TEXT.settingsNow); s("prevLabelFar",TEXT.settingsFar);
+    s("settingsRedLabel",TEXT.settingsRedLabel); s("settingsLessThan1",TEXT.settingsLessThan); s("settingsUnitHours",TEXT.settingsUnitHours);
+    s("settingsOrangeLabel",TEXT.settingsOrangeLabel); s("settingsLessThan2",TEXT.settingsLessThan); s("settingsUnitDays1",TEXT.settingsUnitDays);
+    s("settingsGreenLabel",TEXT.settingsGreenLabel); s("settingsLessThan3",TEXT.settingsLessThan); s("settingsUnitDays2",TEXT.settingsUnitDays);
+    s("settingsBlueLabel",TEXT.settingsBlueLabel); s("settingsBlueDesc",TEXT.settingsBlueDesc);
+    s("settingsResetBtn",TEXT.btnSettingsReset); s("settingsSaveBtn",TEXT.btnSettingsSave);
   }
+  function s(id,html){ const e=document.getElementById(id); if(e) e.innerHTML=html; }
+  function p(id,t)   { const e=document.getElementById(id); if(e) e.placeholder=t; }
 
-  function updateUserUI() {
-    const badge = document.getElementById("userBadge");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const loginBtn = document.getElementById("loginBtn");
+  // ══ THEME ══
+  let currentTheme = localStorage.getItem("hwTheme") || "dark";
+  function applyTheme(t) {
+    currentTheme = t;
+    document.body.classList.toggle("light", t==="light");
+    localStorage.setItem("hwTheme", t);
+    document.getElementById("themeDark").classList.toggle("active", t==="dark");
+    document.getElementById("themeLight").classList.toggle("active", t==="light");
+  }
+  function setTheme(t) { applyTheme(t); }
+
+  // ══ SETTINGS DRAWER ══
+  function openDrawer() {
+    // Populate colour inputs before opening
+    document.getElementById("st-red").value    = colorSettings.redHours;
+    document.getElementById("st-orange").value = colorSettings.orangeDays;
+    document.getElementById("st-green").value  = colorSettings.greenDays;
+    updateSettingsPreview();
+    document.getElementById("settingsDrawer").classList.add("open");
+    document.getElementById("drawerOverlay").classList.add("open");
+  }
+  function closeDrawer() {
+    document.getElementById("settingsDrawer").classList.remove("open");
+    document.getElementById("drawerOverlay").classList.remove("open");
+  }
+  function openAuthFromDrawer() { closeDrawer(); openAuthModal(); }
+
+  function updateDrawerAccountUI() {
+    const loggedIn  = document.getElementById("drawerLoggedIn");
+    const loggedOut = document.getElementById("drawerLoggedOut");
     if (currentUser) {
-      badge.textContent = "שלום, " + currentUser.username;
-      badge.classList.remove("hidden");
-      logoutBtn.classList.remove("hidden");
-      loginBtn.classList.add("hidden");
+      loggedIn.classList.remove("hidden"); loggedOut.classList.add("hidden");
+      s("drawerUsername", TEXT.greetingPrefix + currentUser.username);
+      s("drawerEmail", currentUser.email || "");
+      document.getElementById("userBadge").textContent = TEXT.greetingPrefix + currentUser.username;
+      document.getElementById("userBadge").classList.remove("hidden");
     } else {
-      badge.classList.add("hidden");
-      logoutBtn.classList.add("hidden");
-      loginBtn.classList.remove("hidden");
+      loggedIn.classList.add("hidden"); loggedOut.classList.remove("hidden");
+      document.getElementById("userBadge").classList.add("hidden");
     }
   }
 
-  function logout() {
-    auth.signOut();
-    currentUser = null;
-    updateUserUI();
+  function showDrawerAdminForm() {
+    document.getElementById("drawerAdminForm").classList.toggle("hidden");
+    setTimeout(()=>document.getElementById("adminPassInput").focus(),50);
+  }
+  function exitAdmin() {
+    isAdmin = false;
+    document.getElementById("addBtn").classList.add("hidden");
+    document.getElementById("drawerAdminLogin").classList.remove("hidden");
+    document.getElementById("drawerAdminActive").classList.add("hidden");
+    hideAddForm(); render();
+  }
+  function updateAdminDrawerUI() {
+    document.getElementById("drawerAdminLogin").classList.toggle("hidden", isAdmin);
+    document.getElementById("drawerAdminActive").classList.toggle("hidden", !isAdmin);
   }
 
-  // ══════════════════════════════════════════
-  // AUTH MODAL
-  // ══════════════════════════════════════════
-  function openAuthModal() {
-    document.getElementById("authModal").classList.remove("hidden");
-    switchToLogin();
+  // ══ FIREBASE AUTH ══
+  auth.onAuthStateChanged(async (fu) => {
+    if (fu && (fu.emailVerified || isGoogleProvider(fu))) {
+      try {
+        const doc = await db.collection("users").doc(fu.uid).get();
+        currentUser = doc.exists
+          ? { username:doc.data().username, uid:fu.uid, email:fu.email }
+          : { username:fu.email.split("@")[0], uid:fu.uid, email:fu.email };
+      } catch(e) {
+        currentUser = { username:fu.email.split("@")[0], uid:fu.uid, email:fu.email };
+      }
+    } else { currentUser = null; }
+    updateDrawerAccountUI();
+  });
+  function isGoogleProvider(u){ return u.providerData&&u.providerData.some(p=>p.providerId==="google.com"); }
+  function logout(){ auth.signOut(); currentUser=null; updateDrawerAccountUI(); }
+
+  // ══ AUTH MODAL ══
+  function openAuthModal(){ document.getElementById("authModal").classList.remove("hidden"); switchToLogin(); }
+  function closeAuthModal(){ document.getElementById("authModal").classList.add("hidden"); }
+  function switchToRegister(){ hide("loginView");hide("verifyView");show("registerView");clearErr("registerError"); }
+  function switchToLogin(){ hide("registerView");hide("verifyView");show("loginView");clearErr("loginError"); }
+  function switchToVerify(email){
+    hide("loginView");hide("registerView");show("verifyView");
+    document.getElementById("verifyEmailDisplay").textContent=email; resetResendUI();
   }
 
-  function closeAuthModal() {
-    document.getElementById("authModal").classList.add("hidden");
-  }
-
-  function switchToRegister() {
-    hide("loginView"); hide("verifyView");
-    show("registerView");
-    clearErr("registerError");
-  }
-
-  function switchToLogin() {
-    hide("registerView"); hide("verifyView");
-    show("loginView");
-    clearErr("loginError");
-  }
-
-  function switchToVerify(email) {
-    hide("loginView"); hide("registerView");
-    show("verifyView");
-    document.getElementById("verifyEmailDisplay").textContent = email;
-    resetResendUI();
-  }
-
-  // ══════════════════════════════════════════
-  // GOOGLE SIGN-IN
-  // ══════════════════════════════════════════
-  async function signInWithGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    // Disable both Google buttons
-    setGoogleBtnsDisabled(true);
-    clearErr("loginError");
-    clearErr("registerError");
-
+  // ══ GOOGLE SIGN-IN ══
+  async function signInWithGoogle(){
+    const provider=new firebase.auth.GoogleAuthProvider();
+    setGBtns(true); clearErr("loginError"); clearErr("registerError");
     try {
-      const cred = await auth.signInWithPopup(provider);
-      const firebaseUser = cred.user;
-
-      // Check if user already has a username in Firestore
-      const doc = await db.collection("users").doc(firebaseUser.uid).get();
-      if (doc.exists) {
-        // Returning Google user — just sign in
-        currentUser = { username: doc.data().username, uid: firebaseUser.uid, email: firebaseUser.email };
-        updateUserUI();
-        closeAuthModal();
-        if (currentCardId) openAnswers(currentCardId);
+      const cred=await auth.signInWithPopup(provider), fu=cred.user;
+      const doc=await db.collection("users").doc(fu.uid).get();
+      if(doc.exists){
+        currentUser={username:doc.data().username,uid:fu.uid,email:fu.email};
+        updateDrawerAccountUI(); closeAuthModal();
+        if(currentCardId) openAnswers(currentCardId);
       } else {
-        // New Google user — need to pick a username
-        pendingGoogleFirebaseUser = firebaseUser;
-        closeAuthModal();
+        pendingGoogleFirebaseUser=fu; closeAuthModal();
         document.getElementById("usernameModal").classList.remove("hidden");
-        setTimeout(() => document.getElementById("googleUsernameInput").focus(), 100);
+        setTimeout(()=>document.getElementById("googleUsernameInput").focus(),100);
       }
-    } catch (err) {
-      if (err.code !== "auth/popup-closed-by-user") {
-        const errEl = document.getElementById("loginView").classList.contains("hidden")
-          ? document.getElementById("registerError")
-          : document.getElementById("loginError");
-        showErr(errEl, translateFirebaseError(err.code));
+    } catch(err){
+      if(err.code!=="auth/popup-closed-by-user"){
+        const el=document.getElementById("loginView").classList.contains("hidden")
+          ?document.getElementById("registerError"):document.getElementById("loginError");
+        showErr(el,translateFirebaseError(err.code));
       }
     }
-
-    setGoogleBtnsDisabled(false);
+    setGBtns(false);
+  }
+  function setGBtns(v){
+    const lb=document.getElementById("googleLoginBtn"), rb=document.getElementById("googleRegisterBtn");
+    lb.disabled=rb.disabled=v;
+    lb.innerHTML=v?TEXT.googleBusy:G_SVG+" "+TEXT.btnGoogleLogin;
+    rb.innerHTML=v?TEXT.googleBusy:G_SVG+" "+TEXT.btnGoogleRegister;
   }
 
-  function setGoogleBtnsDisabled(val) {
-    document.getElementById("googleLoginBtn").disabled = val;
-    document.getElementById("googleRegisterBtn").disabled = val;
-    document.getElementById("googleLoginBtn").textContent = val ? "מתחבר..." : "";
-    document.getElementById("googleRegisterBtn").textContent = val ? "מתחבר..." : "";
-    if (!val) {
-      // Restore SVG + text
-      const svgHTML = `<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>`;
-      document.getElementById("googleLoginBtn").innerHTML = svgHTML + " כניסה עם Google";
-      document.getElementById("googleRegisterBtn").innerHTML = svgHTML + " הרשמה עם Google";
-    }
-  }
-
-  // Save username after Google sign-in
-  async function saveGoogleUsername() {
-    const username = document.getElementById("googleUsernameInput").value.trim();
-    const errEl = document.getElementById("usernameError");
-    const btn = document.getElementById("usernameSubmitBtn");
+  // ══ GOOGLE USERNAME ══
+  async function saveGoogleUsername(){
+    const un=document.getElementById("googleUsernameInput").value.trim();
+    const errEl=document.getElementById("usernameError"), btn=document.getElementById("usernameSubmitBtn");
     clearErr("usernameError");
-
-    if (!username) { showErr(errEl, "נא להכניס שם משתמש"); return; }
-    if (username.length < 2) { showErr(errEl, "שם משתמש קצר מדי (לפחות 2 תווים)"); return; }
-
-    // Check uniqueness
-    const usernameDoc = await db.collection("usernames").doc(username).get();
-    if (usernameDoc.exists) { showErr(errEl, "שם משתמש כבר תפוס — בחר אחר"); return; }
-
-    btn.disabled = true;
-    btn.textContent = "שומר...";
-
-    try {
-      const uid = pendingGoogleFirebaseUser.uid;
-      const email = pendingGoogleFirebaseUser.email;
-      await db.collection("users").doc(uid).set({ username, email });
-      await db.collection("usernames").doc(username).set({ uid });
-      currentUser = { username, uid, email };
-      updateUserUI();
+    if(!un){showErr(errEl,TEXT.errUsernameEmpty);return;}
+    if(un.length<2){showErr(errEl,TEXT.errUsernameTooShort);return;}
+    const ud=await db.collection("usernames").doc(un).get();
+    if(ud.exists){showErr(errEl,TEXT.errUsernameTaken);return;}
+    btn.disabled=true; btn.textContent=TEXT.usernameSaving;
+    try{
+      const uid=pendingGoogleFirebaseUser.uid, email=pendingGoogleFirebaseUser.email;
+      await db.collection("users").doc(uid).set({username:un,email});
+      await db.collection("usernames").doc(un).set({uid});
+      currentUser={username:un,uid,email}; updateDrawerAccountUI();
       document.getElementById("usernameModal").classList.add("hidden");
-      document.getElementById("googleUsernameInput").value = "";
-      pendingGoogleFirebaseUser = null;
-      if (currentCardId) openAnswers(currentCardId);
-    } catch (err) {
-      showErr(errEl, "שגיאה בשמירה: " + err.message);
-    }
-
-    btn.disabled = false;
-    btn.textContent = "המשך";
+      document.getElementById("googleUsernameInput").value=""; pendingGoogleFirebaseUser=null;
+      if(currentCardId) openAnswers(currentCardId);
+    }catch(err){showErr(errEl,TEXT.errSaveFailed+err.message);}
+    btn.disabled=false; btn.textContent=TEXT.btnUsernameSave;
   }
 
-  // ── REGISTER ──
-  async function doRegister() {
-    const username  = document.getElementById("regUser").value.trim();
-    const email     = document.getElementById("regEmail").value.trim();
-    const pass      = document.getElementById("regPass").value;
-    const pass2     = document.getElementById("regPass2").value;
-    const errEl     = document.getElementById("registerError");
-    const btn       = document.getElementById("registerSubmitBtn");
-
+  // ══ REGISTER ══
+  async function doRegister(){
+    const un=document.getElementById("regUser").value.trim(), email=document.getElementById("regEmail").value.trim();
+    const pass=document.getElementById("regPass").value, pass2=document.getElementById("regPass2").value;
+    const errEl=document.getElementById("registerError"), btn=document.getElementById("registerSubmitBtn");
     clearErr("registerError");
-
-    if (!username || !email || !pass || !pass2) { showErr(errEl, "נא למלא את כל השדות"); return; }
-    if (username.length < 2)  { showErr(errEl, "שם משתמש קצר מדי (לפחות 2 תווים)"); return; }
-    if (pass !== pass2)       { showErr(errEl, "הסיסמאות אינן תואמות"); return; }
-    if (pass.length < 6)      { showErr(errEl, "סיסמה קצרה מדי (לפחות 6 תווים)"); return; }
-
-    const usernameDoc = await db.collection("usernames").doc(username).get();
-    if (usernameDoc.exists) { showErr(errEl, "שם משתמש כבר תפוס — בחר אחר"); return; }
-
-    btn.disabled = true;
-    btn.textContent = "יוצר חשבון...";
-
-    try {
-      const cred = await auth.createUserWithEmailAndPassword(email, pass);
-      await db.collection("users").doc(cred.user.uid).set({ username, email });
-      await db.collection("usernames").doc(username).set({ uid: cred.user.uid });
-
-      // Send verification email BEFORE signing out
+    if(!un||!email||!pass||!pass2){showErr(errEl,TEXT.errFillAll);return;}
+    if(un.length<2){showErr(errEl,TEXT.errUsernameTooShort);return;}
+    if(pass!==pass2){showErr(errEl,TEXT.errPasswordMismatch);return;}
+    if(pass.length<6){showErr(errEl,TEXT.errPasswordTooShort);return;}
+    const ud=await db.collection("usernames").doc(un).get();
+    if(ud.exists){showErr(errEl,TEXT.errUsernameTaken);return;}
+    btn.disabled=true; btn.textContent=TEXT.registerBusy;
+    try{
+      const cred=await auth.createUserWithEmailAndPassword(email,pass);
+      await db.collection("users").doc(cred.user.uid).set({username:un,email});
+      await db.collection("usernames").doc(un).set({uid:cred.user.uid});
       await cred.user.sendEmailVerification();
-
-      // Store credentials so resend works
-      pendingVerifyEmail = email;
-      pendingVerifyPass = pass;
-
-      await auth.signOut();
-      switchToVerify(email);
-    } catch (err) {
-      showErr(errEl, translateFirebaseError(err.code));
-    }
-
-    btn.disabled = false;
-    btn.textContent = "הרשמה ושליחת קישור אימות";
+      pendingVerifyEmail=email; pendingVerifyPass=pass;
+      await auth.signOut(); switchToVerify(email);
+    }catch(err){showErr(errEl,translateFirebaseError(err.code));}
+    btn.disabled=false; btn.textContent=TEXT.btnRegisterSubmit;
   }
 
-  // ── LOGIN ──
-  async function doUserLogin() {
-    const email  = document.getElementById("loginEmail").value.trim();
-    const pass   = document.getElementById("loginPass").value;
-    const errEl  = document.getElementById("loginError");
-    const btn    = document.getElementById("loginSubmitBtn");
-
+  // ══ LOGIN ══
+  async function doUserLogin(){
+    const email=document.getElementById("loginEmail").value.trim(), pass=document.getElementById("loginPass").value;
+    const errEl=document.getElementById("loginError"), btn=document.getElementById("loginSubmitBtn");
     clearErr("loginError");
-    if (!email || !pass) { showErr(errEl, "נא למלא את כל השדות"); return; }
-
-    btn.disabled = true;
-    btn.textContent = "מתחבר...";
-
-    try {
-      const cred = await auth.signInWithEmailAndPassword(email, pass);
-      if (!cred.user.emailVerified) {
-        // Store for resend
-        pendingVerifyEmail = email;
-        pendingVerifyPass = pass;
-        await auth.signOut();
-        switchToVerify(email);
-      } else {
-        closeAuthModal();
-        if (currentCardId) openAnswers(currentCardId);
-      }
-    } catch (err) {
-      showErr(errEl, translateFirebaseError(err.code));
-    }
-
-    btn.disabled = false;
-    btn.textContent = "כניסה";
+    if(!email||!pass){showErr(errEl,TEXT.errFillAll);return;}
+    btn.disabled=true; btn.textContent=TEXT.loginBusy;
+    try{
+      const cred=await auth.signInWithEmailAndPassword(email,pass);
+      if(!cred.user.emailVerified){
+        pendingVerifyEmail=email; pendingVerifyPass=pass; await auth.signOut(); switchToVerify(email);
+      } else { closeAuthModal(); if(currentCardId) openAnswers(currentCardId); }
+    }catch(err){showErr(errEl,translateFirebaseError(err.code));}
+    btn.disabled=false; btn.textContent=TEXT.btnLoginSubmit;
   }
 
-  // ── RESEND VERIFICATION (actually works now) ──
-  async function resendVerification() {
-    const linkEl    = document.getElementById("resendLink");
-    const coolEl    = document.getElementById("resendCooldown");
-    const successEl = document.getElementById("resendSuccess");
-
-    if (!pendingVerifyEmail || !pendingVerifyPass) {
-      // Can't resend without credentials — tell user to try logging in
-      successEl.textContent = "נסה להתחבר שוב — תקבל הוראות אימות";
-      successEl.classList.remove("hidden");
-      linkEl.classList.add("hidden");
-      return;
-    }
-
-    linkEl.classList.add("hidden");
-    coolEl.textContent = "שולח...";
-    coolEl.classList.remove("hidden");
-    successEl.classList.add("hidden");
-
-    try {
-      // Temporarily sign in to get user object
-      const cred = await auth.signInWithEmailAndPassword(pendingVerifyEmail, pendingVerifyPass);
-      await cred.user.sendEmailVerification();
-      await auth.signOut();
-
-      coolEl.classList.add("hidden");
-      successEl.textContent = "✓ נשלח! בדוק תיקיית ספאם אם לא מצאת";
-      successEl.classList.remove("hidden");
-
-      // Cooldown before allowing another resend
-      startResendCooldown(60, linkEl, coolEl, successEl);
-    } catch (err) {
-      coolEl.classList.add("hidden");
-      successEl.textContent = "שגיאה בשליחה — נסה שוב";
-      successEl.classList.remove("hidden");
-      setTimeout(() => {
-        successEl.classList.add("hidden");
-        linkEl.classList.remove("hidden");
-      }, 3000);
-    }
+  // ══ RESEND VERIFICATION ══
+  async function resendVerification(){
+    const lnk=document.getElementById("resendLink"), cool=document.getElementById("resendCooldown"), suc=document.getElementById("resendSuccess");
+    if(!pendingVerifyEmail||!pendingVerifyPass){suc.textContent=TEXT.resendNoCreds;suc.classList.remove("hidden");lnk.classList.add("hidden");return;}
+    lnk.classList.add("hidden"); cool.textContent=TEXT.resendSending; cool.classList.remove("hidden"); suc.classList.add("hidden");
+    try{
+      const cred=await auth.signInWithEmailAndPassword(pendingVerifyEmail,pendingVerifyPass);
+      await cred.user.sendEmailVerification(); await auth.signOut();
+      cool.classList.add("hidden"); suc.textContent=TEXT.resendSuccess; suc.classList.remove("hidden");
+      let t=60; const timer=setInterval(()=>{if(--t<=0){clearInterval(timer);suc.classList.add("hidden");lnk.classList.remove("hidden");}},1000);
+    }catch(err){cool.classList.add("hidden");suc.textContent=TEXT.resendError;suc.classList.remove("hidden");setTimeout(()=>{suc.classList.add("hidden");lnk.classList.remove("hidden");},3000);}
   }
+  function resetResendUI(){document.getElementById("resendLink").classList.remove("hidden");document.getElementById("resendCooldown").classList.add("hidden");document.getElementById("resendSuccess").classList.add("hidden");}
+  function translateFirebaseError(code){return TEXT.firebaseErrors[code]||"שגיאה: "+code;}
 
-  function startResendCooldown(seconds, linkEl, coolEl, successEl) {
-    let remaining = seconds;
-    const timer = setInterval(() => {
-      remaining--;
-      if (remaining <= 0) {
-        clearInterval(timer);
-        successEl.classList.add("hidden");
-        linkEl.classList.remove("hidden");
-      }
-    }, 1000);
-  }
-
-  function resetResendUI() {
-    document.getElementById("resendLink").classList.remove("hidden");
-    document.getElementById("resendCooldown").classList.add("hidden");
-    document.getElementById("resendSuccess").classList.add("hidden");
-  }
-
-  // ── FIREBASE ERROR TRANSLATION ──
-  function translateFirebaseError(code) {
-    const map = {
-      "auth/email-already-in-use":    "האימייל הזה כבר רשום — נסה להתחבר",
-      "auth/invalid-email":            "כתובת אימייל לא תקינה",
-      "auth/weak-password":            "הסיסמה חלשה מדי",
-      "auth/user-not-found":           "לא נמצא חשבון עם האימייל הזה",
-      "auth/wrong-password":           "סיסמה שגויה",
-      "auth/too-many-requests":        "יותר מדי ניסיונות — נסה שוב מאוחר יותר",
-      "auth/invalid-credential":       "אימייל או סיסמה שגויים",
-      "auth/network-request-failed":   "שגיאת רשת — בדוק חיבור אינטרנט",
-      "auth/popup-blocked":            "חלון קופץ נחסם — אפשר חלונות קופצים בדפדפן",
-      "auth/cancelled-popup-request":  "הכניסה בוטלה",
-      "auth/account-exists-with-different-credential": "כתובת אימייל זו כבר רשומה בשיטה אחרת",
-    };
-    return map[code] || "שגיאה: " + code;
-  }
-
-  function showErr(el, msg) { el.textContent = msg; el.classList.remove("hidden"); }
-  function clearErr(id) { const el = document.getElementById(id); if (el) { el.textContent = ""; el.classList.add("hidden"); } }
-  function show(id) { document.getElementById(id).classList.remove("hidden"); }
-  function hide(id) { document.getElementById(id).classList.add("hidden"); }
-
-  // ══════════════════════════════════════════
-  // DIFFICULTY HELPERS
-  // ══════════════════════════════════════════
-  function getDiffColor(score) {
-    if (!score || score === 0) return "#444";
-    if (score <= 3) return "#30d158";
-    if (score <= 5) return "#64d2ff";
-    if (score <= 7) return "#ff9f0a";
-    if (score <= 9) return "#ff6b35";
-    return "#ff2d55";
-  }
-
-  function getDiffLabel(score) {
-    if (!score || score === 0) return "";
-    if (score <= 2) return "קל מאוד";
-    if (score <= 4) return "קל";
-    if (score <= 6) return "בינוני";
-    if (score <= 8) return "קשה";
-    if (score <= 9) return "קשה מאוד";
-    return "בלתי אפשרי";
-  }
-
-  function renderDiffButtons(myVote) {
-    const container = document.getElementById("diffButtons");
-    container.innerHTML = "";
-    for (let i = 1; i <= 10; i++) {
-      const btn = document.createElement("button");
-      btn.className = "diff-btn" + (myVote === i ? " selected" : "");
-      btn.textContent = i;
-      const color = getDiffColor(i);
-      if (myVote === i) {
-        btn.style.background = color;
-        btn.style.borderColor = color;
-        btn.style.color = "#000";
-      } else {
-        btn.style.borderColor = color + "44";
-        btn.style.color = color + "99";
-      }
-      btn.onmouseenter = () => { if (myVote !== i) { btn.style.borderColor = color; btn.style.color = color; } };
-      btn.onmouseleave = () => { if (myVote !== i) { btn.style.borderColor = color + "44"; btn.style.color = color + "99"; } };
-      btn.onclick = () => submitDiffVote(i);
-      container.appendChild(btn);
-    }
-    const hintEl = document.getElementById("diffLoginHint");
-    const votedEl = document.getElementById("diffVotedMsg");
-    if (!currentUser) {
-      hintEl.classList.remove("hidden");
-      votedEl.classList.add("hidden");
-      container.style.opacity = "0.4";
-      container.style.pointerEvents = "none";
-    } else {
-      hintEl.classList.add("hidden");
-      container.style.opacity = "1";
-      container.style.pointerEvents = "auto";
-      if (myVote) {
-        votedEl.textContent = "הצבעת " + myVote + "/10 · לחץ שוב כדי לשנות";
-        votedEl.classList.remove("hidden");
-      } else {
-        votedEl.classList.add("hidden");
-      }
-    }
-  }
-
-  function updateDiffDisplay(votes) {
-    const vals = Object.values(votes);
-    const count = vals.length;
-    const avg = count > 0 ? vals.reduce((a, b) => a + b, 0) / count : 0;
-    const avgRounded = count > 0 ? Math.round(avg * 10) / 10 : null;
-    const color = getDiffColor(avgRounded);
-    const numEl = document.getElementById("diffAvgNumber");
-    const subEl = document.getElementById("diffAvgSub");
-    const barEl = document.getElementById("diffBarFill");
-    const votersEl = document.getElementById("diffVotersCount");
-    if (avgRounded !== null) {
-      numEl.textContent = avgRounded;
-      numEl.style.color = color;
-      subEl.textContent = getDiffLabel(avgRounded);
-      subEl.style.color = color + "99";
-      barEl.style.width = (avg / 10 * 100) + "%";
-      barEl.style.background = color;
-      votersEl.textContent = count + " הצבעות";
-    } else {
-      numEl.textContent = "—";
-      numEl.style.color = "#444";
-      subEl.textContent = "אין הצבעות עדיין";
-      subEl.style.color = "#333";
-      barEl.style.width = "0%";
-      votersEl.textContent = "";
-    }
-  }
-
-  function loadDiffVotes(cardId) {
-    if (diffUnsubscribe) { diffUnsubscribe(); diffUnsubscribe = null; }
-    const ref = db.collection("homework").doc(cardId).collection("votes").doc("data");
-    diffUnsubscribe = ref.onSnapshot(doc => {
-      const votes = doc.exists ? (doc.data().votes || {}) : {};
-      updateDiffDisplay(votes);
-      const myVote = currentUser ? (votes[currentUser.username] || null) : null;
-      renderDiffButtons(myVote);
-    });
-  }
-
-  async function submitDiffVote(score) {
-    if (!currentUser || !currentCardId) return;
-    const ref = db.collection("homework").doc(currentCardId).collection("votes").doc("data");
-    const doc = await ref.get();
-    const votes = doc.exists ? (doc.data().votes || {}) : {};
-    if (votes[currentUser.username] === score) {
-      delete votes[currentUser.username];
-    } else {
-      votes[currentUser.username] = score;
-    }
-    await ref.set({ votes });
-  }
-
-  function openAuthForDiff() { openAuthModal(); }
-
-  const cardDiffCache = {};
-
-  function watchCardDiff(cardId) {
-    if (cardDiffCache[cardId] && cardDiffCache[cardId].unsub) return;
-    cardDiffCache[cardId] = { avg: null, count: 0, unsub: null };
-    const ref = db.collection("homework").doc(cardId).collection("votes").doc("data");
-    const unsub = ref.onSnapshot(doc => {
-      const votes = doc.exists ? (doc.data().votes || {}) : {};
-      const vals = Object.values(votes);
-      const count = vals.length;
-      const avg = count > 0 ? vals.reduce((a, b) => a + b, 0) / count : null;
-      cardDiffCache[cardId].avg = avg ? Math.round(avg * 10) / 10 : null;
-      cardDiffCache[cardId].count = count;
-      render();
-    });
-    cardDiffCache[cardId].unsub = unsub;
-  }
-
-  // ══════════════════════════════════════════
-  // AUTO DELETE EXPIRED
-  // ══════════════════════════════════════════
-  async function deleteExpiredCards() {
-    const now = new Date();
-    const snapshot = await db.collection("homework").get();
-    snapshot.forEach(async doc => {
-      const data = doc.data();
-      const dueTime = data.dueTime || "23:59";
-      const dueDateTime = new Date(`${data.dueDate}T${dueTime}:00`);
-      if (now >= dueDateTime) {
-        await db.collection("homework").doc(doc.id).delete();
-      }
-    });
-  }
-
-  // ══════════════════════════════════════════
-  // ADMIN
-  // ══════════════════════════════════════════
-  function toggleAdmin() {
-    if (isAdmin) {
-      isAdmin = false;
-      document.getElementById("adminBtn").textContent = "כניסת מנהל";
-      document.getElementById("adminBtn").className = "btn btn-white";
-      document.getElementById("addBtn").classList.add("hidden");
-      hideAddForm(); render();
-    } else {
-      document.getElementById("adminModal").classList.remove("hidden");
-      setTimeout(() => document.getElementById("adminPassInput").focus(), 100);
-    }
-  }
-
-  function doAdminLogin() {
-    const pass = document.getElementById("adminPassInput").value;
-    if (pass === ADMIN_PASSWORD) {
-      isAdmin = true;
-      document.getElementById("adminModal").classList.add("hidden");
-      document.getElementById("adminPassInput").value = "";
-      document.getElementById("adminPassError").classList.add("hidden");
-      document.getElementById("adminBtn").textContent = "יציאת מנהל";
-      document.getElementById("adminBtn").className = "btn btn-danger";
+  // ══ ADMIN ══
+  function doAdminLogin(){
+    const pass=document.getElementById("adminPassInput").value;
+    if(pass===ADMIN_PASSWORD){
+      isAdmin=true;
+      document.getElementById("adminPassInput").value="";
+      clearErr("adminPassError");
+      document.getElementById("drawerAdminForm").classList.add("hidden");
+      updateAdminDrawerUI();
       document.getElementById("addBtn").classList.remove("hidden");
       render();
-    } else {
-      document.getElementById("adminPassError").classList.remove("hidden");
-    }
+    } else { document.getElementById("adminPassError").classList.remove("hidden"); }
   }
 
-  function closeAdminModal(e) {
-    document.getElementById("adminModal").classList.add("hidden");
-    document.getElementById("adminPassInput").value = "";
-    document.getElementById("adminPassError").classList.add("hidden");
+  // ══ HOMEWORK FORM ══
+  function toggleQuestions(){
+    specificQuestions=!specificQuestions;
+    document.getElementById("customCheckbox").classList.toggle("checked",specificQuestions);
+    document.getElementById("checkboxRow").classList.toggle("active",specificQuestions);
+    document.getElementById("questionsBox").classList.toggle("open",specificQuestions);
+    if(specificQuestions) setTimeout(()=>document.getElementById("questionsInput").focus(),300);
+    else document.getElementById("questionsInput").value="";
   }
-
-  // ══════════════════════════════════════════
-  // HOMEWORK FORM
-  // ══════════════════════════════════════════
-  function toggleQuestions() {
-    specificQuestions = !specificQuestions;
-    document.getElementById("customCheckbox").classList.toggle("checked", specificQuestions);
-    document.getElementById("checkboxRow").classList.toggle("active", specificQuestions);
-    document.getElementById("questionsBox").classList.toggle("open", specificQuestions);
-    if (specificQuestions) setTimeout(() => document.getElementById("questionsInput").focus(), 300);
-    else document.getElementById("questionsInput").value = "";
+  function showAddForm(){document.getElementById("addForm").classList.remove("hidden");document.getElementById("addBtn").classList.add("hidden");}
+  function hideAddForm(){document.getElementById("addForm").classList.add("hidden");if(isAdmin)document.getElementById("addBtn").classList.remove("hidden");}
+  async function addCard(){
+    const subject=document.getElementById("subjectInput").value.trim();
+    const pages=document.getElementById("pagesInput").value.trim();
+    const dueDate=document.getElementById("dateInput").value;
+    const dueTime=document.getElementById("timeInput").value||"";
+    const questions=specificQuestions?document.getElementById("questionsInput").value.trim():"";
+    if(!subject||!pages||!dueDate) return alert(TEXT.errMissingFields);
+    if(specificQuestions&&!questions) return alert(TEXT.errMissingQuestions);
+    await db.collection("homework").add({subject,pages,dueDate,dueTime,questions});
+    document.getElementById("subjectInput").value=document.getElementById("pagesInput").value=document.getElementById("dateInput").value=document.getElementById("timeInput").value=document.getElementById("questionsInput").value="";
+    if(specificQuestions) toggleQuestions(); hideAddForm();
   }
+  async function deleteCard(id){ if(confirm(TEXT.confirmDeleteCard)) await db.collection("homework").doc(id).delete(); }
 
-  function showAddForm() {
-    document.getElementById("addForm").classList.remove("hidden");
-    document.getElementById("addBtn").classList.add("hidden");
+  // ══ COLOUR SETTINGS ══
+  const DEFAULT_SETTINGS={redHours:3,orangeDays:2,greenDays:7};
+  let colorSettings=(()=>{try{const s=localStorage.getItem("hwColorSettings");if(s)return{...DEFAULT_SETTINGS,...JSON.parse(s)};}catch(e){}return{...DEFAULT_SETTINGS};})();
+
+  function updateSettingsPreview(){
+    const rH=Math.max(1,parseFloat(document.getElementById("st-red").value)||DEFAULT_SETTINGS.redHours);
+    const oD=Math.max(1,parseFloat(document.getElementById("st-orange").value)||DEFAULT_SETTINGS.orangeDays);
+    const gD=Math.max(1,parseFloat(document.getElementById("st-green").value)||DEFAULT_SETTINGS.greenDays);
+    const total=gD*1.5;
+    const rW=Math.min((rH/24)/total*100,33), oW=Math.min(((oD-rH/24)/total)*100,33), gW=Math.min(((gD-oD)/total)*100,34), bW=100-rW-oW-gW;
+    document.getElementById("prev-red").style.cssText=`background:#ff2d55;flex:${rW}`;
+    document.getElementById("prev-orange").style.cssText=`background:#ff9f0a;flex:${Math.max(oW,0)}`;
+    document.getElementById("prev-green").style.cssText=`background:#30d158;flex:${Math.max(gW,0)}`;
+    document.getElementById("prev-blue").style.cssText=`background:#64d2ff;flex:${Math.max(bW,0)}`;
+    document.getElementById("prevLabelRed").textContent=rH+TEXT.settingsHoursAbbr;
+    document.getElementById("prevLabelOrange").textContent=oD+TEXT.settingsDaysAbbr;
+    document.getElementById("prevLabelGreen").textContent=gD+TEXT.settingsDaysAbbr;
   }
-
-  function hideAddForm() {
-    document.getElementById("addForm").classList.add("hidden");
-    if (isAdmin) document.getElementById("addBtn").classList.remove("hidden");
+  function saveSettings(){
+    const rH=parseFloat(document.getElementById("st-red").value);
+    const oD=parseFloat(document.getElementById("st-orange").value);
+    const gD=parseFloat(document.getElementById("st-green").value);
+    const errEl=document.getElementById("settingsError"); clearErr("settingsError");
+    if(!rH||!oD||!gD||rH<1||oD<1||gD<1){showErr(errEl,TEXT.errSettingsMinOne);return;}
+    if(rH/24>=oD){showErr(errEl,TEXT.errSettingsOrangeGtRed);return;}
+    if(oD>=gD){showErr(errEl,TEXT.errSettingsGreenGtOrange);return;}
+    colorSettings={redHours:rH,orangeDays:oD,greenDays:gD};
+    localStorage.setItem("hwColorSettings",JSON.stringify(colorSettings));
+    closeDrawer(); render();
   }
-
-  async function addCard() {
-    const subject   = document.getElementById("subjectInput").value.trim();
-    const pages     = document.getElementById("pagesInput").value.trim();
-    const dueDate   = document.getElementById("dateInput").value;
-    const dueTime   = document.getElementById("timeInput").value || "";
-    const questions = specificQuestions ? document.getElementById("questionsInput").value.trim() : "";
-    if (!subject || !pages || !dueDate) return alert("נא למלא את כל השדות!");
-    if (specificQuestions && !questions) return alert("נא לרשום את השאלות הספציפיות!");
-    await db.collection("homework").add({ subject, pages, dueDate, dueTime, questions });
-    document.getElementById("subjectInput").value = "";
-    document.getElementById("pagesInput").value = "";
-    document.getElementById("dateInput").value = "";
-    document.getElementById("timeInput").value = "";
-    document.getElementById("questionsInput").value = "";
-    if (specificQuestions) toggleQuestions();
-    hideAddForm();
-  }
-
-  async function deleteCard(id) {
-    if (confirm("למחוק משימה זו?")) {
-      await db.collection("homework").doc(id).delete();
-    }
-  }
-
-  // ══════════════════════════════════════════
-  // RENDER
-  // ══════════════════════════════════════════
-  function getMinutesUntil(dueDate, dueTime) {
-    const timeStr = dueTime || "23:59";
-    const due = new Date(`${dueDate}T${timeStr}:00`);
-    return Math.round((due - new Date()) / 60000);
-  }
-
-  // ══════════════════════════════════════════
-  // DEADLINE COLOR SETTINGS
-  // ══════════════════════════════════════════
-  const DEFAULT_SETTINGS = { redHours: 3, orangeDays: 2, greenDays: 7 };
-  let colorSettings = loadColorSettings();
-
-  function loadColorSettings() {
-    try {
-      const saved = localStorage.getItem("hwColorSettings");
-      if (saved) return { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
-    } catch(e) {}
-    return { ...DEFAULT_SETTINGS };
-  }
-
-  function openSettings() {
-    document.getElementById("st-red").value    = colorSettings.redHours;
-    document.getElementById("st-orange").value = colorSettings.orangeDays;
-    document.getElementById("st-green").value  = colorSettings.greenDays;
-    clearErr("settingsError");
-    updateSettingsPreview();
-    document.getElementById("settingsModal").classList.remove("hidden");
-  }
-
-  function closeSettings(e) {
-    if (e && e.target !== document.getElementById("settingsModal")) return;
-    document.getElementById("settingsModal").classList.add("hidden");
-  }
-
-  function updateSettingsPreview() {
-    const redH   = Math.max(1, parseFloat(document.getElementById("st-red").value)   || DEFAULT_SETTINGS.redHours);
-    const orangeD= Math.max(1, parseFloat(document.getElementById("st-orange").value)|| DEFAULT_SETTINGS.orangeDays);
-    const greenD = Math.max(1, parseFloat(document.getElementById("st-green").value) || DEFAULT_SETTINGS.greenDays);
-
-    // Scale segments proportionally (max shown = greenDays * 1.5)
-    const total = greenD * 1.5;
-    const redW    = Math.min((redH / 24) / total * 100, 33);
-    const orangeW = Math.min(((orangeD - redH/24) / total) * 100, 33);
-    const greenW  = Math.min(((greenD - orangeD) / total) * 100, 34);
-    const blueW   = 100 - redW - orangeW - greenW;
-
-    document.getElementById("prev-red").style.background    = "#ff2d55";
-    document.getElementById("prev-orange").style.background = "#ff9f0a";
-    document.getElementById("prev-green").style.background  = "#30d158";
-    document.getElementById("prev-blue").style.background   = "#64d2ff";
-    document.getElementById("prev-red").style.flex    = redW;
-    document.getElementById("prev-orange").style.flex = Math.max(orangeW, 0);
-    document.getElementById("prev-green").style.flex  = Math.max(greenW, 0);
-    document.getElementById("prev-blue").style.flex   = Math.max(blueW, 0);
-
-    document.getElementById("prevLabelRed").textContent    = redH + "ש'";
-    document.getElementById("prevLabelOrange").textContent = orangeD + "י'";
-    document.getElementById("prevLabelGreen").textContent  = greenD + "י'";
-  }
-
-  function saveSettings() {
-    const redH   = parseFloat(document.getElementById("st-red").value);
-    const orangeD= parseFloat(document.getElementById("st-orange").value);
-    const greenD = parseFloat(document.getElementById("st-green").value);
-    const errEl  = document.getElementById("settingsError");
-    clearErr("settingsError");
-
-    if (!redH || !orangeD || !greenD || redH < 1 || orangeD < 1 || greenD < 1) {
-      showErr(errEl, "כל הערכים חייבים להיות לפחות 1"); return;
-    }
-    if (redH / 24 >= orangeD) {
-      showErr(errEl, "הכתום חייב להיות יותר זמן מהאדום"); return;
-    }
-    if (orangeD >= greenD) {
-      showErr(errEl, "הירוק חייב להיות יותר זמן מהכתום"); return;
-    }
-
-    colorSettings = { redHours: redH, orangeDays: orangeD, greenDays: greenD };
-    localStorage.setItem("hwColorSettings", JSON.stringify(colorSettings));
-    document.getElementById("settingsModal").classList.add("hidden");
-    render();
-  }
-
-  function resetSettings() {
-    colorSettings = { ...DEFAULT_SETTINGS };
+  function resetSettings(){
+    colorSettings={...DEFAULT_SETTINGS};
     localStorage.removeItem("hwColorSettings");
-    document.getElementById("st-red").value    = colorSettings.redHours;
-    document.getElementById("st-orange").value = colorSettings.orangeDays;
-    document.getElementById("st-green").value  = colorSettings.greenDays;
-    updateSettingsPreview();
-    clearErr("settingsError");
+    document.getElementById("st-red").value=DEFAULT_SETTINGS.redHours;
+    document.getElementById("st-orange").value=DEFAULT_SETTINGS.orangeDays;
+    document.getElementById("st-green").value=DEFAULT_SETTINGS.greenDays;
+    updateSettingsPreview(); clearErr("settingsError");
   }
 
-  function getUrgency(minutes) {
-    const { redHours, orangeDays, greenDays } = colorSettings;
-    const hours = minutes / 60;
-    const days  = minutes / 1440;
-    if (minutes < 0)           return { label: "פג תוקף!",                          color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55",   glow: "0 0 20px #ff2d5566" };
-    if (hours < redHours)      return { label: "פחות מ-"+redHours+" שעות!",         color: "#ff2d55", bg: "#2a0a10", border: "#ff2d55",   glow: "0 0 20px #ff2d5566" };
-    if (days  < orangeDays)    return { label: "עוד "+Math.round(hours)+" שעות",     color: "#ff9f0a", bg: "#201500", border: "#ff9f0a",   glow: "0 0 15px #ff9f0a44" };
-    if (days  < greenDays)     return { label: "עוד "+Math.floor(days)+" ימים",      color: "#30d158", bg: "#0a1f10", border: "#30d158",   glow: "0 0 15px #30d15833" };
-    return                            { label: "עוד "+Math.floor(days)+" ימים",      color: "#64d2ff", bg: "#001a2a", border: "#64d2ff44", glow: "none" };
+  // ══ RENDER ══
+  function getMinutesUntil(d,t){return Math.round((new Date(`${d}T${t||"23:59"}:00`)-new Date())/60000);}
+  function getUrgency(min){
+    const {redHours,orangeDays,greenDays}=colorSettings, h=min/60, d=min/1440;
+    if(min<0)         return{label:TEXT.urgencyExpired,                                color:"#ff2d55",bg:"#2a0a10",border:"#ff2d55",  glow:"0 0 20px #ff2d5566"};
+    if(h<redHours)    return{label:TEXT.urgencyRed.replace("{h}",redHours),            color:"#ff2d55",bg:"#2a0a10",border:"#ff2d55",  glow:"0 0 20px #ff2d5566"};
+    if(d<orangeDays)  return{label:TEXT.urgencyOrange.replace("{h}",Math.round(h)),    color:"#ff9f0a",bg:"#201500",border:"#ff9f0a",  glow:"0 0 15px #ff9f0a44"};
+    if(d<greenDays)   return{label:TEXT.urgencyGreen.replace("{d}",Math.floor(d)),     color:"#30d158",bg:"#0a1f10",border:"#30d158",  glow:"0 0 15px #30d15833"};
+    return              {label:TEXT.urgencyBlue.replace("{d}",Math.floor(d)),          color:"#64d2ff",bg:"#001a2a",border:"#64d2ff44",glow:"none"};
+  }
+  function formatDate(dd,dt){
+    const d=new Date(`${dd}T${dt||"23:59"}:00`), p=d.toLocaleDateString("he-IL",{weekday:"short",month:"short",day:"numeric"});
+    return dt?p+" · "+dt:p;
   }
 
-  function formatDate(dueDate, dueTime) {
-    const timeStr = dueTime || "23:59";
-    const d = new Date(`${dueDate}T${timeStr}:00`);
-    const datePart = d.toLocaleDateString("he-IL", { weekday: "short", month: "short", day: "numeric" });
-    return dueTime ? datePart + " · " + dueTime : datePart;
-  }
-
-  function render() {
-    const list   = document.getElementById("cardsList");
-    const empty  = document.getElementById("emptyState");
-    const total  = document.getElementById("totalCount");
-    const credit = document.getElementById("credit");
-    list.innerHTML = "";
-    const sorted = [...cards].sort((a, b) => {
-      const aTime = `${a.dueDate}T${a.dueTime || "23:59"}`;
-      const bTime = `${b.dueDate}T${b.dueTime || "23:59"}`;
-      return new Date(aTime) - new Date(bTime);
+  const cardDiffCache={};
+  function watchCardDiff(id){
+    if(cardDiffCache[id]?.unsub) return;
+    cardDiffCache[id]={avg:null,count:0,unsub:null};
+    cardDiffCache[id].unsub=db.collection("homework").doc(id).collection("votes").doc("data").onSnapshot(doc=>{
+      const v=doc.exists?(doc.data().votes||{}):{}, vals=Object.values(v), cnt=vals.length;
+      const avg=cnt>0?vals.reduce((a,b)=>a+b,0)/cnt:null;
+      cardDiffCache[id].avg=avg?Math.round(avg*10)/10:null; cardDiffCache[id].count=cnt; render();
     });
-    if (sorted.length === 0) {
-      empty.classList.remove("hidden");
-      total.classList.add("hidden");
-      credit.classList.add("hidden");
-    } else {
-      empty.classList.add("hidden");
-      total.classList.remove("hidden");
-      credit.classList.remove("hidden");
-      total.textContent = "סה\"כ " + sorted.length + " משימות";
-      sorted.forEach((card, i) => {
-        const minutes = getMinutesUntil(card.dueDate, card.dueTime);
-        const u = getUrgency(minutes);
-        watchCardDiff(card.id);
-        const diffData = cardDiffCache[card.id];
-        let diffBadgeHTML = "";
-        if (diffData && diffData.count > 0) {
-          const color = getDiffColor(diffData.avg);
-          const label = getDiffLabel(diffData.avg);
-          diffBadgeHTML = `<div class="card-difficulty-badge" style="color:${color};border-color:${color}33">🔥 קושי ${diffData.avg}/10 <span style="color:#333;font-weight:normal">·</span> <span style="color:#444;font-weight:normal">${label}</span></div>`;
-        } else if (diffData) {
-          diffBadgeHTML = `<div class="card-difficulty-badge" style="color:#333">🔥 לא דורג עדיין</div>`;
-        }
-        const div = document.createElement("div");
-        div.className = "card";
-        div.style.cssText = `background:${u.bg};border:1px solid ${u.border};box-shadow:${u.glow}`;
-        div.onclick = (e) => {
-          if (e.target.classList.contains("delete-btn") || e.target.closest(".delete-btn")) return;
-          handleCardClick(card.id);
-        };
-        const questionsHTML = card.questions
-          ? `<div class="card-questions"><span class="card-questions-label">שאלות:</span>${card.questions}</div>`
-          : "";
-        div.innerHTML = `
-          <div class="card-number" style="border:1px solid ${u.color}44;color:${u.color}">#${i+1}</div>
-          <div class="card-info">
-            <div class="card-subject">${card.subject}</div>
-            <div class="card-pages">עמודים <span>${card.pages}</span></div>
-            ${questionsHTML}
-            ${diffBadgeHTML}
-            <div class="card-hint">לחץ לצפייה בתשובות ✦</div>
-          </div>
-          <div class="card-due ${isAdmin ? 'has-delete' : ''}">
-            <div class="card-urgency" style="color:${u.color}">${u.label}</div>
-            <div class="card-date">${formatDate(card.dueDate, card.dueTime)}</div>
-          </div>
-          ${isAdmin ? `<button class="delete-btn" onclick="deleteCard('${card.id}')">&#215;</button>` : ""}
-        `;
-        list.appendChild(div);
-      });
-    }
+  }
+  function getDiffColor(s){if(!s||s===0)return"#444";if(s<=3)return"#30d158";if(s<=5)return"#64d2ff";if(s<=7)return"#ff9f0a";if(s<=9)return"#ff6b35";return"#ff2d55";}
+  function getDiffLabel(s){if(!s||s===0)return"";if(s<=2)return TEXT.diffLabels.veryEasy;if(s<=4)return TEXT.diffLabels.easy;if(s<=6)return TEXT.diffLabels.medium;if(s<=8)return TEXT.diffLabels.hard;if(s<=9)return TEXT.diffLabels.veryHard;return TEXT.diffLabels.impossible;}
+
+  function render(){
+    const list=document.getElementById("cardsList"), empty=document.getElementById("emptyState");
+    const total=document.getElementById("totalCount"), credit=document.getElementById("credit");
+    list.innerHTML="";
+    const sorted=[...cards].sort((a,b)=>new Date(`${a.dueDate}T${a.dueTime||"23:59"}`)-new Date(`${b.dueDate}T${b.dueTime||"23:59"}`));
+    if(!sorted.length){empty.classList.remove("hidden");total.classList.add("hidden");credit.classList.add("hidden");return;}
+    empty.classList.add("hidden");total.classList.remove("hidden");credit.classList.remove("hidden");
+    total.textContent=TEXT.totalCount.replace("{n}",sorted.length);
+    sorted.forEach((card,i)=>{
+      const mins=getMinutesUntil(card.dueDate,card.dueTime), u=getUrgency(mins);
+      watchCardDiff(card.id);
+      const dd=cardDiffCache[card.id];
+      let diffHTML=dd&&dd.count>0?`<div class="card-difficulty-badge" style="color:${getDiffColor(dd.avg)};border-color:${getDiffColor(dd.avg)}33">🔥 קושי ${dd.avg}/10 · ${getDiffLabel(dd.avg)}</div>`
+                  :dd?`<div class="card-difficulty-badge" style="color:var(--text4)">${TEXT.cardNotRated}</div>`:"";
+      const qHTML=card.questions?`<div class="card-questions"><span class="card-questions-label">${TEXT.cardQuestionsLabel}</span>${card.questions}</div>`:"";
+      const div=document.createElement("div");
+      div.className="card"; div.style.cssText=`background:${u.bg};border:1px solid ${u.border};box-shadow:${u.glow}`;
+      div.onclick=e=>{if(!e.target.classList.contains("delete-btn")&&!e.target.closest(".delete-btn"))handleCardClick(card.id);};
+      div.innerHTML=`<div class="card-number" style="border:1px solid ${u.color}44;color:${u.color}">#${i+1}</div>
+        <div class="card-info">
+          <div class="card-subject">${card.subject}</div>
+          <div class="card-pages">${TEXT.cardPagesPrefix} <span>${card.pages}</span></div>
+          ${qHTML}${diffHTML}
+          <div class="card-hint">${TEXT.cardHint}</div>
+        </div>
+        <div class="card-due ${isAdmin?"has-delete":""}">
+          <div class="card-urgency" style="color:${u.color}">${u.label}</div>
+          <div class="card-date">${formatDate(card.dueDate,card.dueTime)}</div>
+        </div>
+        ${isAdmin?`<button class="delete-btn" onclick="deleteCard('${card.id}')">&#215;</button>`:""}`;
+      list.appendChild(div);
+    });
   }
 
-  db.collection("homework").orderBy("dueDate").onSnapshot(snapshot => {
-    cards = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    render();
-  });
+  db.collection("homework").orderBy("dueDate").onSnapshot(snap=>{cards=snap.docs.map(d=>({id:d.id,...d.data()}));render();});
 
-  // ══════════════════════════════════════════
-  // ANSWERS MODAL
-  // ══════════════════════════════════════════
-  function handleCardClick(cardId) {
-    if (!currentUser) { currentCardId = cardId; openAuthModal(); return; }
-    openAnswers(cardId);
-  }
-
-  function openAnswers(cardId) {
-    currentCardId = cardId;
-    const card = cards.find(c => c.id === cardId);
-    document.getElementById("answersSubject").textContent = card ? card.subject + " — עמ' " + card.pages : "";
+  // ══ ANSWERS MODAL ══
+  function handleCardClick(id){ if(!currentUser){currentCardId=id;openAuthModal();return;} openAnswers(id); }
+  function openAnswers(id){
+    currentCardId=id; const card=cards.find(c=>c.id===id);
+    document.getElementById("answersSubject").textContent=card?card.subject+TEXT.answersSubjectSep+card.pages:"";
     document.getElementById("answersModal").classList.remove("hidden");
-    pendingFiles = [];
-    renderPreviews();
-    document.getElementById("uploadBtn").disabled = true;
+    pendingFiles=[]; renderPreviews(); document.getElementById("uploadBtn").disabled=true;
     document.getElementById("uploadingText").classList.add("hidden");
-    loadPhotos(cardId);
-    loadDiffVotes(cardId);
+    loadPhotos(id); loadDiffVotes(id);
   }
-
-  function closeAnswers() {
+  function closeAnswers(){
     document.getElementById("answersModal").classList.add("hidden");
-    if (photosUnsubscribe) { photosUnsubscribe(); photosUnsubscribe = null; }
-    if (diffUnsubscribe) { diffUnsubscribe(); diffUnsubscribe = null; }
-    currentCardId = null;
-    document.getElementById("fileInput").value = "";
-    pendingFiles = [];
-    renderPreviews();
+    if(photosUnsubscribe){photosUnsubscribe();photosUnsubscribe=null;}
+    if(diffUnsubscribe){diffUnsubscribe();diffUnsubscribe=null;}
+    currentCardId=null; document.getElementById("fileInput").value=""; pendingFiles=[]; renderPreviews();
   }
-
-  function loadPhotos(cardId) {
-    if (photosUnsubscribe) photosUnsubscribe();
-    const grid = document.getElementById("photosGrid");
-    const noPhotos = document.getElementById("noPhotos");
-    grid.innerHTML = '<div style="text-align:center;color:#444;font-size:13px;padding:20px">טוען...</div>';
-    noPhotos.classList.add("hidden");
-    photosUnsubscribe = db.collection("homework").doc(cardId).collection("photos")
-      .orderBy("timestamp", "desc")
-      .onSnapshot(snapshot => {
-        const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-          .sort((a, b) => (b.likes?.length || 0) - (a.likes?.length || 0));
-        grid.innerHTML = "";
-        if (posts.length === 0) {
-          noPhotos.classList.remove("hidden");
-        } else {
-          noPhotos.classList.add("hidden");
-          posts.forEach(post => {
-            const liked = currentUser && post.likes && post.likes.includes(currentUser.username);
-            const likeCount = post.likes ? post.likes.length : 0;
-            const time = post.timestamp ? new Date(post.timestamp.toDate()).toLocaleDateString("he-IL", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" }) : "";
-            const urls = post.urls || (post.url ? [post.url] : []);
-            const imagesHTML = urls.map(url =>
-              `<img class="photo-img" src="${url}" loading="lazy" onclick="openLightbox('${url}')" />`
-            ).join('<div style="height:2px;background:#0a0a0f"></div>');
-            const div = document.createElement("div");
-            div.className = "photo-card";
-            div.innerHTML = `
-              <div class="photo-card-header">
-                <span class="photo-uploader">👤 ${post.uploader}</span>
-                <span class="photo-time">${time}${urls.length > 1 ? ` · ${urls.length} תמונות` : ""}</span>
-              </div>
-              ${imagesHTML}
-              <div class="photo-actions">
-                <button class="like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
-                  ❤️ ${likeCount > 0 ? likeCount : "לייק"}
-                </button>
-                ${isAdmin ? `<button class="photo-delete-btn" onclick="deletePhoto('${post.id}')">🗑️ מחק</button>` : ""}
-              </div>
-            `;
-            grid.appendChild(div);
-          });
-        }
+  function loadPhotos(id){
+    if(photosUnsubscribe) photosUnsubscribe();
+    const grid=document.getElementById("photosGrid"), np=document.getElementById("noPhotos");
+    grid.innerHTML=`<div style="text-align:center;color:var(--text4);font-size:13px;padding:20px">${TEXT.leaderboardLoading}</div>`;
+    np.classList.add("hidden");
+    photosUnsubscribe=db.collection("homework").doc(id).collection("photos").orderBy("timestamp","desc").onSnapshot(snap=>{
+      const posts=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.likes?.length||0)-(a.likes?.length||0));
+      grid.innerHTML="";
+      if(!posts.length){np.classList.remove("hidden");return;}
+      np.classList.add("hidden");
+      posts.forEach(post=>{
+        const liked=currentUser&&post.likes?.includes(currentUser.username), lc=post.likes?.length||0;
+        const time=post.timestamp?new Date(post.timestamp.toDate()).toLocaleDateString("he-IL",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"";
+        const urls=post.urls||(post.url?[post.url]:[]);
+        const imgs=urls.map(u=>`<img class="photo-img" src="${u}" loading="lazy" onclick="openLightbox('${u}')"/>`).join('<div style="height:2px;background:var(--bg)"></div>');
+        const div=document.createElement("div"); div.className="photo-card";
+        div.innerHTML=`<div class="photo-card-header"><span class="photo-uploader">${TEXT.photoUploaderIcon}${post.uploader}</span><span class="photo-time">${time}${urls.length>1?` · ${urls.length} ${TEXT.photoCountSuffix}`:""}</span></div>
+          ${imgs}
+          <div class="photo-actions">
+            <button class="like-btn ${liked?"liked":""}" onclick="toggleLike('${post.id}')">❤️ ${lc>0?lc:TEXT.photoLikeDefault}</button>
+            ${isAdmin?`<button class="photo-delete-btn" onclick="deletePhoto('${post.id}')">${TEXT.btnPhotoDelete}</button>`:""}
+          </div>`;
+        grid.appendChild(div);
       });
-  }
-
-  async function deletePhoto(photoId) {
-    if (!isAdmin) return;
-    if (confirm("למחוק תמונה זו?")) {
-      await db.collection("homework").doc(currentCardId).collection("photos").doc(photoId).delete();
-    }
-  }
-
-  async function toggleLike(photoId) {
-    if (!currentUser) return;
-    const ref = db.collection("homework").doc(currentCardId).collection("photos").doc(photoId);
-    const doc = await ref.get();
-    if (!doc.exists) return;
-    const likes = doc.data().likes || [];
-    const username = currentUser.username;
-    if (likes.includes(username)) {
-      await ref.update({ likes: likes.filter(u => u !== username) });
-    } else {
-      await ref.update({ likes: [...likes, username] });
-    }
-  }
-
-  // ── UPLOAD ──
-  function handleFiles(e) {
-    const files = Array.from(e.target.files);
-    pendingFiles = [...pendingFiles, ...files];
-    renderPreviews();
-    document.getElementById("uploadBtn").disabled = pendingFiles.length === 0;
-  }
-
-  function renderPreviews() {
-    const container = document.getElementById("uploadPreviews");
-    container.innerHTML = "";
-    pendingFiles.forEach((file, i) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const wrap = document.createElement("div");
-        wrap.className = "upload-preview";
-        wrap.innerHTML = `<img src="${e.target.result}" /><button class="upload-preview-remove" onclick="removeFile(${i})">&#215;</button>`;
-        container.appendChild(wrap);
-      };
-      reader.readAsDataURL(file);
     });
   }
-
-  function removeFile(index) {
-    pendingFiles.splice(index, 1);
-    renderPreviews();
-    document.getElementById("uploadBtn").disabled = pendingFiles.length === 0;
+  async function deletePhoto(pid){ if(!isAdmin)return; if(confirm(TEXT.confirmDeletePhoto)) await db.collection("homework").doc(currentCardId).collection("photos").doc(pid).delete(); }
+  async function toggleLike(pid){
+    if(!currentUser)return;
+    const ref=db.collection("homework").doc(currentCardId).collection("photos").doc(pid);
+    const doc=await ref.get(); if(!doc.exists)return;
+    const likes=doc.data().likes||[], un=currentUser.username;
+    await ref.update({likes:likes.includes(un)?likes.filter(u=>u!==un):[...likes,un]});
   }
 
-  async function uploadToImgBB(file) {
-    const formData = new FormData();
-    formData.append("image", file);
-    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: formData });
-    const data = await res.json();
-    if (!data.success) throw new Error("שגיאה בהעלאה");
-    return data.data.url;
-  }
-
-  async function uploadPhotos() {
-    if (!currentUser || pendingFiles.length === 0) return;
-    const btn = document.getElementById("uploadBtn");
-    const uploadingText = document.getElementById("uploadingText");
-    btn.disabled = true;
-    uploadingText.classList.remove("hidden");
-    try {
-      const urls = [];
-      for (const file of pendingFiles) {
-        const url = await uploadToImgBB(file);
-        urls.push(url);
-      }
-      await db.collection("homework").doc(currentCardId).collection("photos").add({
-        urls, uploader: currentUser.username, likes: [],
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      pendingFiles = [];
-      renderPreviews();
-      document.getElementById("fileInput").value = "";
-    } catch (err) {
-      alert("שגיאה בהעלאת תמונות: " + err.message);
+  // ══ DIFFICULTY ══
+  function renderDiffButtons(myVote){
+    const cont=document.getElementById("diffButtons"); cont.innerHTML="";
+    for(let i=1;i<=10;i++){
+      const btn=document.createElement("button"), color=getDiffColor(i);
+      btn.className="diff-btn"+(myVote===i?" selected":""); btn.textContent=i;
+      if(myVote===i){btn.style.background=color;btn.style.borderColor=color;btn.style.color="#000";}
+      else{btn.style.borderColor=color+"44";btn.style.color=color+"99";}
+      btn.onmouseenter=()=>{if(myVote!==i){btn.style.borderColor=color;btn.style.color=color;}};
+      btn.onmouseleave=()=>{if(myVote!==i){btn.style.borderColor=color+"44";btn.style.color=color+"99";}};
+      btn.onclick=()=>submitDiffVote(i); cont.appendChild(btn);
     }
-    btn.disabled = true;
-    uploadingText.classList.add("hidden");
+    const hint=document.getElementById("diffLoginHint"), voted=document.getElementById("diffVotedMsg");
+    if(!currentUser){hint.classList.remove("hidden");voted.classList.add("hidden");cont.style.opacity="0.4";cont.style.pointerEvents="none";}
+    else{hint.classList.add("hidden");cont.style.opacity="1";cont.style.pointerEvents="auto";
+      if(myVote){voted.textContent=TEXT.diffVotedMsg.replace("{v}",myVote);voted.classList.remove("hidden");}
+      else voted.classList.add("hidden");}
+  }
+  function updateDiffDisplay(votes){
+    const vals=Object.values(votes), cnt=vals.length, avg=cnt>0?vals.reduce((a,b)=>a+b,0)/cnt:0;
+    const ar=cnt>0?Math.round(avg*10)/10:null, color=getDiffColor(ar);
+    const ne=document.getElementById("diffAvgNumber"), se=document.getElementById("diffAvgSub");
+    const be=document.getElementById("diffBarFill"), ve=document.getElementById("diffVotersCount");
+    if(ar!==null){ne.textContent=ar;ne.style.color=color;se.textContent=getDiffLabel(ar);se.style.color=color+"99";be.style.width=(avg/10*100)+"%";be.style.background=color;ve.textContent=cnt+" "+TEXT.diffVotesSuffix;}
+    else{ne.textContent="—";ne.style.color="#444";se.textContent=TEXT.diffNoVotes;se.style.color="var(--text4)";be.style.width="0%";ve.textContent="";}
+  }
+  function loadDiffVotes(id){
+    if(diffUnsubscribe){diffUnsubscribe();diffUnsubscribe=null;}
+    diffUnsubscribe=db.collection("homework").doc(id).collection("votes").doc("data").onSnapshot(doc=>{
+      const v=doc.exists?(doc.data().votes||{}):{};
+      updateDiffDisplay(v); renderDiffButtons(currentUser?(v[currentUser.username]||null):null);
+    });
+  }
+  async function submitDiffVote(score){
+    if(!currentUser||!currentCardId)return;
+    const ref=db.collection("homework").doc(currentCardId).collection("votes").doc("data");
+    const doc=await ref.get(), votes=doc.exists?(doc.data().votes||{}):{};
+    if(votes[currentUser.username]===score) delete votes[currentUser.username]; else votes[currentUser.username]=score;
+    await ref.set({votes});
+  }
+  function openAuthForDiff(){ openAuthModal(); }
+
+  // ══ UPLOAD ══
+  function handleFiles(e){pendingFiles=[...pendingFiles,...Array.from(e.target.files)];renderPreviews();document.getElementById("uploadBtn").disabled=pendingFiles.length===0;}
+  function renderPreviews(){
+    const c=document.getElementById("uploadPreviews"); c.innerHTML="";
+    pendingFiles.forEach((f,i)=>{const r=new FileReader();r.onload=e=>{const w=document.createElement("div");w.className="upload-preview";w.innerHTML=`<img src="${e.target.result}"/><button class="upload-preview-remove" onclick="removeFile(${i})">&#215;</button>`;c.appendChild(w);};r.readAsDataURL(f);});
+  }
+  function removeFile(i){pendingFiles.splice(i,1);renderPreviews();document.getElementById("uploadBtn").disabled=pendingFiles.length===0;}
+  async function uploadToImgBB(file){
+    const fd=new FormData(); fd.append("image",file);
+    const res=await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`,{method:"POST",body:fd});
+    const data=await res.json(); if(!data.success)throw new Error(TEXT.errUploadInternal); return data.data.url;
+  }
+  async function uploadPhotos(){
+    if(!currentUser||!pendingFiles.length)return;
+    const btn=document.getElementById("uploadBtn"), ut=document.getElementById("uploadingText");
+    btn.disabled=true; ut.classList.remove("hidden");
+    try{
+      const urls=[]; for(const f of pendingFiles) urls.push(await uploadToImgBB(f));
+      await db.collection("homework").doc(currentCardId).collection("photos").add({urls,uploader:currentUser.username,likes:[],timestamp:firebase.firestore.FieldValue.serverTimestamp()});
+      pendingFiles=[]; renderPreviews(); document.getElementById("fileInput").value="";
+    }catch(err){alert(TEXT.errUploadFailed+err.message);}
+    btn.disabled=true; ut.classList.add("hidden");
   }
 
-  // ── LIGHTBOX ──
-  function openLightbox(url) {
-    document.getElementById("lightboxImg").src = url;
-    document.getElementById("lightbox").classList.remove("hidden");
-  }
+  // ══ LIGHTBOX ══
+  function openLightbox(url){document.getElementById("lightboxImg").src=url;document.getElementById("lightbox").classList.remove("hidden");}
+  function closeLightbox(){document.getElementById("lightbox").classList.add("hidden");document.getElementById("lightboxImg").src="";}
 
-  function closeLightbox() {
-    document.getElementById("lightbox").classList.add("hidden");
-    document.getElementById("lightboxImg").src = "";
-  }
-
-  // ── LEADERBOARD ──
-  async function openLeaderboard() {
+  // ══ LEADERBOARD ══
+  async function openLeaderboard(){
     document.getElementById("leaderboardModal").classList.remove("hidden");
-    const listEl = document.getElementById("leaderboardList");
-    listEl.innerHTML = '<div style="text-align:center;color:#444;padding:20px;font-size:13px">טוען...</div>';
-    try {
-      const hwSnap = await db.collection("homework").get();
-      const totals = {};
-      for (const hwDoc of hwSnap.docs) {
-        const photosSnap = await db.collection("homework").doc(hwDoc.id).collection("photos").get();
-        photosSnap.forEach(p => {
-          const data = p.data();
-          const user = data.uploader || "?";
-          const likes = data.likes ? data.likes.length : 0;
-          totals[user] = (totals[user] || 0) + likes;
-        });
-      }
-      const sorted = Object.entries(totals).sort((a,b) => b[1]-a[1]);
-      if (sorted.length === 0) {
-        listEl.innerHTML = '<div style="text-align:center;color:#333;padding:30px;font-size:14px">אין נתונים עדיין</div>';
-        return;
-      }
-      const medals = ["🥇","🥈","🥉"];
-      listEl.innerHTML = sorted.map(([user, likes], i) => {
-        const medal = medals[i] || (i+1)+".";
-        const isMe = currentUser && currentUser.username === user;
-        return `<div style="display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid #1a1a1a;border-radius:8px;background:${isMe?'rgba(100,210,255,0.05)':'transparent'}">
-          <span style="font-size:20px;width:32px;text-align:center">${medal}</span>
-          <span style="flex:1;font-size:15px;font-weight:bold;color:${isMe?'#64d2ff':'#fff'}">${user}${isMe?' (את/ה)':''}</span>
+    const el=document.getElementById("leaderboardList");
+    el.innerHTML=`<div style="text-align:center;color:var(--text4);padding:20px;font-size:13px">${TEXT.leaderboardLoading}</div>`;
+    try{
+      const hw=await db.collection("homework").get(), totals={};
+      for(const d of hw.docs){const ph=await db.collection("homework").doc(d.id).collection("photos").get();ph.forEach(p=>{const data=p.data();totals[data.uploader||"?"]=(totals[data.uploader||"?"]||0)+(data.likes?.length||0);});}
+      const sorted=Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+      if(!sorted.length){el.innerHTML=`<div style="text-align:center;color:var(--text4);padding:30px;font-size:14px">${TEXT.leaderboardEmpty}</div>`;return;}
+      const medals=["🥇","🥈","🥉"];
+      el.innerHTML=sorted.map(([user,likes],i)=>{
+        const isMe=currentUser&&currentUser.username===user;
+        return `<div style="display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);border-radius:8px;background:${isMe?"rgba(100,210,255,0.05)":"transparent"}">
+          <span style="font-size:20px;width:32px;text-align:center">${medals[i]||(i+1)+"."}</span>
+          <span style="flex:1;font-size:15px;font-weight:bold;color:${isMe?"var(--accent)":"var(--text)"}">${user}${isMe?TEXT.leaderboardMe:""}</span>
           <span style="color:#ff2d55;font-size:14px">❤️ ${likes}</span>
         </div>`;
       }).join("");
-    } catch(e) {
-      listEl.innerHTML = '<div style="color:#ff2d55;text-align:center;padding:20px">שגיאה בטעינה</div>';
-    }
+    }catch(e){el.innerHTML=`<div style="color:#ff2d55;text-align:center;padding:20px">${TEXT.leaderboardError}</div>`;}
+  }
+  function closeLeaderboard(e){if(e&&e.target!==document.getElementById("leaderboardModal"))return;document.getElementById("leaderboardModal").classList.add("hidden");}
+
+  // ══ AUTO-DELETE EXPIRED ══
+  async function deleteExpiredCards(){
+    const now=new Date(), snap=await db.collection("homework").get();
+    snap.forEach(async d=>{const data=d.data(), dt=new Date(`${data.dueDate}T${data.dueTime||"23:59"}:00`);if(now>=dt)await db.collection("homework").doc(d.id).delete();});
   }
 
-  function closeLeaderboard(e) {
-    if (e && e.target !== document.getElementById("leaderboardModal")) return;
-    document.getElementById("leaderboardModal").classList.add("hidden");
-  }
+  // ══ HELPERS ══
+  function showErr(el,msg){el.textContent=msg;el.classList.remove("hidden");}
+  function clearErr(id){const e=document.getElementById(id);if(e){e.textContent="";e.classList.add("hidden");}}
+  function show(id){document.getElementById(id).classList.remove("hidden");}
+  function hide(id){document.getElementById(id).classList.add("hidden");}
 
-  // ── INIT ──
+  // ══ INIT ══
+  applyTexts();
+  applyTheme(currentTheme);
+  updateAdminDrawerUI();
   deleteExpiredCards();
-  setInterval(deleteExpiredCards, 60000);
+  setInterval(deleteExpiredCards,60000);
 </script>
 </body>
 </html>
