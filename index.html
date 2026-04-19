@@ -8,7 +8,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <style>
-    /* ── THEME VARIABLES ── light/dark toggled by <body class="light"> */
     body {
       --bg:       #0a0a0f;
       --bg2:      #111;
@@ -53,7 +52,6 @@
     .user-badge { font-size:12px; color:var(--text2); padding:6px 12px;
                   border:1px solid var(--border); border-radius:8px; }
 
-    /* Settings gear button */
     .btn-gear { background:transparent; border:1px solid var(--border2); color:var(--text2);
                 padding:8px 14px; border-radius:8px; cursor:pointer; font-size:16px;
                 font-family:'Courier New',monospace; transition:all .2s; }
@@ -126,6 +124,7 @@
                       font-size:12px; color:var(--accent); line-height:1.5; }
     .card-questions-label { color:#3a8fa8; margin-left:4px; }
     .card-hint { font-size:11px; color:var(--card-hint); margin-top:6px; }
+    .card-has-images { font-size:11px; color:var(--accent); margin-top:4px; opacity:0.7; }
     .card-due { text-align:left; flex-shrink:0; }
     .card-due.has-delete { margin-left:16px; }
     .card-urgency { font-weight:bold; font-size:13px; }
@@ -145,6 +144,27 @@
     .empty-sub  { color:var(--text4); font-size:13px; margin-top:8px; }
     .total-count { text-align:center; margin-top:40px; color:var(--text4); font-size:12px; letter-spacing:2px; }
     .credit { text-align:center; margin-top:8px; color:var(--text4); font-size:11px; opacity:.5; }
+
+    /* ── HW IMAGE UPLOAD (in add form) ── */
+    .hw-img-upload-area { border:2px dashed var(--border2); border-radius:12px; padding:16px 20px;
+                          text-align:center; cursor:pointer; transition:all .2s; }
+    .hw-img-upload-area:hover { border-color:var(--accent); }
+    .hw-img-upload-area input { display:none; }
+    .hw-img-upload-text { color:var(--text3); font-size:13px; }
+    .hw-img-upload-text span { color:var(--accent); }
+    .hw-img-section { display:flex; flex-direction:column; gap:8px; }
+    .hw-img-section-label { font-size:11px; color:var(--text3); letter-spacing:1px; display:flex; align-items:center; gap:6px; }
+    .hw-img-section-label em { font-style:normal; background:rgba(100,210,255,.1); color:var(--accent);
+                               font-size:10px; padding:2px 7px; border-radius:20px; border:1px solid rgba(100,210,255,.2); }
+    .hw-img-previews { display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
+    .hw-img-preview { position:relative; width:70px; height:70px; border-radius:8px;
+                      overflow:hidden; border:1px solid var(--border2); }
+    .hw-img-preview img { width:100%; height:100%; object-fit:cover; }
+    .hw-img-preview-remove { position:absolute; top:2px; left:2px; background:rgba(0,0,0,.75);
+                             border:none; color:#fff; width:18px; height:18px; border-radius:4px;
+                             cursor:pointer; font-size:12px; display:flex; align-items:center;
+                             justify-content:center; transition:background .2s; }
+    .hw-img-preview-remove:hover { background:rgba(255,45,85,.85); }
 
     /* ── MODALS ── */
     .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.88); display:flex;
@@ -191,7 +211,39 @@
                  width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:18px;
                  display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
     .close-btn:hover { border-color:var(--text); color:var(--text); }
-    .answers-body { flex:1; overflow-y:auto; padding:20px 24px; }
+
+    /* ── TABS (answers modal) ── */
+    .answers-tabs { display:flex; border-bottom:1px solid var(--border); flex-shrink:0; background:var(--bg); }
+    .answers-tab { flex:1; padding:13px 10px; background:transparent; border:none;
+                   color:var(--text3); cursor:pointer; font-family:'Courier New',monospace;
+                   font-size:13px; letter-spacing:.5px; border-bottom:2px solid transparent;
+                   transition:all .22s; position:relative; }
+    .answers-tab:hover { color:var(--text2); }
+    .answers-tab.active { color:var(--text); border-bottom-color:var(--accent); }
+    .answers-tab .tab-badge { display:inline-flex; align-items:center; justify-content:center;
+                              width:18px; height:18px; border-radius:50%; font-size:10px;
+                              background:var(--accent); color:#000; font-weight:bold;
+                              margin-right:6px; vertical-align:middle; }
+
+    .answers-body { flex:1; overflow-y:auto; }
+
+    /* tab panels */
+    .tab-panel { display:none; padding:20px 24px; }
+    .tab-panel.active { display:block; }
+
+    /* ── ASSIGNMENT IMAGES PANEL ── */
+    .assignment-imgs-grid { display:flex; flex-direction:column; gap:12px; }
+    .assignment-img-wrap { border-radius:12px; overflow:hidden; border:1px solid var(--border);
+                           background:var(--bg2); }
+    .assignment-img-wrap img { width:100%; display:block; cursor:pointer; transition:opacity .2s; }
+    .assignment-img-wrap img:hover { opacity:.9; }
+    .no-assignment-imgs { text-align:center; padding:60px 20px; color:var(--text4); font-size:14px; }
+    .no-assignment-imgs-icon { font-size:36px; margin-bottom:12px; }
+    .uploading-hw-bar { display:flex; align-items:center; gap:10px; padding:12px 16px;
+                        background:rgba(100,210,255,.06); border:1px solid rgba(100,210,255,.15);
+                        border-radius:10px; color:var(--accent); font-size:13px; margin-top:8px; }
+
+    /* ── ANSWERS TAB CONTENT (existing) ── */
     .upload-area { border:2px dashed var(--border2); border-radius:12px; padding:20px;
                    text-align:center; cursor:pointer; transition:all .2s; margin-bottom:16px; }
     .upload-area:hover { border-color:var(--accent); }
@@ -292,47 +344,15 @@
     .drawer-row-label { font-size:13px; color:var(--text); }
     .drawer-row-sub { font-size:11px; color:var(--text3); margin-top:1px; }
     .drawer-row-right { color:var(--text3); font-size:12px; }
-    /* theme toggle pill */
     .theme-toggle { display:flex; background:var(--bg); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
     .theme-opt { flex:1; padding:9px 6px; text-align:center; font-size:12px; cursor:pointer;
                  transition:all .2s; color:var(--text3); font-family:'Courier New',monospace; }
     .theme-opt.active { background:var(--text); color:var(--bg); font-weight:bold; }
-    /* admin section inside drawer */
     .drawer-admin-badge { display:inline-block; padding:2px 8px; border-radius:20px;
                           font-size:10px; background:rgba(255,45,85,.12); color:#ff2d55;
                           border:1px solid rgba(255,45,85,.3); margin-right:6px; }
-    /* deadline colour settings inside drawer */
-    .color-settings-wrap { padding:0; }
-    .color-row { display:flex; align-items:center; gap:10px; padding:10px 0;
-                 border-bottom:1px solid var(--border); }
-    .color-row:last-child { border-bottom:none; }
-    .color-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
-    .color-row-label { flex:1; font-size:12px; color:var(--text2); }
-    .color-row-label strong { display:block; font-size:13px; color:var(--text); margin-bottom:1px; }
-    .color-input-wrap { display:flex; align-items:center; gap:5px; }
-    .color-num { width:52px; padding:6px 8px; background:var(--bg2); border:1px solid var(--border2);
-                 border-radius:8px; color:var(--text); font-size:13px; font-family:'Courier New',monospace;
-                 outline:none; text-align:center; direction:ltr; }
-    .color-num:focus { border-color:var(--text3); }
-    .color-unit { font-size:11px; color:var(--text3); white-space:nowrap; }
-    .color-preview-bar { display:flex; border-radius:8px; overflow:hidden; height:8px; margin:12px 0 4px; }
-    .color-preview-seg { flex:1; transition:all .3s; }
-    .color-preview-labels { display:flex; justify-content:space-between; font-size:10px; color:var(--text4); margin-bottom:8px; }
-    .drawer-btn-row { display:flex; gap:8px; margin-top:4px; }
-    .drawer-btn-sm { flex:1; padding:9px; background:transparent; border:1px solid var(--border2);
-                     color:var(--text2); border-radius:8px; cursor:pointer; font-size:12px;
-                     font-family:'Courier New',monospace; transition:all .2s; }
-    .drawer-btn-sm:hover { border-color:var(--text); color:var(--text); }
-    .drawer-btn-primary { flex:2; padding:9px; background:var(--text); color:var(--bg);
-                          border:none; border-radius:8px; cursor:pointer; font-size:12px; font-weight:bold;
-                          font-family:'Courier New',monospace; transition:opacity .2s; }
-    .drawer-btn-primary:hover { opacity:.85; }
-
-    /* deadline settings sub-panel (hidden until expanded) */
     .expandable { overflow:hidden; max-height:0; opacity:0; transition:max-height .3s ease,opacity .3s ease; }
     .expandable.open { max-height:600px; opacity:1; }
-
-    /* settings rows */
     .settings-row { display:flex; align-items:center; gap:14px; padding:14px 16px; background:var(--bg);
                     border:1px solid var(--border); border-radius:12px; margin-bottom:10px; }
     .settings-color-dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; }
@@ -351,6 +371,15 @@
                       padding:8px 14px; border-radius:8px; cursor:pointer; font-size:12px;
                       font-family:'Courier New',monospace; transition:all .2s; }
     .settings-reset:hover { border-color:var(--text2); color:var(--text2); }
+    .drawer-btn-row { display:flex; gap:8px; margin-top:4px; }
+    .drawer-btn-sm { flex:1; padding:9px; background:transparent; border:1px solid var(--border2);
+                     color:var(--text2); border-radius:8px; cursor:pointer; font-size:12px;
+                     font-family:'Courier New',monospace; transition:all .2s; }
+    .drawer-btn-sm:hover { border-color:var(--text); color:var(--text); }
+    .drawer-btn-primary { flex:2; padding:9px; background:var(--text); color:var(--bg);
+                          border:none; border-radius:8px; cursor:pointer; font-size:12px; font-weight:bold;
+                          font-family:'Courier New',monospace; transition:opacity .2s; }
+    .drawer-btn-primary:hover { opacity:.85; }
 
     .hidden { display:none; }
     @keyframes fadeIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
@@ -387,6 +416,19 @@
     <div class="questions-box" id="questionsBox">
       <textarea id="questionsInput"></textarea>
     </div>
+
+    <!-- ══ ADMIN: HW IMAGE UPLOAD ══ -->
+    <div class="hw-img-section">
+      <div class="hw-img-section-label">
+        📷 תמונות המשימה <em>אופציונלי</em>
+      </div>
+      <div class="hw-img-upload-area" onclick="document.getElementById('hwImgInput').click()">
+        <input type="file" id="hwImgInput" accept="image/*" multiple onchange="handleHwImages(event)"/>
+        <div class="hw-img-upload-text">לחץ לבחירת תמונות המשימה · <span>ניתן לבחור מספר תמונות</span></div>
+      </div>
+      <div class="hw-img-previews" id="hwImgPreviews"></div>
+    </div>
+
     <div class="form-row">
       <button class="btn-full" id="btnAddCard" style="flex:1;margin-top:0" onclick="addCard()"></button>
       <button class="btn-cancel" id="btnCancelForm" onclick="hideAddForm()"></button>
@@ -409,11 +451,8 @@
     <div class="drawer-title" id="drawerTitle"></div>
     <button class="drawer-close" onclick="closeDrawer()">✕</button>
   </div>
-
-  <!-- ACCOUNT SECTION -->
   <div class="drawer-section" id="drawerAccountSection">
     <div class="drawer-section-label" id="drawerAccountLabel"></div>
-    <!-- Logged-in state -->
     <div id="drawerLoggedIn" class="hidden">
       <div class="drawer-row" style="cursor:default">
         <div class="drawer-row-left">
@@ -430,7 +469,6 @@
         <span class="drawer-row-right">›</span>
       </div>
     </div>
-    <!-- Logged-out state -->
     <div id="drawerLoggedOut">
       <div class="drawer-row" onclick="openAuthFromDrawer()">
         <div class="drawer-row-left">
@@ -442,8 +480,6 @@
       </div>
     </div>
   </div>
-
-  <!-- THEME SECTION -->
   <div class="drawer-section">
     <div class="drawer-section-label" id="drawerThemeLabel"></div>
     <div class="theme-toggle">
@@ -451,8 +487,6 @@
       <div class="theme-opt" id="themeLight" onclick="setTheme('light')"></div>
     </div>
   </div>
-
-  <!-- LEADERBOARD SHORTCUT -->
   <div class="drawer-section">
     <div class="drawer-section-label" id="drawerMoreLabel"></div>
     <div class="drawer-row" onclick="closeDrawer();openLeaderboard()">
@@ -463,8 +497,6 @@
       <span class="drawer-row-right">›</span>
     </div>
   </div>
-
-  <!-- DEADLINE COLOURS SECTION -->
   <div class="drawer-section">
     <div class="drawer-section-label" id="drawerColorsLabel"></div>
     <div class="settings-preview">
@@ -512,11 +544,8 @@
       <button class="drawer-btn-primary" id="settingsSaveBtn" onclick="saveSettings()"></button>
     </div>
   </div>
-
-  <!-- ADMIN SECTION -->
   <div class="drawer-section" id="drawerAdminSection">
     <div class="drawer-section-label" id="drawerAdminLabel"></div>
-    <!-- Not admin -->
     <div id="drawerAdminLogin">
       <div class="drawer-row" onclick="showDrawerAdminForm()">
         <div class="drawer-row-left">
@@ -532,7 +561,6 @@
         <button class="btn-full" id="adminLoginSubmitBtn" onclick="doAdminLogin()" style="margin-top:0"></button>
       </div>
     </div>
-    <!-- Is admin -->
     <div id="drawerAdminActive" class="hidden">
       <div class="drawer-row" style="cursor:default;border-color:#ff2d5544;background:rgba(255,45,85,.05)">
         <div class="drawer-row-left">
@@ -616,6 +644,8 @@
 <!-- ══ ANSWERS MODAL ══ -->
 <div class="modal-overlay hidden" id="answersModal">
   <div class="answers-modal">
+
+    <!-- Header -->
     <div class="answers-header">
       <div>
         <div class="answers-title"   id="answersTitle"></div>
@@ -623,44 +653,73 @@
       </div>
       <button class="close-btn" onclick="closeAnswers()">&#215;</button>
     </div>
-    <div class="answers-body">
-      <div class="difficulty-section">
-        <div class="difficulty-section-title">
-          <span id="diffSectionTitle"></span>
-          <span id="diffVotersCount" style="color:var(--text4);font-size:11px"></span>
-        </div>
-        <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:12px">
-          <div>
-            <div class="difficulty-avg-display">
-              <span class="difficulty-avg-number" id="diffAvgNumber">—</span>
-              <span class="difficulty-avg-outof">/10</span>
-            </div>
-            <div class="difficulty-avg-voters" id="diffAvgSub"></div>
-          </div>
-          <div style="flex:1;padding-bottom:6px">
-            <div class="difficulty-bar-bg"><div class="difficulty-bar-fill" id="diffBarFill" style="width:0%;background:#444"></div></div>
-          </div>
-        </div>
-        <div class="difficulty-buttons" id="diffButtons"></div>
-        <div class="difficulty-login-hint hidden" id="diffLoginHint"></div>
-        <div class="difficulty-voted-msg  hidden" id="diffVotedMsg"></div>
-      </div>
-      <div class="difficulty-divider"></div>
-      <div id="uploadSection">
-        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-          <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(event)"/>
-          <div class="upload-area-text" id="uploadAreaText"></div>
-        </div>
-        <div class="upload-previews" id="uploadPreviews"></div>
-        <button class="upload-btn" id="uploadBtn" onclick="uploadPhotos()" disabled></button>
-        <div class="uploading-text hidden" id="uploadingText"></div>
-      </div>
-      <div style="margin-top:24px">
-        <div id="uploadedSectionHeader" style="font-size:12px;color:var(--text4);margin-bottom:12px;letter-spacing:1px"></div>
-        <div class="photos-grid" id="photosGrid"></div>
-        <div class="no-photos hidden" id="noPhotos"></div>
-      </div>
+
+    <!-- Tab bar -->
+    <div class="answers-tabs">
+      <button class="answers-tab active" id="tabBtnAssignment" onclick="switchAnswersTab('assignment')">
+        📋 <span id="tabLabelAssignment">המשימה</span>
+      </button>
+      <button class="answers-tab" id="tabBtnAnswers" onclick="switchAnswersTab('answers')">
+        💡 <span id="tabLabelAnswers">תשובות</span>
+      </button>
     </div>
+
+    <!-- Scrollable body with two panels -->
+    <div class="answers-body">
+
+      <!-- PANEL 1: Assignment images (admin-uploaded) -->
+      <div class="tab-panel active" id="panelAssignment">
+        <div id="assignmentImgsWrap">
+          <div style="text-align:center;color:var(--text4);font-size:13px;padding:30px" id="assignmentLoading">טוען...</div>
+          <div class="assignment-imgs-grid hidden" id="assignmentImgsGrid"></div>
+          <div class="no-assignment-imgs hidden" id="noAssignmentImgs">
+            <div class="no-assignment-imgs-icon">🖼️</div>
+            <div id="noAssignmentImgsText">אין תמונות משימה</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL 2: Difficulty + user answers -->
+      <div class="tab-panel" id="panelAnswers">
+        <div class="difficulty-section">
+          <div class="difficulty-section-title">
+            <span id="diffSectionTitle"></span>
+            <span id="diffVotersCount" style="color:var(--text4);font-size:11px"></span>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:12px">
+            <div>
+              <div class="difficulty-avg-display">
+                <span class="difficulty-avg-number" id="diffAvgNumber">—</span>
+                <span class="difficulty-avg-outof">/10</span>
+              </div>
+              <div class="difficulty-avg-voters" id="diffAvgSub"></div>
+            </div>
+            <div style="flex:1;padding-bottom:6px">
+              <div class="difficulty-bar-bg"><div class="difficulty-bar-fill" id="diffBarFill" style="width:0%;background:#444"></div></div>
+            </div>
+          </div>
+          <div class="difficulty-buttons" id="diffButtons"></div>
+          <div class="difficulty-login-hint hidden" id="diffLoginHint"></div>
+          <div class="difficulty-voted-msg  hidden" id="diffVotedMsg"></div>
+        </div>
+        <div class="difficulty-divider"></div>
+        <div id="uploadSection">
+          <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(event)"/>
+            <div class="upload-area-text" id="uploadAreaText"></div>
+          </div>
+          <div class="upload-previews" id="uploadPreviews"></div>
+          <button class="upload-btn" id="uploadBtn" onclick="uploadPhotos()" disabled></button>
+          <div class="uploading-text hidden" id="uploadingText"></div>
+        </div>
+        <div style="margin-top:24px">
+          <div id="uploadedSectionHeader" style="font-size:12px;color:var(--text4);margin-bottom:12px;letter-spacing:1px"></div>
+          <div class="photos-grid" id="photosGrid"></div>
+          <div class="no-photos hidden" id="noPhotos"></div>
+        </div>
+      </div>
+
+    </div><!-- /answers-body -->
   </div>
 </div>
 
@@ -682,14 +741,12 @@
 
 <script>
   // ══════════════════════════════════════════════════════════════════════
-  //  ✏️  TEXT CONFIG — edit all visible strings here, nowhere else
+  //  TEXT CONFIG
   // ══════════════════════════════════════════════════════════════════════
   const TEXT = {
-    // Page & header
     pageTitle:        "מעקב שיעורי בית",
     headerLabel:      "פורטל כיתה",
     headerTitle:      "📚 מעקב שיעורי בית",
-    // Settings drawer
     drawerTitle:      "⚙️ הגדרות",
     drawerAccountLabel:"חשבון",
     drawerLogoutLabel:"התנתקות",
@@ -706,7 +763,6 @@
     drawerAdminLoginSub:  "גישה לעריכת משימות",
     drawerAdminActiveLabel:"מצב מנהל פעיל",
     drawerAdminExitLabel: "יציאה ממצב מנהל",
-    // Add-homework form
     btnAddHomework:   "+ הוסף שיעורי בית",
     formTitle:        "משימה חדשה",
     phSubject:        "מקצוע (למשל: מתמטיקה)",
@@ -717,34 +773,33 @@
     phQuestions:      "רשום אילו שאלות צריך לעשות (למשל: 1, 3, 5-7, 12)",
     btnAdd:           "הוסף",
     btnCancel:        "ביטול",
-    // Empty state
-    emptyEmoji:       "",
+    emptyEmoji:       "✨",
     emptyText:        "אין שיעורי בית כרגע.",
     emptySub:         "תהנו מהחופש!",
     credit:           "רון יאדגרוב",
-    // Cards
     cardPagesPrefix:  "עמודים",
     cardQuestionsLabel:"שאלות:",
     cardHint:         "לחץ לצפייה בתשובות ✦",
+    cardHasImages:    "📋 יש תמונות משימה",
     cardNotRated:     "🔥 לא דורג עדיין",
     totalCount:       "סה\"כ {n} משימות",
-    // Urgency labels  ({h}=hours, {d}=days)
     urgencyExpired:   "פג תוקף!",
     urgencyRed:       "פחות מ-{h} שעות!",
     urgencyOrange:    "עוד {h} שעות",
     urgencyGreen:     "עוד {d} ימים",
     urgencyBlue:      "עוד {d} ימים",
-    // Difficulty
     diffSectionTitle: "🔥 דרגת קושי",
     diffNoVotes:      "אין הצבעות עדיין",
     diffVotesSuffix:  "הצבעות",
     diffVotedMsg:     "הצבעת {v}/10 · לחץ שוב כדי לשנות",
     diffLoginWord:    "התחבר",
     diffLoginSuffix:  " כדי להצביע",
-    diffLabels:{ veryEasy:"קל מאוד", easy:"קל", medium:"בינוני", hard:"קשה", veryHard:"קשה מאוד", impossible:"בלתי אפשרי" },
-    // Answers modal
+    diffLabels:{ veryEasy:"קל מאוד", easy:"קל", medium:"בינוני", hard:"קשה", veryHard:"קשה מאוד", impossible:"בלתי אפשרי 💀" },
     answersTitle:     "תשובות",
     answersSubjectSep:" — עמ' ",
+    tabAssignment:    "📋 המשימה",
+    tabAnswers:       "💡 תשובות",
+    noAssignmentImgs: "המנהל לא העלה תמונות למשימה זו",
     uploadAreaLine1:  "לחץ כדי לבחור תמונות",
     uploadAreaLine2:  "ניתן לבחור מספר תמונות",
     btnUpload:        "העלה תשובות",
@@ -756,7 +811,6 @@
     photoCountSuffix: "תמונות",
     btnPhotoDelete:   "🗑️ מחק",
     confirmDeletePhoto:"למחוק תמונה זו?",
-    // Auth modal
     loginTitle:       "כניסה",
     loginSub:         "הכנס את פרטיך כדי להעלות תשובות",
     btnGoogleLogin:   "כניסה עם Google",
@@ -788,18 +842,15 @@
     resendError:      "שגיאה בשליחה — נסה שוב",
     resendNoCreds:    "נסה להתחבר שוב — תקבל הוראות אימות",
     backToLogin:      "← חזרה לכניסה",
-    // Google username modal
     usernameModalTitle:"בחר שם משתמש",
     usernameModalSub:  "שם זה יוצג לאחרים בעת העלאת תשובות",
     phGoogleUsername:  "שם משתמש (לפחות 2 תווים)",
     btnUsernameSave:   "המשך",
     usernameSaving:    "שומר...",
-    // Admin
     phAdminPass:      "סיסמה",
     btnAdminLogin:    "כניסה",
     adminWrongPass:   "סיסמה שגויה",
     confirmDeleteCard:"למחוק משימה זו?",
-    // Validation errors
     errFillAll:       "נא למלא את כל השדות",
     errUsernameTooShort:"שם משתמש קצר מדי (לפחות 2 תווים)",
     errPasswordMismatch:"הסיסמאות אינן תואמות",
@@ -811,7 +862,6 @@
     errMissingQuestions:"נא לרשום את השאלות הספציפיות!",
     errUploadFailed:  "שגיאה בהעלאת תמונות: ",
     errUploadInternal:"שגיאה בהעלאה",
-    // Settings colours
     settingsNow:      "עכשיו",
     settingsFar:      "הרחק",
     settingsHoursAbbr:"ש'",
@@ -829,14 +879,12 @@
     errSettingsMinOne:"כל הערכים חייבים להיות לפחות 1",
     errSettingsOrangeGtRed:"הכתום חייב להיות יותר זמן מהאדום",
     errSettingsGreenGtOrange:"הירוק חייב להיות יותר זמן מהכתום",
-    // Leaderboard
     leaderboardTitle: "🏆 טבלת מובילים",
     leaderboardLoading:"טוען...",
     leaderboardEmpty: "אין נתונים עדיין",
     leaderboardError: "שגיאה בטעינה",
     leaderboardMe:    " (את/ה)",
     greetingPrefix:   "שלום, ",
-    // Firebase errors
     firebaseErrors:{
       "auth/email-already-in-use":   "האימייל הזה כבר רשום — נסה להתחבר",
       "auth/invalid-email":           "כתובת אימייל לא תקינה",
@@ -867,10 +915,10 @@
   const ADMIN_PASSWORD = "homework123";
   const IMGBB_KEY      = "422246b6dc0e09efd2144d6017395f57";
 
-  // Runtime state
   let isAdmin=false, cards=[], specificQuestions=false, currentCardId=null, currentUser=null;
-  let pendingFiles=[], photosUnsubscribe=null, diffUnsubscribe=null;
+  let pendingFiles=[], pendingHwFiles=[], photosUnsubscribe=null, diffUnsubscribe=null;
   let pendingVerifyEmail=null, pendingVerifyPass=null, pendingGoogleFirebaseUser=null;
+  let currentAnswersTab = 'assignment';
 
   // ══ APPLY TEXTS ══
   const G_SVG = `<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>`;
@@ -912,10 +960,12 @@
     s("usernameModalTitle",TEXT.usernameModalTitle); s("usernameModalSub",TEXT.usernameModalSub);
     p("googleUsernameInput",TEXT.phGoogleUsername); s("usernameSubmitBtn",TEXT.btnUsernameSave);
     p("adminPassInput",TEXT.phAdminPass); s("adminPassError",TEXT.adminWrongPass); s("adminLoginSubmitBtn",TEXT.btnAdminLogin);
-    s("answersTitle",TEXT.answersTitle); s("diffSectionTitle",TEXT.diffSectionTitle); s("diffAvgSub",TEXT.diffNoVotes);
+    s("answersTitle",TEXT.answersTitle);
+    s("diffSectionTitle",TEXT.diffSectionTitle); s("diffAvgSub",TEXT.diffNoVotes);
     document.getElementById("diffLoginHint").innerHTML=`<span onclick="openAuthForDiff()">${TEXT.diffLoginWord}</span>${TEXT.diffLoginSuffix}`;
     s("uploadAreaText",TEXT.uploadAreaLine1+`<br><span>`+TEXT.uploadAreaLine2+`</span>`);
     s("uploadBtn",TEXT.btnUpload); s("uploadingText",TEXT.uploadingMsg); s("uploadedSectionHeader",TEXT.uploadedHeader); s("noPhotos",TEXT.noPhotos);
+    s("noAssignmentImgsText", TEXT.noAssignmentImgs);
     s("leaderboardTitle",TEXT.leaderboardTitle);
     s("prevLabelNow",TEXT.settingsNow); s("prevLabelFar",TEXT.settingsFar);
     s("settingsRedLabel",TEXT.settingsRedLabel); s("settingsLessThan1",TEXT.settingsLessThan); s("settingsUnitHours",TEXT.settingsUnitHours);
@@ -940,7 +990,6 @@
 
   // ══ SETTINGS DRAWER ══
   function openDrawer() {
-    // Populate colour inputs before opening
     document.getElementById("st-red").value    = colorSettings.redHours;
     document.getElementById("st-orange").value = colorSettings.orangeDays;
     document.getElementById("st-green").value  = colorSettings.greenDays;
@@ -1135,6 +1184,26 @@
     } else { document.getElementById("adminPassError").classList.remove("hidden"); }
   }
 
+  // ══ HW IMAGE UPLOAD (admin, in add form) ══
+  function handleHwImages(e){
+    pendingHwFiles=[...pendingHwFiles,...Array.from(e.target.files)];
+    renderHwPreviews();
+    document.getElementById("hwImgInput").value="";
+  }
+  function renderHwPreviews(){
+    const c=document.getElementById("hwImgPreviews"); c.innerHTML="";
+    pendingHwFiles.forEach((f,i)=>{
+      const r=new FileReader();
+      r.onload=e=>{
+        const w=document.createElement("div"); w.className="hw-img-preview";
+        w.innerHTML=`<img src="${e.target.result}"/><button class="hw-img-preview-remove" onclick="removeHwFile(${i})">&#215;</button>`;
+        c.appendChild(w);
+      };
+      r.readAsDataURL(f);
+    });
+  }
+  function removeHwFile(i){ pendingHwFiles.splice(i,1); renderHwPreviews(); }
+
   // ══ HOMEWORK FORM ══
   function toggleQuestions(){
     specificQuestions=!specificQuestions;
@@ -1144,8 +1213,16 @@
     if(specificQuestions) setTimeout(()=>document.getElementById("questionsInput").focus(),300);
     else document.getElementById("questionsInput").value="";
   }
-  function showAddForm(){document.getElementById("addForm").classList.remove("hidden");document.getElementById("addBtn").classList.add("hidden");}
-  function hideAddForm(){document.getElementById("addForm").classList.add("hidden");if(isAdmin)document.getElementById("addBtn").classList.remove("hidden");}
+  function showAddForm(){
+    document.getElementById("addForm").classList.remove("hidden");
+    document.getElementById("addBtn").classList.add("hidden");
+  }
+  function hideAddForm(){
+    document.getElementById("addForm").classList.add("hidden");
+    if(isAdmin) document.getElementById("addBtn").classList.remove("hidden");
+    // Clear hw images
+    pendingHwFiles=[]; renderHwPreviews();
+  }
   async function addCard(){
     const subject=document.getElementById("subjectInput").value.trim();
     const pages=document.getElementById("pagesInput").value.trim();
@@ -1154,9 +1231,26 @@
     const questions=specificQuestions?document.getElementById("questionsInput").value.trim():"";
     if(!subject||!pages||!dueDate) return alert(TEXT.errMissingFields);
     if(specificQuestions&&!questions) return alert(TEXT.errMissingQuestions);
-    await db.collection("homework").add({subject,pages,dueDate,dueTime,questions});
-    document.getElementById("subjectInput").value=document.getElementById("pagesInput").value=document.getElementById("dateInput").value=document.getElementById("timeInput").value=document.getElementById("questionsInput").value="";
-    if(specificQuestions) toggleQuestions(); hideAddForm();
+
+    const btn=document.getElementById("btnAddCard");
+    btn.disabled=true; btn.textContent="מוסיף...";
+
+    // Upload hw images first if any
+    let hwImageUrls=[];
+    if(pendingHwFiles.length>0){
+      try{
+        for(const f of pendingHwFiles) hwImageUrls.push(await uploadToImgBB(f));
+      }catch(err){ alert(TEXT.errUploadFailed+err.message); btn.disabled=false; btn.textContent=TEXT.btnAdd; return; }
+    }
+
+    await db.collection("homework").add({subject,pages,dueDate,dueTime,questions,hwImages:hwImageUrls});
+    document.getElementById("subjectInput").value=document.getElementById("pagesInput").value="";
+    document.getElementById("dateInput").value=document.getElementById("timeInput").value="";
+    document.getElementById("questionsInput").value="";
+    pendingHwFiles=[]; renderHwPreviews();
+    if(specificQuestions) toggleQuestions();
+    hideAddForm();
+    btn.disabled=false; btn.textContent=TEXT.btnAdd;
   }
   async function deleteCard(id){ if(confirm(TEXT.confirmDeleteCard)) await db.collection("homework").doc(id).delete(); }
 
@@ -1242,6 +1336,8 @@
       let diffHTML=dd&&dd.count>0?`<div class="card-difficulty-badge" style="color:${getDiffColor(dd.avg)};border-color:${getDiffColor(dd.avg)}33">🔥 קושי ${dd.avg}/10 · ${getDiffLabel(dd.avg)}</div>`
                   :dd?`<div class="card-difficulty-badge" style="color:var(--text4)">${TEXT.cardNotRated}</div>`:"";
       const qHTML=card.questions?`<div class="card-questions"><span class="card-questions-label">${TEXT.cardQuestionsLabel}</span>${card.questions}</div>`:"";
+      const hasImgs=card.hwImages&&card.hwImages.length>0;
+      const imgBadge=hasImgs?`<div class="card-has-images">${TEXT.cardHasImages} (${card.hwImages.length})</div>`:"";
       const div=document.createElement("div");
       div.className="card"; div.style.cssText=`background:${u.bg};border:1px solid ${u.border};box-shadow:${u.glow}`;
       div.onclick=e=>{if(!e.target.classList.contains("delete-btn")&&!e.target.closest(".delete-btn"))handleCardClick(card.id);};
@@ -1249,7 +1345,7 @@
         <div class="card-info">
           <div class="card-subject">${card.subject}</div>
           <div class="card-pages">${TEXT.cardPagesPrefix} <span>${card.pages}</span></div>
-          ${qHTML}${diffHTML}
+          ${qHTML}${imgBadge}${diffHTML}
           <div class="card-hint">${TEXT.cardHint}</div>
         </div>
         <div class="card-due ${isAdmin?"has-delete":""}">
@@ -1263,15 +1359,33 @@
 
   db.collection("homework").orderBy("dueDate").onSnapshot(snap=>{cards=snap.docs.map(d=>({id:d.id,...d.data()}));render();});
 
+  // ══ TAB SWITCHING ══
+  function switchAnswersTab(tab){
+    currentAnswersTab = tab;
+    // Update tab button styles
+    document.getElementById("tabBtnAssignment").classList.toggle("active", tab==="assignment");
+    document.getElementById("tabBtnAnswers").classList.toggle("active", tab==="answers");
+    // Show/hide panels
+    document.getElementById("panelAssignment").classList.toggle("active", tab==="assignment");
+    document.getElementById("panelAnswers").classList.toggle("active", tab==="answers");
+  }
+
   // ══ ANSWERS MODAL ══
-  function handleCardClick(id){ if(!currentUser){currentCardId=id;openAuthModal();return;} openAnswers(id); }
+  function handleCardClick(id){
+    currentCardId=id;
+    openAnswers(id);
+  }
   function openAnswers(id){
     currentCardId=id; const card=cards.find(c=>c.id===id);
     document.getElementById("answersSubject").textContent=card?card.subject+TEXT.answersSubjectSep+card.pages:"";
     document.getElementById("answersModal").classList.remove("hidden");
+    // Always start on assignment tab
+    switchAnswersTab('assignment');
     pendingFiles=[]; renderPreviews(); document.getElementById("uploadBtn").disabled=true;
     document.getElementById("uploadingText").classList.add("hidden");
-    loadPhotos(id); loadDiffVotes(id);
+    loadAssignmentImages(card);
+    loadPhotos(id);
+    loadDiffVotes(id);
   }
   function closeAnswers(){
     document.getElementById("answersModal").classList.add("hidden");
@@ -1279,6 +1393,25 @@
     if(diffUnsubscribe){diffUnsubscribe();diffUnsubscribe=null;}
     currentCardId=null; document.getElementById("fileInput").value=""; pendingFiles=[]; renderPreviews();
   }
+
+  // ══ ASSIGNMENT IMAGES (admin-uploaded, stored in card doc) ══
+  function loadAssignmentImages(card){
+    const loading=document.getElementById("assignmentLoading");
+    const grid=document.getElementById("assignmentImgsGrid");
+    const noImgs=document.getElementById("noAssignmentImgs");
+    loading.classList.remove("hidden"); grid.classList.add("hidden"); noImgs.classList.add("hidden");
+    grid.innerHTML="";
+    const urls=(card&&card.hwImages&&card.hwImages.length)?card.hwImages:[];
+    loading.classList.add("hidden");
+    if(!urls.length){ noImgs.classList.remove("hidden"); return; }
+    grid.classList.remove("hidden");
+    urls.forEach(url=>{
+      const wrap=document.createElement("div"); wrap.className="assignment-img-wrap";
+      wrap.innerHTML=`<img src="${url}" loading="lazy" onclick="openLightbox('${url}')"/>`;
+      grid.appendChild(wrap);
+    });
+  }
+
   function loadPhotos(id){
     if(photosUnsubscribe) photosUnsubscribe();
     const grid=document.getElementById("photosGrid"), np=document.getElementById("noPhotos");
@@ -1356,7 +1489,7 @@
   }
   function openAuthForDiff(){ openAuthModal(); }
 
-  // ══ UPLOAD ══
+  // ══ UPLOAD (user answers) ══
   function handleFiles(e){pendingFiles=[...pendingFiles,...Array.from(e.target.files)];renderPreviews();document.getElementById("uploadBtn").disabled=pendingFiles.length===0;}
   function renderPreviews(){
     const c=document.getElementById("uploadPreviews"); c.innerHTML="";
