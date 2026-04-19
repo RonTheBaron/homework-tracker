@@ -544,6 +544,39 @@
       <button class="drawer-btn-primary" id="settingsSaveBtn" onclick="saveSettings()"></button>
     </div>
   </div>
+  <!-- MANAGER QUICK TOGGLE (only visible for emails in MANAGER_EMAILS) -->
+  <div class="drawer-section hidden" id="drawerManagerSection">
+    <div class="drawer-section-label" id="drawerManagerLabel"></div>
+    <!-- Manager OFF state -->
+    <div id="drawerManagerOff">
+      <div class="drawer-row" onclick="managerToggleAdmin(true)"
+           style="border-color:rgba(100,210,255,.3);background:rgba(100,210,255,.04)">
+        <div class="drawer-row-left">
+          <span class="drawer-row-icon">⚡</span>
+          <div><div class="drawer-row-label" id="drawerManagerOnLabel"></div>
+               <div class="drawer-row-sub"  id="drawerManagerOnSub"></div></div>
+        </div>
+        <span class="drawer-row-right" style="color:var(--accent)">›</span>
+      </div>
+    </div>
+    <!-- Manager ON state -->
+    <div id="drawerManagerOn" class="hidden">
+      <div class="drawer-row" style="cursor:default;border-color:#30d15844;background:rgba(48,209,88,.05)">
+        <div class="drawer-row-left">
+          <span class="drawer-row-icon">✅</span>
+          <div class="drawer-row-label" id="drawerManagerActiveLabel" style="color:#30d158"></div>
+        </div>
+      </div>
+      <div class="drawer-row" onclick="managerToggleAdmin(false)" style="margin-top:4px">
+        <div class="drawer-row-left">
+          <span class="drawer-row-icon">🔴</span>
+          <div class="drawer-row-label" id="drawerManagerOffLabel"></div>
+        </div>
+        <span class="drawer-row-right">›</span>
+      </div>
+    </div>
+  </div>
+
   <div class="drawer-section" id="drawerAdminSection">
     <div class="drawer-section-label" id="drawerAdminLabel"></div>
     <div id="drawerAdminLogin">
@@ -591,8 +624,22 @@
       <div class="field-group"><input type="password" id="loginPass"  onkeydown="if(event.key==='Enter')doUserLogin()"/></div>
       <div class="modal-error hidden" id="loginError"></div>
       <button class="btn-full" id="loginSubmitBtn" onclick="doUserLogin()"></button>
+      <div style="text-align:center;margin-top:6px">
+        <span class="modal-link" style="font-size:11px;color:var(--text3)" id="forgotPasswordLink" onclick="switchToForgot()"></span>
+      </div>
       <div class="modal-link" id="switchToRegisterLink" onclick="switchToRegister()"></div>
       <div style="text-align:center;margin-top:10px"><span style="color:var(--text4);font-size:12px;cursor:pointer" onclick="closeAuthModal()" id="cancelLoginLink"></span></div>
+    </div>
+
+    <!-- FORGOT PASSWORD VIEW -->
+    <div id="forgotView" class="hidden">
+      <div class="modal-title" id="forgotTitle"></div>
+      <div class="modal-sub"   id="forgotSub"></div>
+      <div class="field-group"><input type="email" id="forgotEmail" onkeydown="if(event.key==='Enter')doForgotPassword()"/></div>
+      <div class="modal-error hidden" id="forgotError"></div>
+      <div class="resend-success hidden" id="forgotSuccess" style="margin-bottom:8px;text-align:center;font-size:13px"></div>
+      <button class="btn-full" id="forgotSubmitBtn" onclick="doForgotPassword()"></button>
+      <div class="modal-link" id="forgotBackLink" onclick="switchToLogin()"></div>
     </div>
     <div id="registerView" class="hidden">
       <div class="modal-title" id="registerTitle"></div>
@@ -819,7 +866,19 @@
     phPassword:       "סיסמה",
     btnLoginSubmit:   "כניסה",
     loginBusy:        "מתחבר...",
+    forgotPassword:   "שכחתי סיסמה",
+    forgotTitle:      "איפוס סיסמה",
+    forgotSub:        "הכנס את כתובת האימייל ונשלח קישור לאיפוס הסיסמה",
+    btnForgotSubmit:  "שלח קישור לאיפוס",
+    forgotBusy:       "שולח...",
+    forgotSuccess:    "✓ נשלח! בדוק את הדואר הנכנס (וספאם)",
+    forgotBackToLogin:"← חזרה לכניסה",
     switchToRegister: "אין לך חשבון? הירשם כאן",
+    drawerManagerLabel:   "מנהל",
+    drawerManagerOn:      "⚡ הפעל מצב מנהל",
+    drawerManagerOnSub:   "לחץ להפעלה מידית",
+    drawerManagerOff:     "כבה מצב מנהל",
+    drawerManagerActive:  "מצב מנהל פעיל ✓",
     cancelAuth:       "ביטול",
     registerTitle:    "הרשמה",
     registerSub:      "צור חשבון חדש",
@@ -915,6 +974,12 @@
   const ADMIN_PASSWORD = "homework123";
   const IMGBB_KEY      = "422246b6dc0e09efd2144d6017395f57";
 
+  // ✏️ Add manager emails here — these users get an instant admin toggle button
+  const MANAGER_EMAILS = [
+    // "teacher@gmail.com",
+    // "admin@school.com",
+  ];
+
   let isAdmin=false, cards=[], specificQuestions=false, currentCardId=null, currentUser=null;
   let pendingFiles=[], pendingHwFiles=[], photosUnsubscribe=null, diffUnsubscribe=null;
   let pendingVerifyEmail=null, pendingVerifyPass=null, pendingGoogleFirebaseUser=null;
@@ -949,6 +1014,13 @@
     document.getElementById("googleLoginBtn").innerHTML = G_SVG+" "+TEXT.btnGoogleLogin;
     s("authDividerText",TEXT.authDivider); p("loginEmail",TEXT.phEmail); p("loginPass",TEXT.phPassword);
     s("loginSubmitBtn",TEXT.btnLoginSubmit); s("switchToRegisterLink",TEXT.switchToRegister); s("cancelLoginLink",TEXT.cancelAuth);
+    s("forgotPasswordLink",TEXT.forgotPassword);
+    s("forgotTitle",TEXT.forgotTitle); s("forgotSub",TEXT.forgotSub);
+    p("forgotEmail",TEXT.phEmail);
+    s("forgotSubmitBtn",TEXT.btnForgotSubmit); s("forgotBackLink",TEXT.forgotBackToLogin);
+    s("drawerManagerLabel",TEXT.drawerManagerLabel);
+    s("drawerManagerOnLabel",TEXT.drawerManagerOn); s("drawerManagerOnSub",TEXT.drawerManagerOnSub);
+    s("drawerManagerActiveLabel",TEXT.drawerManagerActive); s("drawerManagerOffLabel",TEXT.drawerManagerOff);
     s("registerTitle",TEXT.registerTitle); s("registerSub",TEXT.registerSub);
     document.getElementById("googleRegisterBtn").innerHTML = G_SVG+" "+TEXT.btnGoogleRegister;
     s("authDividerText2",TEXT.authDivider); p("regUser",TEXT.phUsername); p("regEmail",TEXT.phEmail);
@@ -1016,6 +1088,29 @@
       loggedIn.classList.add("hidden"); loggedOut.classList.remove("hidden");
       document.getElementById("userBadge").classList.add("hidden");
     }
+    updateManagerSectionUI();
+  }
+
+  // ══ MANAGER TOGGLE ══
+  function isManager(){ return currentUser && MANAGER_EMAILS.includes(currentUser.email); }
+  function updateManagerSectionUI(){
+    const section=document.getElementById("drawerManagerSection");
+    if(!isManager()){ section.classList.add("hidden"); return; }
+    section.classList.remove("hidden");
+    document.getElementById("drawerManagerOff").classList.toggle("hidden", isAdmin);
+    document.getElementById("drawerManagerOn").classList.toggle("hidden", !isAdmin);
+  }
+  function managerToggleAdmin(on){
+    isAdmin=on;
+    if(on){
+      document.getElementById("addBtn").classList.remove("hidden");
+    } else {
+      document.getElementById("addBtn").classList.add("hidden");
+      hideAddForm();
+    }
+    updateManagerSectionUI();
+    updateAdminDrawerUI();
+    render();
   }
 
   function showDrawerAdminForm() {
@@ -1027,6 +1122,7 @@
     document.getElementById("addBtn").classList.add("hidden");
     document.getElementById("drawerAdminLogin").classList.remove("hidden");
     document.getElementById("drawerAdminActive").classList.add("hidden");
+    updateManagerSectionUI();
     hideAddForm(); render();
   }
   function updateAdminDrawerUI() {
@@ -1054,11 +1150,27 @@
   // ══ AUTH MODAL ══
   function openAuthModal(){ document.getElementById("authModal").classList.remove("hidden"); switchToLogin(); }
   function closeAuthModal(){ document.getElementById("authModal").classList.add("hidden"); }
-  function switchToRegister(){ hide("loginView");hide("verifyView");show("registerView");clearErr("registerError"); }
-  function switchToLogin(){ hide("registerView");hide("verifyView");show("loginView");clearErr("loginError"); }
+  function switchToRegister(){ hide("loginView");hide("verifyView");hide("forgotView");show("registerView");clearErr("registerError"); }
+  function switchToLogin(){ hide("registerView");hide("verifyView");hide("forgotView");show("loginView");clearErr("loginError"); }
+  function switchToForgot(){ hide("loginView");hide("registerView");hide("verifyView");show("forgotView");clearErr("forgotError");document.getElementById("forgotSuccess").classList.add("hidden");setTimeout(()=>document.getElementById("forgotEmail").focus(),50); }
   function switchToVerify(email){
-    hide("loginView");hide("registerView");show("verifyView");
+    hide("loginView");hide("registerView");hide("forgotView");show("verifyView");
     document.getElementById("verifyEmailDisplay").textContent=email; resetResendUI();
+  }
+
+  // ══ FORGOT PASSWORD ══
+  async function doForgotPassword(){
+    const email=document.getElementById("forgotEmail").value.trim();
+    const errEl=document.getElementById("forgotError"), sucEl=document.getElementById("forgotSuccess");
+    const btn=document.getElementById("forgotSubmitBtn");
+    clearErr("forgotError"); sucEl.classList.add("hidden");
+    if(!email){showErr(errEl,TEXT.errFillAll);return;}
+    btn.disabled=true; btn.textContent=TEXT.forgotBusy;
+    try{
+      await auth.sendPasswordResetEmail(email);
+      sucEl.textContent=TEXT.forgotSuccess; sucEl.classList.remove("hidden");
+    }catch(err){ showErr(errEl,translateFirebaseError(err.code)); }
+    btn.disabled=false; btn.textContent=TEXT.btnForgotSubmit;
   }
 
   // ══ GOOGLE SIGN-IN ══
