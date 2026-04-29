@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8"/>
@@ -35,355 +36,364 @@
       --card-hint:#999;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { min-height:100vh; background:var(--bg); font-family:'Courier New',monospace;
-           background-image:radial-gradient(ellipse at 20% 50%,rgba(13,26,42,.6) 0%,transparent 60%),
-                            radial-gradient(ellipse at 80% 20%,rgba(26,13,26,.4) 0%,transparent 60%);
-           color:var(--text); direction:rtl; transition:background .3s,color .3s; }
-    body.light { background-image:none; }
+```
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { min-height:100vh; background:var(--bg); font-family:'Courier New',monospace;
+       background-image:radial-gradient(ellipse at 20% 50%,rgba(13,26,42,.6) 0%,transparent 60%),
+                        radial-gradient(ellipse at 80% 20%,rgba(26,13,26,.4) 0%,transparent 60%);
+       color:var(--text); direction:rtl; transition:background .3s,color .3s; }
+body.light { background-image:none; }
 
-    header { border-bottom:1px solid var(--border); padding:20px 28px; display:flex;
-             justify-content:space-between; align-items:center;
-             background:rgba(255,255,255,0.02); position:sticky; top:0; z-index:100; }
-    body.light header { background:rgba(255,255,255,0.85); backdrop-filter:blur(10px); }
-    .header-title-label { font-size:11px; letter-spacing:2px; color:var(--text3); margin-bottom:4px; }
-    .header-title { font-size:24px; font-weight:bold; }
-    .header-actions { display:flex; gap:10px; align-items:center; }
-    .user-badge { font-size:12px; color:var(--text2); padding:6px 12px;
-                  border:1px solid var(--border); border-radius:8px; }
+header { border-bottom:1px solid var(--border); padding:20px 28px; display:flex;
+         justify-content:space-between; align-items:center;
+         background:rgba(255,255,255,0.02); position:sticky; top:0; z-index:100; }
+body.light header { background:rgba(255,255,255,0.85); backdrop-filter:blur(10px); }
+.header-title-label { font-size:11px; letter-spacing:2px; color:var(--text3); margin-bottom:4px; }
+.header-title { font-size:24px; font-weight:bold; }
+.header-actions { display:flex; gap:10px; align-items:center; }
+.user-badge { font-size:12px; color:var(--text2); padding:6px 12px;
+              border:1px solid var(--border); border-radius:8px; }
 
-    .btn-gear { background:transparent; border:1px solid var(--border2); color:var(--text2);
-                padding:8px 14px; border-radius:8px; cursor:pointer; font-size:16px;
-                font-family:'Courier New',monospace; transition:all .2s; }
-    .btn-gear:hover { border-color:var(--text); color:var(--text); }
+.btn-gear { background:transparent; border:1px solid var(--border2); color:var(--text2);
+            padding:8px 14px; border-radius:8px; cursor:pointer; font-size:16px;
+            font-family:'Courier New',monospace; transition:all .2s; }
+.btn-gear:hover { border-color:var(--text); color:var(--text); }
 
-    .btn { padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px;
-           font-family:'Courier New',monospace; transition:all .2s; border:none; }
-    .btn-full { width:100%; padding:14px; background:var(--text); color:var(--bg);
-                border:none; border-radius:10px; cursor:pointer; font-weight:bold;
-                font-size:14px; font-family:'Courier New',monospace; margin-top:8px; transition:all .2s; }
-    .btn-full:hover { opacity:.88; }
-    .btn-full:disabled { background:var(--border2); color:var(--text3); cursor:not-allowed; }
+.btn { padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px;
+       font-family:'Courier New',monospace; transition:all .2s; border:none; }
+.btn-full { width:100%; padding:14px; background:var(--text); color:var(--bg);
+            border:none; border-radius:10px; cursor:pointer; font-weight:bold;
+            font-size:14px; font-family:'Courier New',monospace; margin-top:8px; transition:all .2s; }
+.btn-full:hover { opacity:.88; }
+.btn-full:disabled { background:var(--border2); color:var(--text3); cursor:not-allowed; }
 
-    main { max-width:700px; margin:0 auto; padding:40px 20px; }
-    .add-btn-dashed { width:100%; padding:16px; background:transparent;
-                      border:2px dashed var(--border2); color:var(--text3);
-                      border-radius:16px; cursor:pointer; font-size:15px;
-                      font-family:'Courier New',monospace; transition:all .2s; margin-bottom:28px; }
-    .add-btn-dashed:hover { border-color:var(--text); color:var(--text); }
-    .add-form { background:var(--bg2); border:1px solid var(--border2); border-radius:16px;
-                padding:24px; margin-bottom:28px; display:flex; flex-direction:column; gap:12px; }
-    .form-title { font-weight:bold; letter-spacing:1px; margin-bottom:4px; font-size:15px; }
-    .form-row-2 { display:flex; gap:10px; }
-    .form-row-2 > * { flex:1; }
-    input[type=text],input[type=password],input[type=date],input[type=time],input[type=email],textarea {
-      width:100%; padding:12px 14px; background:var(--bg); border:1px solid var(--border2);
-      border-radius:10px; color:var(--text); font-size:14px; font-family:'Courier New',monospace;
-      outline:none; text-align:right; transition:border-color .2s; }
-    input:focus,textarea:focus { border-color:var(--text3); }
-    input[type=date],input[type=time] { text-align:left; direction:ltr; }
-    input[type=email] { text-align:left; direction:ltr; }
-    input[type=date]::-webkit-calendar-picker-indicator,
-    input[type=time]::-webkit-calendar-picker-indicator { filter:invert(1); }
-    body.light input[type=date]::-webkit-calendar-picker-indicator,
-    body.light input[type=time]::-webkit-calendar-picker-indicator { filter:none; }
-    .input-label { font-size:11px; color:var(--text3); margin-bottom:4px; letter-spacing:1px; }
-    textarea { resize:none; height:70px; }
-    .checkbox-row { display:flex; align-items:center; gap:10px; padding:12px 14px;
-                    background:var(--bg); border:1px solid var(--border2); border-radius:10px;
-                    cursor:pointer; user-select:none; transition:border-color .2s; }
-    .checkbox-row:hover { border-color:var(--text3); }
-    .checkbox-row.active { border-color:var(--accent); }
-    .custom-checkbox { width:20px; height:20px; border-radius:6px; border:2px solid var(--border2);
-                       background:transparent; display:flex; align-items:center; justify-content:center;
-                       flex-shrink:0; transition:all .2s; }
-    .custom-checkbox.checked { background:var(--accent); border-color:var(--accent); }
-    .custom-checkbox.checked::after { content:'✓'; font-size:13px; color:#000; font-weight:bold; }
-    .checkbox-label { color:var(--text2); font-size:13px; transition:color .2s; }
-    .checkbox-row.active .checkbox-label { color:var(--text); }
-    .questions-box { overflow:hidden; max-height:0; transition:max-height .3s ease,opacity .3s ease; opacity:0; }
-    .questions-box.open { max-height:120px; opacity:1; }
-    .form-row { display:flex; gap:10px; }
-    .form-row button { flex:1; }
-    .btn-cancel { flex:1; padding:12px; background:transparent; color:var(--text3);
-                  border:1px solid var(--border2); border-radius:10px; cursor:pointer;
-                  font-family:'Courier New',monospace; font-size:14px; }
-    .cards-list { display:flex; flex-direction:column; gap:14px; }
-    .card { border-radius:16px; padding:20px 24px; display:flex; align-items:flex-start;
-            transition:transform .2s; cursor:pointer; animation:fadeIn .3s ease; }
-    .card:hover { transform:translateX(-4px); }
-    .card-number { width:32px; height:32px; border-radius:50%; font-size:13px; font-weight:bold;
-                   display:flex; align-items:center; justify-content:center;
-                   margin-left:18px; flex-shrink:0; margin-top:3px; }
-    .card-info { flex:1; }
-    .card-subject { font-size:18px; font-weight:bold; margin-bottom:4px; }
-    .card-pages { color:var(--text2); font-size:13px; }
-    .card-pages span { color:var(--text); font-weight:bold; }
-    .card-questions { margin-top:8px; padding:8px 12px; background:rgba(100,210,255,.08);
-                      border:1px solid rgba(100,210,255,.2); border-radius:8px;
-                      font-size:12px; color:var(--accent); line-height:1.5; }
-    .card-questions-label { color:#3a8fa8; margin-left:4px; }
-    .card-hint { font-size:11px; color:var(--card-hint); margin-top:6px; }
-    .card-has-images { font-size:11px; color:var(--accent); margin-top:4px; opacity:0.7; }
-    .card-due { text-align:left; flex-shrink:0; }
-    .card-due.has-delete { margin-left:16px; }
-    .card-urgency { font-weight:bold; font-size:13px; }
-    .card-date { color:var(--text3); font-size:12px; margin-top:3px; }
-    .delete-btn { background:transparent; border:1px solid var(--border2); color:var(--text3);
-                  width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:18px;
-                  display:flex; align-items:center; justify-content:center; flex-shrink:0;
-                  transition:all .2s; line-height:1; margin-top:3px; }
-    .delete-btn:hover { border-color:#ff2d55; color:#ff2d55; }
-    .card-difficulty-badge { display:inline-flex; align-items:center; gap:5px; margin-top:6px;
-                             padding:3px 9px; border-radius:20px; font-size:11px; font-weight:bold;
-                             border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); }
-    body.light .card-difficulty-badge { background:rgba(0,0,0,.04); border-color:rgba(0,0,0,.1); }
-    .empty { text-align:center; padding:80px 0; }
-    .empty-emoji { font-size:48px; margin-bottom:16px; }
-    .empty-text { color:var(--text3); font-size:16px; }
-    .empty-sub  { color:var(--text4); font-size:13px; margin-top:8px; }
-    .total-count { text-align:center; margin-top:40px; color:var(--text4); font-size:12px; letter-spacing:2px; }
-    .credit { text-align:center; margin-top:8px; color:var(--text4); font-size:11px; opacity:.5; }
+main { max-width:700px; margin:0 auto; padding:40px 20px; }
 
-    /* ── HW IMAGE UPLOAD (in add form) ── */
-    .hw-img-upload-area { border:2px dashed var(--border2); border-radius:12px; padding:16px 20px;
-                          text-align:center; cursor:pointer; transition:all .2s; }
-    .hw-img-upload-area:hover { border-color:var(--accent); }
-    .hw-img-upload-area input { display:none; }
-    .hw-img-upload-text { color:var(--text3); font-size:13px; }
-    .hw-img-upload-text span { color:var(--accent); }
-    .hw-img-section { display:flex; flex-direction:column; gap:8px; }
-    .hw-img-section-label { font-size:11px; color:var(--text3); letter-spacing:1px; display:flex; align-items:center; gap:6px; }
-    .hw-img-section-label em { font-style:normal; background:rgba(100,210,255,.1); color:var(--accent);
-                               font-size:10px; padding:2px 7px; border-radius:20px; border:1px solid rgba(100,210,255,.2); }
-    .hw-img-previews { display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
-    .hw-img-preview { position:relative; width:70px; height:70px; border-radius:8px;
-                      overflow:hidden; border:1px solid var(--border2); }
-    .hw-img-preview img { width:100%; height:100%; object-fit:cover; }
-    .hw-img-preview-remove { position:absolute; top:2px; left:2px; background:rgba(0,0,0,.75);
-                             border:none; color:#fff; width:18px; height:18px; border-radius:4px;
-                             cursor:pointer; font-size:12px; display:flex; align-items:center;
-                             justify-content:center; transition:background .2s; }
-    .hw-img-preview-remove:hover { background:rgba(255,45,85,.85); }
+/* ── TYPE FILTER BAR ── */
+.filter-bar { display:flex; gap:8px; margin-bottom:20px; }
+.filter-btn { flex:1; padding:10px 8px; border-radius:10px; border:1px solid var(--border2);
+              background:transparent; color:var(--text3); cursor:pointer; font-size:13px;
+              font-family:'Courier New',monospace; transition:all .22s; font-weight:bold;
+              letter-spacing:.5px; }
+.filter-btn:hover { border-color:var(--text2); color:var(--text2); }
+.filter-btn.active-all  { background:rgba(255,255,255,.07); border-color:var(--text2); color:var(--text); }
+.filter-btn.active-hw   { background:rgba(100,210,255,.1); border-color:var(--accent); color:var(--accent); }
+.filter-btn.active-exam { background:rgba(255,159,10,.1); border-color:#ff9f0a; color:#ff9f0a; }
 
-    /* ── MODALS ── */
-    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.88); display:flex;
-                     align-items:center; justify-content:center; backdrop-filter:blur(12px);
-                     z-index:999; padding:16px; }
-    .modal { background:var(--bg2); border:1px solid var(--border2); border-radius:20px;
-             padding:32px; width:100%; max-width:380px; }
-    .modal-title { font-weight:bold; font-size:18px; margin-bottom:6px; }
-    .modal-sub   { color:var(--text3); font-size:13px; margin-bottom:24px; line-height:1.5; }
-    .modal-error { color:#ff2d55; font-size:12px; margin-top:8px; padding:8px 12px;
-                   background:rgba(255,45,85,.08); border:1px solid rgba(255,45,85,.2); border-radius:8px; }
-    .modal-link  { color:var(--accent); cursor:pointer; font-size:12px; text-align:center; margin-top:14px; }
-    .modal-link:hover { text-decoration:underline; }
-    .modal-divider { height:1px; background:var(--border); margin:16px 0; }
-    .field-group { margin-bottom:10px; }
-    .btn-google { width:100%; padding:12px 16px; background:#fff; color:#333; border:none;
-                  border-radius:10px; cursor:pointer; font-size:14px; font-family:'Courier New',monospace;
-                  font-weight:bold; display:flex; align-items:center; justify-content:center;
-                  gap:10px; transition:background .2s; margin-bottom:4px; }
-    .btn-google:hover { background:#f0f0f0; }
-    .btn-google:disabled { background:#ccc; color:#888; cursor:not-allowed; }
-    .auth-divider { display:flex; align-items:center; gap:10px; margin:14px 0; }
-    .auth-divider-line { flex:1; height:1px; background:var(--border); }
-    .auth-divider-text { color:var(--text3); font-size:11px; letter-spacing:1px; }
-    .verify-box { text-align:center; padding:8px 0; }
-    .verify-icon { font-size:40px; margin-bottom:12px; }
-    .verify-title { font-size:17px; font-weight:bold; margin-bottom:8px; }
-    .verify-sub { color:var(--text3); font-size:13px; line-height:1.6; margin-bottom:20px; }
-    .verify-email-highlight { color:var(--accent); font-weight:bold; }
-    .resend-link    { color:var(--accent); cursor:pointer; font-size:12px; }
-    .resend-link:hover { text-decoration:underline; }
-    .resend-cooldown { color:var(--text3); font-size:12px; }
-    .resend-success  { color:#30d158; font-size:12px; }
+/* ── TYPE SELECTOR (in form) ── */
+.type-selector { display:flex; gap:0; border:1px solid var(--border2); border-radius:12px; overflow:hidden; margin-bottom:2px; }
+.type-opt { flex:1; padding:12px 10px; text-align:center; font-size:14px; font-weight:bold;
+            cursor:pointer; transition:all .22s; color:var(--text3); background:transparent;
+            font-family:'Courier New',monospace; border:none; position:relative; }
+.type-opt:first-child { border-left:1px solid var(--border2); }
+.type-opt.active-hw {
+  background:rgba(100,210,255,.12); color:var(--accent); border-bottom:2px solid var(--accent);
+}
+.type-opt.active-exam {
+  background:rgba(255,159,10,.12); color:#ff9f0a; border-bottom:2px solid #ff9f0a;
+}
+.type-opt:hover:not(.active-hw):not(.active-exam) { color:var(--text2); background:rgba(255,255,255,.04); }
 
-    /* ── ANSWERS MODAL ── */
-    .answers-modal { background:var(--bg); border:1px solid var(--border); border-radius:20px;
-                     width:100%; max-width:600px; max-height:90vh; display:flex;
-                     flex-direction:column; overflow:hidden; }
-    .answers-header { padding:20px 24px; border-bottom:1px solid var(--border);
-                      display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
-    .answers-title   { font-size:18px; font-weight:bold; }
-    .answers-subject { font-size:12px; color:var(--text3); margin-top:2px; }
-    .close-btn { background:transparent; border:1px solid var(--border2); color:var(--text3);
-                 width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:18px;
-                 display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
-    .close-btn:hover { border-color:var(--text); color:var(--text); }
+/* ── TYPE BADGE on cards ── */
+.type-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px;
+              border-radius:20px; font-size:11px; font-weight:bold; letter-spacing:.5px;
+              margin-bottom:6px; }
+.type-badge-hw   { background:rgba(100,210,255,.1); color:var(--accent); border:1px solid rgba(100,210,255,.25); }
+.type-badge-exam { background:rgba(255,159,10,.1); color:#ff9f0a; border:1px solid rgba(255,159,10,.25); }
 
-    /* ── TABS (answers modal) ── */
-    .answers-tabs { display:flex; border-bottom:1px solid var(--border); flex-shrink:0; background:var(--bg); }
-    .answers-tab { flex:1; padding:13px 10px; background:transparent; border:none;
-                   color:var(--text3); cursor:pointer; font-family:'Courier New',monospace;
-                   font-size:13px; letter-spacing:.5px; border-bottom:2px solid transparent;
-                   transition:all .22s; position:relative; }
-    .answers-tab:hover { color:var(--text2); }
-    .answers-tab.active { color:var(--text); border-bottom-color:var(--accent); }
-    .answers-tab .tab-badge { display:inline-flex; align-items:center; justify-content:center;
-                              width:18px; height:18px; border-radius:50%; font-size:10px;
-                              background:var(--accent); color:#000; font-weight:bold;
-                              margin-right:6px; vertical-align:middle; }
+.add-btn-dashed { width:100%; padding:16px; background:transparent;
+                  border:2px dashed var(--border2); color:var(--text3);
+                  border-radius:16px; cursor:pointer; font-size:15px;
+                  font-family:'Courier New',monospace; transition:all .2s; margin-bottom:28px; }
+.add-btn-dashed:hover { border-color:var(--text); color:var(--text); }
+.add-form { background:var(--bg2); border:1px solid var(--border2); border-radius:16px;
+            padding:24px; margin-bottom:28px; display:flex; flex-direction:column; gap:12px; }
+.form-title { font-weight:bold; letter-spacing:1px; margin-bottom:4px; font-size:15px; }
+.form-row-2 { display:flex; gap:10px; }
+.form-row-2 > * { flex:1; }
+input[type=text],input[type=password],input[type=date],input[type=time],input[type=email],textarea {
+  width:100%; padding:12px 14px; background:var(--bg); border:1px solid var(--border2);
+  border-radius:10px; color:var(--text); font-size:14px; font-family:'Courier New',monospace;
+  outline:none; text-align:right; transition:border-color .2s; }
+input:focus,textarea:focus { border-color:var(--text3); }
+input[type=date],input[type=time] { text-align:left; direction:ltr; }
+input[type=email] { text-align:left; direction:ltr; }
+input[type=date]::-webkit-calendar-picker-indicator,
+input[type=time]::-webkit-calendar-picker-indicator { filter:invert(1); }
+body.light input[type=date]::-webkit-calendar-picker-indicator,
+body.light input[type=time]::-webkit-calendar-picker-indicator { filter:none; }
+.input-label { font-size:11px; color:var(--text3); margin-bottom:4px; letter-spacing:1px; }
+textarea { resize:none; height:70px; }
+.checkbox-row { display:flex; align-items:center; gap:10px; padding:12px 14px;
+                background:var(--bg); border:1px solid var(--border2); border-radius:10px;
+                cursor:pointer; user-select:none; transition:border-color .2s; }
+.checkbox-row:hover { border-color:var(--text3); }
+.checkbox-row.active { border-color:var(--accent); }
+.custom-checkbox { width:20px; height:20px; border-radius:6px; border:2px solid var(--border2);
+                   background:transparent; display:flex; align-items:center; justify-content:center;
+                   flex-shrink:0; transition:all .2s; }
+.custom-checkbox.checked { background:var(--accent); border-color:var(--accent); }
+.custom-checkbox.checked::after { content:'✓'; font-size:13px; color:#000; font-weight:bold; }
+.checkbox-label { color:var(--text2); font-size:13px; transition:color .2s; }
+.checkbox-row.active .checkbox-label { color:var(--text); }
+.questions-box { overflow:hidden; max-height:0; transition:max-height .3s ease,opacity .3s ease; opacity:0; }
+.questions-box.open { max-height:120px; opacity:1; }
+.form-row { display:flex; gap:10px; }
+.form-row button { flex:1; }
+.btn-cancel { flex:1; padding:12px; background:transparent; color:var(--text3);
+              border:1px solid var(--border2); border-radius:10px; cursor:pointer;
+              font-family:'Courier New',monospace; font-size:14px; }
+.cards-list { display:flex; flex-direction:column; gap:14px; }
+.card { border-radius:16px; padding:20px 24px; display:flex; align-items:flex-start;
+        transition:transform .2s; cursor:pointer; animation:fadeIn .3s ease; }
+.card:hover { transform:translateX(-4px); }
+.card-number { width:32px; height:32px; border-radius:50%; font-size:13px; font-weight:bold;
+               display:flex; align-items:center; justify-content:center;
+               margin-left:18px; flex-shrink:0; margin-top:3px; }
+.card-info { flex:1; }
+.card-subject { font-size:18px; font-weight:bold; margin-bottom:4px; }
+.card-pages { color:var(--text2); font-size:13px; }
+.card-pages span { color:var(--text); font-weight:bold; }
+.card-questions { margin-top:8px; padding:8px 12px; background:rgba(100,210,255,.08);
+                  border:1px solid rgba(100,210,255,.2); border-radius:8px;
+                  font-size:12px; color:var(--accent); line-height:1.5; }
+.card-questions-label { color:#3a8fa8; margin-left:4px; }
+.card-hint { font-size:11px; color:var(--card-hint); margin-top:6px; }
+.card-has-images { font-size:11px; color:var(--accent); margin-top:4px; opacity:0.7; }
+.card-due { text-align:left; flex-shrink:0; }
+.card-due.has-delete { margin-left:16px; }
+.card-urgency { font-weight:bold; font-size:13px; }
+.card-date { color:var(--text3); font-size:12px; margin-top:3px; }
+.delete-btn { background:transparent; border:1px solid var(--border2); color:var(--text3);
+              width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:18px;
+              display:flex; align-items:center; justify-content:center; flex-shrink:0;
+              transition:all .2s; line-height:1; margin-top:3px; }
+.delete-btn:hover { border-color:#ff2d55; color:#ff2d55; }
+.card-difficulty-badge { display:inline-flex; align-items:center; gap:5px; margin-top:6px;
+                         padding:3px 9px; border-radius:20px; font-size:11px; font-weight:bold;
+                         border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); }
+body.light .card-difficulty-badge { background:rgba(0,0,0,.04); border-color:rgba(0,0,0,.1); }
+.empty { text-align:center; padding:80px 0; }
+.empty-emoji { font-size:48px; margin-bottom:16px; }
+.empty-text { color:var(--text3); font-size:16px; }
+.empty-sub  { color:var(--text4); font-size:13px; margin-top:8px; }
+.total-count { text-align:center; margin-top:40px; color:var(--text4); font-size:12px; letter-spacing:2px; }
+.credit { text-align:center; margin-top:8px; color:var(--text4); font-size:11px; opacity:.5; }
 
-    .answers-body { flex:1; overflow-y:auto; }
+/* ── HW IMAGE UPLOAD ── */
+.hw-img-upload-area { border:2px dashed var(--border2); border-radius:12px; padding:16px 20px;
+                      text-align:center; cursor:pointer; transition:all .2s; }
+.hw-img-upload-area:hover { border-color:var(--accent); }
+.hw-img-upload-area input { display:none; }
+.hw-img-upload-text { color:var(--text3); font-size:13px; }
+.hw-img-upload-text span { color:var(--accent); }
+.hw-img-section { display:flex; flex-direction:column; gap:8px; }
+.hw-img-section-label { font-size:11px; color:var(--text3); letter-spacing:1px; display:flex; align-items:center; gap:6px; }
+.hw-img-section-label em { font-style:normal; background:rgba(100,210,255,.1); color:var(--accent);
+                           font-size:10px; padding:2px 7px; border-radius:20px; border:1px solid rgba(100,210,255,.2); }
+.hw-img-previews { display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
+.hw-img-preview { position:relative; width:70px; height:70px; border-radius:8px;
+                  overflow:hidden; border:1px solid var(--border2); }
+.hw-img-preview img { width:100%; height:100%; object-fit:cover; }
+.hw-img-preview-remove { position:absolute; top:2px; left:2px; background:rgba(0,0,0,.75);
+                         border:none; color:#fff; width:18px; height:18px; border-radius:4px;
+                         cursor:pointer; font-size:12px; display:flex; align-items:center;
+                         justify-content:center; transition:background .2s; }
+.hw-img-preview-remove:hover { background:rgba(255,45,85,.85); }
 
-    /* tab panels */
-    .tab-panel { display:none; padding:20px 24px; }
-    .tab-panel.active { display:block; }
+/* ── MODALS ── */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.88); display:flex;
+                 align-items:center; justify-content:center; backdrop-filter:blur(12px);
+                 z-index:999; padding:16px; }
+.modal { background:var(--bg2); border:1px solid var(--border2); border-radius:20px;
+         padding:32px; width:100%; max-width:380px; }
+.modal-title { font-weight:bold; font-size:18px; margin-bottom:6px; }
+.modal-sub   { color:var(--text3); font-size:13px; margin-bottom:24px; line-height:1.5; }
+.modal-error { color:#ff2d55; font-size:12px; margin-top:8px; padding:8px 12px;
+               background:rgba(255,45,85,.08); border:1px solid rgba(255,45,85,.2); border-radius:8px; }
+.modal-link  { color:var(--accent); cursor:pointer; font-size:12px; text-align:center; margin-top:14px; }
+.modal-link:hover { text-decoration:underline; }
+.modal-divider { height:1px; background:var(--border); margin:16px 0; }
+.field-group { margin-bottom:10px; }
+.btn-google { width:100%; padding:12px 16px; background:#fff; color:#333; border:none;
+              border-radius:10px; cursor:pointer; font-size:14px; font-family:'Courier New',monospace;
+              font-weight:bold; display:flex; align-items:center; justify-content:center;
+              gap:10px; transition:background .2s; margin-bottom:4px; }
+.btn-google:hover { background:#f0f0f0; }
+.btn-google:disabled { background:#ccc; color:#888; cursor:not-allowed; }
+.auth-divider { display:flex; align-items:center; gap:10px; margin:14px 0; }
+.auth-divider-line { flex:1; height:1px; background:var(--border); }
+.auth-divider-text { color:var(--text3); font-size:11px; letter-spacing:1px; }
+.verify-box { text-align:center; padding:8px 0; }
+.verify-icon { font-size:40px; margin-bottom:12px; }
+.verify-title { font-size:17px; font-weight:bold; margin-bottom:8px; }
+.verify-sub { color:var(--text3); font-size:13px; line-height:1.6; margin-bottom:20px; }
+.verify-email-highlight { color:var(--accent); font-weight:bold; }
+.resend-link    { color:var(--accent); cursor:pointer; font-size:12px; }
+.resend-link:hover { text-decoration:underline; }
+.resend-cooldown { color:var(--text3); font-size:12px; }
+.resend-success  { color:#30d158; font-size:12px; }
 
-    /* ── ASSIGNMENT IMAGES PANEL ── */
-    .assignment-imgs-grid { display:flex; flex-direction:column; gap:12px; }
-    .assignment-img-wrap { border-radius:12px; overflow:hidden; border:1px solid var(--border);
-                           background:var(--bg2); }
-    .assignment-img-wrap img { width:100%; display:block; cursor:pointer; transition:opacity .2s; }
-    .assignment-img-wrap img:hover { opacity:.9; }
-    .no-assignment-imgs { text-align:center; padding:60px 20px; color:var(--text4); font-size:14px; }
-    .no-assignment-imgs-icon { font-size:36px; margin-bottom:12px; }
-    .uploading-hw-bar { display:flex; align-items:center; gap:10px; padding:12px 16px;
-                        background:rgba(100,210,255,.06); border:1px solid rgba(100,210,255,.15);
-                        border-radius:10px; color:var(--accent); font-size:13px; margin-top:8px; }
+/* ── ANSWERS MODAL ── */
+.answers-modal { background:var(--bg); border:1px solid var(--border); border-radius:20px;
+                 width:100%; max-width:600px; max-height:90vh; display:flex;
+                 flex-direction:column; overflow:hidden; }
+.answers-header { padding:20px 24px; border-bottom:1px solid var(--border);
+                  display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+.answers-title   { font-size:18px; font-weight:bold; }
+.answers-subject { font-size:12px; color:var(--text3); margin-top:2px; }
+.close-btn { background:transparent; border:1px solid var(--border2); color:var(--text3);
+             width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:18px;
+             display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
+.close-btn:hover { border-color:var(--text); color:var(--text); }
+.answers-tabs { display:flex; border-bottom:1px solid var(--border); flex-shrink:0; background:var(--bg); }
+.answers-tab { flex:1; padding:13px 10px; background:transparent; border:none;
+               color:var(--text3); cursor:pointer; font-family:'Courier New',monospace;
+               font-size:13px; letter-spacing:.5px; border-bottom:2px solid transparent;
+               transition:all .22s; }
+.answers-tab:hover { color:var(--text2); }
+.answers-tab.active { color:var(--text); border-bottom-color:var(--accent); }
+.answers-body { flex:1; overflow-y:auto; }
+.tab-panel { display:none; padding:20px 24px; }
+.tab-panel.active { display:block; }
+.assignment-imgs-grid { display:flex; flex-direction:column; gap:12px; }
+.assignment-img-wrap { border-radius:12px; overflow:hidden; border:1px solid var(--border); background:var(--bg2); }
+.assignment-img-wrap img { width:100%; display:block; cursor:pointer; transition:opacity .2s; }
+.assignment-img-wrap img:hover { opacity:.9; }
+.no-assignment-imgs { text-align:center; padding:60px 20px; color:var(--text4); font-size:14px; }
+.no-assignment-imgs-icon { font-size:36px; margin-bottom:12px; }
+.upload-area { border:2px dashed var(--border2); border-radius:12px; padding:20px;
+               text-align:center; cursor:pointer; transition:all .2s; margin-bottom:16px; }
+.upload-area:hover { border-color:var(--accent); }
+.upload-area input { display:none; }
+.upload-area-text { color:var(--text3); font-size:13px; }
+.upload-area-text span { color:var(--accent); }
+.upload-previews { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.upload-preview { position:relative; width:70px; height:70px; border-radius:8px;
+                  overflow:hidden; border:1px solid var(--border2); }
+.upload-preview img { width:100%; height:100%; object-fit:cover; }
+.upload-preview-remove { position:absolute; top:2px; left:2px; background:rgba(0,0,0,.7);
+                         border:none; color:#fff; width:18px; height:18px; border-radius:4px;
+                         cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; }
+.upload-btn { width:100%; padding:12px; background:var(--accent); color:#000; border:none;
+              border-radius:10px; cursor:pointer; font-weight:bold; font-size:14px;
+              font-family:'Courier New',monospace; transition:opacity .2s; }
+.upload-btn:hover { opacity:.85; }
+.upload-btn:disabled { background:var(--border2); color:var(--text3); cursor:not-allowed; }
+.uploading-text { text-align:center; color:var(--accent); font-size:13px; margin-top:8px; }
+.photos-grid { display:flex; flex-direction:column; gap:16px; }
+.photo-card { background:var(--bg3); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+.photo-card-header { padding:10px 14px; display:flex; justify-content:space-between; align-items:center; }
+.photo-uploader { font-size:13px; font-weight:bold; }
+.photo-time { font-size:11px; color:var(--text3); }
+.photo-img { width:100%; max-height:400px; object-fit:contain; background:var(--bg); cursor:pointer; display:block; }
+.photo-img:hover { opacity:.9; }
+.photo-actions { padding:10px 14px; display:flex; align-items:center; gap:10px; }
+.like-btn { background:transparent; border:1px solid var(--border2); border-radius:8px;
+            padding:6px 14px; color:var(--text2); cursor:pointer; font-size:13px;
+            font-family:'Courier New',monospace; display:flex; align-items:center; gap:6px; transition:all .2s; }
+.like-btn:hover,.like-btn.liked { border-color:#ff2d55; color:#ff2d55; }
+.like-btn.liked { background:rgba(255,45,85,.1); }
+.photo-delete-btn { background:transparent; border:1px solid var(--border2); border-radius:8px;
+                    padding:6px 12px; color:var(--text3); cursor:pointer; font-size:12px;
+                    font-family:'Courier New',monospace; transition:all .2s; margin-right:auto; }
+.photo-delete-btn:hover { border-color:#ff2d55; color:#ff2d55; background:rgba(255,45,85,.1); }
+.no-photos { text-align:center; padding:40px 0; color:var(--text4); font-size:14px; }
+.lightbox { position:fixed; inset:0; background:rgba(0,0,0,.95); display:flex;
+            align-items:center; justify-content:center; z-index:9999; cursor:pointer; }
+.lightbox img { max-width:95vw; max-height:95vh; object-fit:contain; border-radius:8px; }
+.difficulty-section { margin-bottom:24px; background:var(--bg3); border:1px solid var(--border);
+                      border-radius:14px; padding:18px 20px; }
+.difficulty-section-title { font-size:12px; letter-spacing:2px; color:var(--text3); margin-bottom:14px;
+                             display:flex; align-items:center; justify-content:space-between; }
+.difficulty-avg-display { display:flex; align-items:baseline; gap:6px; margin-bottom:12px; }
+.difficulty-avg-number { font-size:36px; font-weight:bold; line-height:1; transition:color .4s; }
+.difficulty-avg-outof  { font-size:14px; color:var(--text3); }
+.difficulty-avg-voters { font-size:11px; color:var(--text4); margin-top:2px; }
+.difficulty-bar-bg { width:100%; height:6px; background:var(--border); border-radius:3px;
+                     margin-bottom:16px; overflow:hidden; }
+.difficulty-bar-fill { height:100%; border-radius:3px; transition:width .5s cubic-bezier(.4,0,.2,1),background .4s; }
+.difficulty-buttons { display:flex; gap:6px; flex-wrap:wrap; }
+.diff-btn { flex:1; min-width:28px; padding:8px 4px; border-radius:8px; border:1px solid var(--border);
+            background:var(--bg); color:var(--text3); cursor:pointer; font-size:13px; font-weight:bold;
+            font-family:'Courier New',monospace; transition:all .18s; text-align:center; position:relative; }
+.diff-btn:hover { transform:translateY(-2px); }
+.diff-btn.selected { color:#000; font-weight:bold; transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.5); }
+.diff-btn.selected::after { content:'✓'; position:absolute; top:-6px; right:-4px; font-size:9px;
+                            background:#fff; color:#000; border-radius:50%; width:12px; height:12px;
+                            display:flex; align-items:center; justify-content:center; font-weight:bold; }
+.difficulty-login-hint { font-size:12px; color:var(--text4); text-align:center; margin-top:10px; }
+.difficulty-login-hint span { color:var(--accent); cursor:pointer; }
+.difficulty-voted-msg { font-size:11px; color:var(--text3); text-align:center; margin-top:10px; }
+.difficulty-divider { height:1px; background:var(--border); margin:20px 0; }
+.settings-drawer-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5);
+                            backdrop-filter:blur(6px); z-index:998;
+                            opacity:0; pointer-events:none; transition:opacity .25s; }
+.settings-drawer-overlay.open { opacity:1; pointer-events:all; }
+.settings-drawer { position:fixed; top:0; left:0; height:100%; width:320px; max-width:90vw;
+                   background:var(--bg2); border-right:1px solid var(--border2);
+                   z-index:999; transform:translateX(-100%); transition:transform .28s cubic-bezier(.4,0,.2,1);
+                   display:flex; flex-direction:column; overflow-y:auto; }
+body[dir=rtl] .settings-drawer { left:auto; right:0; border-right:none;
+                                  border-left:1px solid var(--border2);
+                                  transform:translateX(100%); }
+.settings-drawer.open { transform:translateX(0); }
+.drawer-header { padding:24px 20px 16px; border-bottom:1px solid var(--border); display:flex;
+                 justify-content:space-between; align-items:center; flex-shrink:0; }
+.drawer-title { font-size:17px; font-weight:bold; }
+.drawer-close { background:transparent; border:1px solid var(--border2); color:var(--text3);
+                width:30px; height:30px; border-radius:8px; cursor:pointer; font-size:16px;
+                display:flex; align-items:center; justify-content:center; transition:all .2s; }
+.drawer-close:hover { border-color:var(--text); color:var(--text); }
+.drawer-section { padding:16px 20px; border-bottom:1px solid var(--border); }
+.drawer-section-label { font-size:10px; letter-spacing:2px; color:var(--text3);
+                        margin-bottom:12px; text-transform:uppercase; }
+.drawer-row { display:flex; align-items:center; justify-content:space-between;
+              padding:10px 14px; background:var(--bg); border:1px solid var(--border);
+              border-radius:10px; margin-bottom:8px; cursor:pointer; transition:border-color .2s; }
+.drawer-row:last-child { margin-bottom:0; }
+.drawer-row:hover { border-color:var(--border2); }
+.drawer-row-left { display:flex; align-items:center; gap:10px; }
+.drawer-row-icon { font-size:16px; width:22px; text-align:center; }
+.drawer-row-label { font-size:13px; color:var(--text); }
+.drawer-row-sub { font-size:11px; color:var(--text3); margin-top:1px; }
+.drawer-row-right { color:var(--text3); font-size:12px; }
+.theme-toggle { display:flex; background:var(--bg); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+.theme-opt { flex:1; padding:9px 6px; text-align:center; font-size:12px; cursor:pointer;
+             transition:all .2s; color:var(--text3); font-family:'Courier New',monospace; }
+.theme-opt.active { background:var(--text); color:var(--bg); font-weight:bold; }
+.settings-row { display:flex; align-items:center; gap:14px; padding:14px 16px; background:var(--bg);
+                border:1px solid var(--border); border-radius:12px; margin-bottom:10px; }
+.settings-color-dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; }
+.settings-row-label { flex:1; font-size:13px; color:var(--text2); line-height:1.4; }
+.settings-row-label strong { display:block; color:var(--text); font-size:14px; margin-bottom:2px; }
+.settings-input-wrap { display:flex; align-items:center; gap:6px; }
+.settings-num { width:60px; padding:8px 10px; background:var(--bg2); border:1px solid var(--border2);
+                border-radius:8px; color:var(--text); font-size:14px; font-family:'Courier New',monospace;
+                outline:none; text-align:center; direction:ltr; }
+.settings-num:focus { border-color:var(--text3); }
+.settings-unit { font-size:12px; color:var(--text3); white-space:nowrap; }
+.settings-preview { display:flex; border-radius:10px; overflow:hidden; height:10px; margin:14px 0 4px; }
+.settings-preview-seg { flex:1; transition:background .3s; }
+.settings-preview-labels { display:flex; justify-content:space-between; font-size:10px; color:var(--text4); margin-bottom:16px; }
+.settings-reset { background:transparent; border:1px solid var(--border2); color:var(--text3);
+                  padding:8px 14px; border-radius:8px; cursor:pointer; font-size:12px;
+                  font-family:'Courier New',monospace; transition:all .2s; }
+.settings-reset:hover { border-color:var(--text2); color:var(--text2); }
+.drawer-btn-row { display:flex; gap:8px; margin-top:4px; }
+.drawer-btn-sm { flex:1; padding:9px; background:transparent; border:1px solid var(--border2);
+                 color:var(--text2); border-radius:8px; cursor:pointer; font-size:12px;
+                 font-family:'Courier New',monospace; transition:all .2s; }
+.drawer-btn-sm:hover { border-color:var(--text); color:var(--text); }
+.drawer-btn-primary { flex:2; padding:9px; background:var(--text); color:var(--bg);
+                      border:none; border-radius:8px; cursor:pointer; font-size:12px; font-weight:bold;
+                      font-family:'Courier New',monospace; transition:opacity .2s; }
+.drawer-btn-primary:hover { opacity:.85; }
+.hidden { display:none; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+@media(max-width:500px){ header{padding:16px;flex-wrap:wrap;gap:10px} .card{padding:16px} .card-subject{font-size:15px} .form-row-2{flex-direction:column} .filter-bar{gap:6px} }
+```
 
-    /* ── ANSWERS TAB CONTENT (existing) ── */
-    .upload-area { border:2px dashed var(--border2); border-radius:12px; padding:20px;
-                   text-align:center; cursor:pointer; transition:all .2s; margin-bottom:16px; }
-    .upload-area:hover { border-color:var(--accent); }
-    .upload-area input { display:none; }
-    .upload-area-text { color:var(--text3); font-size:13px; }
-    .upload-area-text span { color:var(--accent); }
-    .upload-previews { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
-    .upload-preview { position:relative; width:70px; height:70px; border-radius:8px;
-                      overflow:hidden; border:1px solid var(--border2); }
-    .upload-preview img { width:100%; height:100%; object-fit:cover; }
-    .upload-preview-remove { position:absolute; top:2px; left:2px; background:rgba(0,0,0,.7);
-                             border:none; color:#fff; width:18px; height:18px; border-radius:4px;
-                             cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; }
-    .upload-btn { width:100%; padding:12px; background:var(--accent); color:#000; border:none;
-                  border-radius:10px; cursor:pointer; font-weight:bold; font-size:14px;
-                  font-family:'Courier New',monospace; transition:opacity .2s; }
-    .upload-btn:hover { opacity:.85; }
-    .upload-btn:disabled { background:var(--border2); color:var(--text3); cursor:not-allowed; }
-    .uploading-text { text-align:center; color:var(--accent); font-size:13px; margin-top:8px; }
-    .photos-grid { display:flex; flex-direction:column; gap:16px; }
-    .photo-card { background:var(--bg3); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
-    .photo-card-header { padding:10px 14px; display:flex; justify-content:space-between; align-items:center; }
-    .photo-uploader { font-size:13px; font-weight:bold; }
-    .photo-time { font-size:11px; color:var(--text3); }
-    .photo-img { width:100%; max-height:400px; object-fit:contain; background:var(--bg); cursor:pointer; display:block; }
-    .photo-img:hover { opacity:.9; }
-    .photo-actions { padding:10px 14px; display:flex; align-items:center; gap:10px; }
-    .like-btn { background:transparent; border:1px solid var(--border2); border-radius:8px;
-                padding:6px 14px; color:var(--text2); cursor:pointer; font-size:13px;
-                font-family:'Courier New',monospace; display:flex; align-items:center; gap:6px; transition:all .2s; }
-    .like-btn:hover,.like-btn.liked { border-color:#ff2d55; color:#ff2d55; }
-    .like-btn.liked { background:rgba(255,45,85,.1); }
-    .photo-delete-btn { background:transparent; border:1px solid var(--border2); border-radius:8px;
-                        padding:6px 12px; color:var(--text3); cursor:pointer; font-size:12px;
-                        font-family:'Courier New',monospace; transition:all .2s; margin-right:auto; }
-    .photo-delete-btn:hover { border-color:#ff2d55; color:#ff2d55; background:rgba(255,45,85,.1); }
-    .no-photos { text-align:center; padding:40px 0; color:var(--text4); font-size:14px; }
-    .lightbox { position:fixed; inset:0; background:rgba(0,0,0,.95); display:flex;
-                align-items:center; justify-content:center; z-index:9999; cursor:pointer; }
-    .lightbox img { max-width:95vw; max-height:95vh; object-fit:contain; border-radius:8px; }
-
-    /* ── DIFFICULTY ── */
-    .difficulty-section { margin-bottom:24px; background:var(--bg3); border:1px solid var(--border);
-                          border-radius:14px; padding:18px 20px; }
-    .difficulty-section-title { font-size:12px; letter-spacing:2px; color:var(--text3); margin-bottom:14px;
-                                 display:flex; align-items:center; justify-content:space-between; }
-    .difficulty-avg-display { display:flex; align-items:baseline; gap:6px; margin-bottom:12px; }
-    .difficulty-avg-number { font-size:36px; font-weight:bold; line-height:1; transition:color .4s; }
-    .difficulty-avg-outof  { font-size:14px; color:var(--text3); }
-    .difficulty-avg-voters { font-size:11px; color:var(--text4); margin-top:2px; }
-    .difficulty-bar-bg { width:100%; height:6px; background:var(--border); border-radius:3px;
-                         margin-bottom:16px; overflow:hidden; }
-    .difficulty-bar-fill { height:100%; border-radius:3px; transition:width .5s cubic-bezier(.4,0,.2,1),background .4s; }
-    .difficulty-buttons { display:flex; gap:6px; flex-wrap:wrap; }
-    .diff-btn { flex:1; min-width:28px; padding:8px 4px; border-radius:8px; border:1px solid var(--border);
-                background:var(--bg); color:var(--text3); cursor:pointer; font-size:13px; font-weight:bold;
-                font-family:'Courier New',monospace; transition:all .18s; text-align:center; position:relative; }
-    .diff-btn:hover { transform:translateY(-2px); }
-    .diff-btn.selected { color:#000; font-weight:bold; transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.5); }
-    .diff-btn.selected::after { content:'✓'; position:absolute; top:-6px; right:-4px; font-size:9px;
-                                background:#fff; color:#000; border-radius:50%; width:12px; height:12px;
-                                display:flex; align-items:center; justify-content:center; font-weight:bold; }
-    .difficulty-login-hint { font-size:12px; color:var(--text4); text-align:center; margin-top:10px; }
-    .difficulty-login-hint span { color:var(--accent); cursor:pointer; }
-    .difficulty-voted-msg { font-size:11px; color:var(--text3); text-align:center; margin-top:10px; }
-    .difficulty-divider { height:1px; background:var(--border); margin:20px 0; }
-
-    /* ── SETTINGS DRAWER ── */
-    .settings-drawer-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5);
-                                backdrop-filter:blur(6px); z-index:998;
-                                opacity:0; pointer-events:none; transition:opacity .25s; }
-    .settings-drawer-overlay.open { opacity:1; pointer-events:all; }
-    .settings-drawer { position:fixed; top:0; left:0; height:100%; width:320px; max-width:90vw;
-                       background:var(--bg2); border-right:1px solid var(--border2);
-                       z-index:999; transform:translateX(-100%); transition:transform .28s cubic-bezier(.4,0,.2,1);
-                       display:flex; flex-direction:column; overflow-y:auto; }
-    body[dir=rtl] .settings-drawer { left:auto; right:0; border-right:none;
-                                      border-left:1px solid var(--border2);
-                                      transform:translateX(100%); }
-    .settings-drawer.open { transform:translateX(0); }
-    .drawer-header { padding:24px 20px 16px; border-bottom:1px solid var(--border); display:flex;
-                     justify-content:space-between; align-items:center; flex-shrink:0; }
-    .drawer-title { font-size:17px; font-weight:bold; }
-    .drawer-close { background:transparent; border:1px solid var(--border2); color:var(--text3);
-                    width:30px; height:30px; border-radius:8px; cursor:pointer; font-size:16px;
-                    display:flex; align-items:center; justify-content:center; transition:all .2s; }
-    .drawer-close:hover { border-color:var(--text); color:var(--text); }
-    .drawer-section { padding:16px 20px; border-bottom:1px solid var(--border); }
-    .drawer-section-label { font-size:10px; letter-spacing:2px; color:var(--text3);
-                            margin-bottom:12px; text-transform:uppercase; }
-    .drawer-row { display:flex; align-items:center; justify-content:space-between;
-                  padding:10px 14px; background:var(--bg); border:1px solid var(--border);
-                  border-radius:10px; margin-bottom:8px; cursor:pointer; transition:border-color .2s; }
-    .drawer-row:last-child { margin-bottom:0; }
-    .drawer-row:hover { border-color:var(--border2); }
-    .drawer-row-left { display:flex; align-items:center; gap:10px; }
-    .drawer-row-icon { font-size:16px; width:22px; text-align:center; }
-    .drawer-row-label { font-size:13px; color:var(--text); }
-    .drawer-row-sub { font-size:11px; color:var(--text3); margin-top:1px; }
-    .drawer-row-right { color:var(--text3); font-size:12px; }
-    .theme-toggle { display:flex; background:var(--bg); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
-    .theme-opt { flex:1; padding:9px 6px; text-align:center; font-size:12px; cursor:pointer;
-                 transition:all .2s; color:var(--text3); font-family:'Courier New',monospace; }
-    .theme-opt.active { background:var(--text); color:var(--bg); font-weight:bold; }
-    .drawer-admin-badge { display:inline-block; padding:2px 8px; border-radius:20px;
-                          font-size:10px; background:rgba(255,45,85,.12); color:#ff2d55;
-                          border:1px solid rgba(255,45,85,.3); margin-right:6px; }
-    .expandable { overflow:hidden; max-height:0; opacity:0; transition:max-height .3s ease,opacity .3s ease; }
-    .expandable.open { max-height:600px; opacity:1; }
-    .settings-row { display:flex; align-items:center; gap:14px; padding:14px 16px; background:var(--bg);
-                    border:1px solid var(--border); border-radius:12px; margin-bottom:10px; }
-    .settings-color-dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; }
-    .settings-row-label { flex:1; font-size:13px; color:var(--text2); line-height:1.4; }
-    .settings-row-label strong { display:block; color:var(--text); font-size:14px; margin-bottom:2px; }
-    .settings-input-wrap { display:flex; align-items:center; gap:6px; }
-    .settings-num { width:60px; padding:8px 10px; background:var(--bg2); border:1px solid var(--border2);
-                    border-radius:8px; color:var(--text); font-size:14px; font-family:'Courier New',monospace;
-                    outline:none; text-align:center; direction:ltr; }
-    .settings-num:focus { border-color:var(--text3); }
-    .settings-unit { font-size:12px; color:var(--text3); white-space:nowrap; }
-    .settings-preview { display:flex; border-radius:10px; overflow:hidden; height:10px; margin:14px 0 4px; }
-    .settings-preview-seg { flex:1; transition:background .3s; }
-    .settings-preview-labels { display:flex; justify-content:space-between; font-size:10px; color:var(--text4); margin-bottom:16px; }
-    .settings-reset { background:transparent; border:1px solid var(--border2); color:var(--text3);
-                      padding:8px 14px; border-radius:8px; cursor:pointer; font-size:12px;
-                      font-family:'Courier New',monospace; transition:all .2s; }
-    .settings-reset:hover { border-color:var(--text2); color:var(--text2); }
-    .drawer-btn-row { display:flex; gap:8px; margin-top:4px; }
-    .drawer-btn-sm { flex:1; padding:9px; background:transparent; border:1px solid var(--border2);
-                     color:var(--text2); border-radius:8px; cursor:pointer; font-size:12px;
-                     font-family:'Courier New',monospace; transition:all .2s; }
-    .drawer-btn-sm:hover { border-color:var(--text); color:var(--text); }
-    .drawer-btn-primary { flex:2; padding:9px; background:var(--text); color:var(--bg);
-                          border:none; border-radius:8px; cursor:pointer; font-size:12px; font-weight:bold;
-                          font-family:'Courier New',monospace; transition:opacity .2s; }
-    .drawer-btn-primary:hover { opacity:.85; }
-
-    .hidden { display:none; }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
-    @media(max-width:500px){ header{padding:16px;flex-wrap:wrap;gap:10px} .card{padding:16px} .card-subject{font-size:15px} .form-row-2{flex-direction:column} }
   </style>
 </head>
 <body>
@@ -400,59 +410,77 @@
 </header>
 
 <main>
-  <button class="add-btn-dashed hidden" id="addBtn" onclick="showAddForm()"></button>
-  <div class="add-form hidden" id="addForm">
-    <div class="form-title" id="formTitle"></div>
-    <input type="text" id="subjectInput"/>
-    <input type="text" id="pagesInput"/>
-    <div class="form-row-2">
-      <div><div class="input-label" id="labelDueDate"></div><input type="date" id="dateInput"/></div>
-      <div><div class="input-label" id="labelDueTime"></div><input type="time" id="timeInput"/></div>
-    </div>
-    <div class="checkbox-row" id="checkboxRow" onclick="toggleQuestions()">
-      <div class="custom-checkbox" id="customCheckbox"></div>
-      <span class="checkbox-label" id="checkboxLabel"></span>
-    </div>
-    <div class="questions-box" id="questionsBox">
-      <textarea id="questionsInput"></textarea>
-    </div>
-
-    <!-- ══ ADMIN: HW IMAGE UPLOAD ══ -->
-    <div class="hw-img-section">
-      <div class="hw-img-section-label">
-        📷 תמונות המשימה <em>אופציונלי</em>
-      </div>
-      <div class="hw-img-upload-area" onclick="document.getElementById('hwImgInput').click()">
-        <input type="file" id="hwImgInput" accept="image/*" multiple onchange="handleHwImages(event)"/>
-        <div class="hw-img-upload-text">לחץ לבחירת תמונות המשימה · <span>ניתן לבחור מספר תמונות</span></div>
-      </div>
-      <div class="hw-img-previews" id="hwImgPreviews"></div>
-    </div>
-
-    <div class="form-row">
-      <button class="btn-full" id="btnAddCard" style="flex:1;margin-top:0" onclick="addCard()"></button>
-      <button class="btn-cancel" id="btnCancelForm" onclick="hideAddForm()"></button>
-    </div>
+  <!-- ── FILTER BAR ── -->
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active-all" id="filterAll"  onclick="setFilter('all')">📋 הכל</button>
+    <button class="filter-btn"            id="filterHw"   onclick="setFilter('hw')">📚 שיעורי בית</button>
+    <button class="filter-btn"            id="filterExam" onclick="setFilter('exam')">📝 מבחנים</button>
   </div>
+
+<button class="add-btn-dashed hidden" id="addBtn" onclick="showAddForm()">+ הוסף</button>
+
+  <div class="add-form hidden" id="addForm">
+    <div class="form-title" id="formTitle">משימה חדשה</div>
+
+```
+<!-- ── TYPE SELECTOR ── -->
+<div>
+  <div class="input-label" style="margin-bottom:6px">סוג</div>
+  <div class="type-selector">
+    <button class="type-opt active-hw" id="typeOptHw"   onclick="selectType('hw')">📚 שיעורי בית</button>
+    <button class="type-opt"           id="typeOptExam" onclick="selectType('exam')">📝 מבחן</button>
+  </div>
+</div>
+
+<input type="text" id="subjectInput" placeholder="מקצוע (למשל: מתמטיקה)"/>
+<input type="text" id="pagesInput"   placeholder="עמודים (למשל: 45-67)"/>
+<div class="form-row-2">
+  <div><div class="input-label">תאריך הגשה</div><input type="date" id="dateInput"/></div>
+  <div><div class="input-label">שעת הגשה (אופציונלי)</div><input type="time" id="timeInput"/></div>
+</div>
+<div class="checkbox-row" id="checkboxRow" onclick="toggleQuestions()">
+  <div class="custom-checkbox" id="customCheckbox"></div>
+  <span class="checkbox-label">שאלות ספציפיות בלבד</span>
+</div>
+<div class="questions-box" id="questionsBox">
+  <textarea id="questionsInput" placeholder="רשום אילו שאלות צריך לעשות (למשל: 1, 3, 5-7, 12)"></textarea>
+</div>
+<div class="hw-img-section">
+  <div class="hw-img-section-label">📷 תמונות המשימה <em>אופציונלי</em></div>
+  <div class="hw-img-upload-area" onclick="document.getElementById('hwImgInput').click()">
+    <input type="file" id="hwImgInput" accept="image/*" multiple onchange="handleHwImages(event)"/>
+    <div class="hw-img-upload-text">לחץ לבחירת תמונות המשימה · <span>ניתן לבחור מספר תמונות</span></div>
+  </div>
+  <div class="hw-img-previews" id="hwImgPreviews"></div>
+</div>
+<div class="form-row">
+  <button class="btn-full" id="btnAddCard" style="flex:1;margin-top:0" onclick="addCard()">הוסף</button>
+  <button class="btn-cancel" onclick="hideAddForm()">ביטול</button>
+</div>
+```
+
+  </div>
+
   <div class="cards-list" id="cardsList"></div>
   <div class="empty hidden" id="emptyState">
-    <div class="empty-emoji" id="emptyEmoji"></div>
-    <div class="empty-text"  id="emptyText"></div>
-    <div class="empty-sub"   id="emptySub"></div>
+    <div class="empty-emoji">✨</div>
+    <div class="empty-text" id="emptyText">אין שיעורי בית כרגע.</div>
+    <div class="empty-sub">תהנו מהחופש!</div>
   </div>
   <div class="total-count hidden" id="totalCount"></div>
-  <div class="credit hidden" id="credit"></div>
+  <div class="credit hidden" id="credit">רון יאדגרוב</div>
 </main>
 
 <!-- ══ SETTINGS DRAWER ══ -->
+
 <div class="settings-drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="settings-drawer" id="settingsDrawer">
   <div class="drawer-header">
-    <div class="drawer-title" id="drawerTitle"></div>
+    <div class="drawer-title">⚙️ הגדרות</div>
     <button class="drawer-close" onclick="closeDrawer()">✕</button>
   </div>
   <div class="drawer-section" id="drawerAccountSection">
-    <div class="drawer-section-label" id="drawerAccountLabel"></div>
+    <div class="drawer-section-label">חשבון</div>
     <div id="drawerLoggedIn" class="hidden">
       <div class="drawer-row" style="cursor:default">
         <div class="drawer-row-left">
@@ -464,7 +492,7 @@
       <div class="drawer-row" onclick="logout()" style="margin-top:4px">
         <div class="drawer-row-left">
           <span class="drawer-row-icon">🚪</span>
-          <div class="drawer-row-label" id="drawerLogoutLabel"></div>
+          <div class="drawer-row-label">התנתקות</div>
         </div>
         <span class="drawer-row-right">›</span>
       </div>
@@ -473,32 +501,32 @@
       <div class="drawer-row" onclick="openAuthFromDrawer()">
         <div class="drawer-row-left">
           <span class="drawer-row-icon">🔑</span>
-          <div><div class="drawer-row-label" id="drawerLoginLabel"></div>
-               <div class="drawer-row-sub"  id="drawerLoginSub"></div></div>
+          <div><div class="drawer-row-label">כניסה / הרשמה</div>
+               <div class="drawer-row-sub">כדי להעלות תשובות</div></div>
         </div>
         <span class="drawer-row-right">›</span>
       </div>
     </div>
   </div>
   <div class="drawer-section">
-    <div class="drawer-section-label" id="drawerThemeLabel"></div>
+    <div class="drawer-section-label">ערכת נושא</div>
     <div class="theme-toggle">
-      <div class="theme-opt" id="themeDark"  onclick="setTheme('dark')"></div>
-      <div class="theme-opt" id="themeLight" onclick="setTheme('light')"></div>
+      <div class="theme-opt" id="themeDark"  onclick="setTheme('dark')">🌙 כהה</div>
+      <div class="theme-opt" id="themeLight" onclick="setTheme('light')">☀️ בהיר</div>
     </div>
   </div>
   <div class="drawer-section">
-    <div class="drawer-section-label" id="drawerMoreLabel"></div>
+    <div class="drawer-section-label">עוד</div>
     <div class="drawer-row" onclick="closeDrawer();openLeaderboard()">
       <div class="drawer-row-left">
         <span class="drawer-row-icon">🏆</span>
-        <div class="drawer-row-label" id="drawerLeaderboardLabel"></div>
+        <div class="drawer-row-label">🏆 טבלת מובילים</div>
       </div>
       <span class="drawer-row-right">›</span>
     </div>
   </div>
   <div class="drawer-section">
-    <div class="drawer-section-label" id="drawerColorsLabel"></div>
+    <div class="drawer-section-label">צבעי דדליין</div>
     <div class="settings-preview">
       <div class="settings-preview-seg" id="prev-red"></div>
       <div class="settings-preview-seg" id="prev-orange"></div>
@@ -506,105 +534,100 @@
       <div class="settings-preview-seg" id="prev-blue"></div>
     </div>
     <div class="settings-preview-labels">
-      <span id="prevLabelNow"></span><span id="prevLabelRed"></span>
+      <span>עכשיו</span><span id="prevLabelRed"></span>
       <span id="prevLabelOrange"></span><span id="prevLabelGreen"></span>
-      <span id="prevLabelFar"></span>
+      <span>הרחק</span>
     </div>
     <div class="settings-row">
       <div class="settings-color-dot" style="background:#ff2d55;box-shadow:0 0 6px #ff2d5588"></div>
-      <div class="settings-row-label"><strong id="settingsRedLabel" style="color:#ff2d55"></strong><span id="settingsLessThan1"></span></div>
+      <div class="settings-row-label"><strong style="color:#ff2d55">🔴 אדום — דחוף!</strong><span>פחות מ...</span></div>
       <div class="settings-input-wrap">
         <input class="settings-num" type="number" id="st-red" min="1" max="999" oninput="updateSettingsPreview()"/>
-        <span class="settings-unit" id="settingsUnitHours"></span>
+        <span class="settings-unit">שעות</span>
       </div>
     </div>
     <div class="settings-row">
       <div class="settings-color-dot" style="background:#ff9f0a;box-shadow:0 0 6px #ff9f0a88"></div>
-      <div class="settings-row-label"><strong id="settingsOrangeLabel" style="color:#ff9f0a"></strong><span id="settingsLessThan2"></span></div>
+      <div class="settings-row-label"><strong style="color:#ff9f0a">🟠 כתום — קרוב</strong><span>פחות מ...</span></div>
       <div class="settings-input-wrap">
         <input class="settings-num" type="number" id="st-orange" min="1" max="999" oninput="updateSettingsPreview()"/>
-        <span class="settings-unit" id="settingsUnitDays1"></span>
+        <span class="settings-unit">ימים</span>
       </div>
     </div>
     <div class="settings-row">
       <div class="settings-color-dot" style="background:#30d158;box-shadow:0 0 6px #30d15888"></div>
-      <div class="settings-row-label"><strong id="settingsGreenLabel" style="color:#30d158"></strong><span id="settingsLessThan3"></span></div>
+      <div class="settings-row-label"><strong style="color:#30d158">🟢 ירוק — יש זמן</strong><span>פחות מ...</span></div>
       <div class="settings-input-wrap">
         <input class="settings-num" type="number" id="st-green" min="1" max="999" oninput="updateSettingsPreview()"/>
-        <span class="settings-unit" id="settingsUnitDays2"></span>
+        <span class="settings-unit">ימים</span>
       </div>
     </div>
     <div class="settings-row" style="opacity:.5">
       <div class="settings-color-dot" style="background:#64d2ff"></div>
-      <div class="settings-row-label"><strong id="settingsBlueLabel" style="color:#64d2ff"></strong><span id="settingsBlueDesc"></span></div>
+      <div class="settings-row-label"><strong style="color:#64d2ff">🔵 כחול — רחוק</strong><span>כל מה שמעבר לירוק</span></div>
     </div>
     <div class="modal-error hidden" id="settingsError"></div>
     <div class="drawer-btn-row" style="margin-top:12px">
-      <button class="settings-reset" id="settingsResetBtn" onclick="resetSettings()"></button>
-      <button class="drawer-btn-primary" id="settingsSaveBtn" onclick="saveSettings()"></button>
+      <button class="settings-reset" onclick="resetSettings()">↺ איפוס</button>
+      <button class="drawer-btn-primary" onclick="saveSettings()">שמור</button>
     </div>
   </div>
-  <!-- MANAGER QUICK TOGGLE (only visible for emails in MANAGER_EMAILS) -->
   <div class="drawer-section hidden" id="drawerManagerSection">
-    <div class="drawer-section-label" id="drawerManagerLabel"></div>
-    <!-- Manager OFF state -->
+    <div class="drawer-section-label">מנהל</div>
     <div id="drawerManagerOff">
-      <div class="drawer-row" onclick="managerToggleAdmin(true)"
-           style="border-color:rgba(100,210,255,.3);background:rgba(100,210,255,.04)">
+      <div class="drawer-row" onclick="managerToggleAdmin(true)" style="border-color:rgba(100,210,255,.3);background:rgba(100,210,255,.04)">
         <div class="drawer-row-left">
           <span class="drawer-row-icon">⚡</span>
-          <div><div class="drawer-row-label" id="drawerManagerOnLabel"></div>
-               <div class="drawer-row-sub"  id="drawerManagerOnSub"></div></div>
+          <div><div class="drawer-row-label">⚡ הפעל מצב מנהל</div>
+               <div class="drawer-row-sub">לחץ להפעלה מידית</div></div>
         </div>
         <span class="drawer-row-right" style="color:var(--accent)">›</span>
       </div>
     </div>
-    <!-- Manager ON state -->
     <div id="drawerManagerOn" class="hidden">
       <div class="drawer-row" style="cursor:default;border-color:#30d15844;background:rgba(48,209,88,.05)">
         <div class="drawer-row-left">
           <span class="drawer-row-icon">✅</span>
-          <div class="drawer-row-label" id="drawerManagerActiveLabel" style="color:#30d158"></div>
+          <div class="drawer-row-label" style="color:#30d158">מצב מנהל פעיל ✓</div>
         </div>
       </div>
       <div class="drawer-row" onclick="managerToggleAdmin(false)" style="margin-top:4px">
         <div class="drawer-row-left">
           <span class="drawer-row-icon">🔴</span>
-          <div class="drawer-row-label" id="drawerManagerOffLabel"></div>
+          <div class="drawer-row-label">כבה מצב מנהל</div>
         </div>
         <span class="drawer-row-right">›</span>
       </div>
     </div>
   </div>
-
   <div class="drawer-section" id="drawerAdminSection">
-    <div class="drawer-section-label" id="drawerAdminLabel"></div>
+    <div class="drawer-section-label">ניהול</div>
     <div id="drawerAdminLogin">
       <div class="drawer-row" onclick="showDrawerAdminForm()">
         <div class="drawer-row-left">
           <span class="drawer-row-icon">🔐</span>
-          <div><div class="drawer-row-label" id="drawerAdminLoginLabel"></div>
-               <div class="drawer-row-sub"  id="drawerAdminLoginSub"></div></div>
+          <div><div class="drawer-row-label">כניסת מנהל</div>
+               <div class="drawer-row-sub">גישה לעריכת משימות</div></div>
         </div>
         <span class="drawer-row-right">›</span>
       </div>
       <div id="drawerAdminForm" class="hidden" style="margin-top:10px">
-        <input type="password" id="adminPassInput" style="margin-bottom:8px" onkeydown="if(event.key==='Enter')doAdminLogin()"/>
-        <div class="modal-error hidden" id="adminPassError"></div>
-        <button class="btn-full" id="adminLoginSubmitBtn" onclick="doAdminLogin()" style="margin-top:0"></button>
+        <input type="password" id="adminPassInput" placeholder="סיסמה" style="margin-bottom:8px" onkeydown="if(event.key==='Enter')doAdminLogin()"/>
+        <div class="modal-error hidden" id="adminPassError">סיסמה שגויה</div>
+        <button class="btn-full" onclick="doAdminLogin()" style="margin-top:0">כניסה</button>
       </div>
     </div>
     <div id="drawerAdminActive" class="hidden">
       <div class="drawer-row" style="cursor:default;border-color:#ff2d5544;background:rgba(255,45,85,.05)">
         <div class="drawer-row-left">
           <span class="drawer-row-icon">✅</span>
-          <div class="drawer-row-label" id="drawerAdminActiveLabel"></div>
+          <div class="drawer-row-label">מצב מנהל פעיל</div>
         </div>
       </div>
       <div class="drawer-row" onclick="exitAdmin()" style="margin-top:4px">
         <div class="drawer-row-left">
           <span class="drawer-row-icon">🚪</span>
-          <div class="drawer-row-label" id="drawerAdminExitLabel"></div>
+          <div class="drawer-row-label">יציאה ממצב מנהל</div>
         </div>
         <span class="drawer-row-right">›</span>
       </div>
@@ -613,124 +636,109 @@
 </div>
 
 <!-- ══ AUTH MODAL ══ -->
+
 <div class="modal-overlay hidden" id="authModal">
   <div class="modal">
     <div id="loginView">
-      <div class="modal-title" id="loginTitle"></div>
-      <div class="modal-sub"   id="loginSub"></div>
+      <div class="modal-title">כניסה</div>
+      <div class="modal-sub">הכנס את פרטיך כדי להעלות תשובות</div>
       <button class="btn-google" id="googleLoginBtn" onclick="signInWithGoogle()"></button>
-      <div class="auth-divider"><div class="auth-divider-line"></div><span class="auth-divider-text" id="authDividerText"></span><div class="auth-divider-line"></div></div>
-      <div class="field-group"><input type="email"    id="loginEmail"/></div>
-      <div class="field-group"><input type="password" id="loginPass"  onkeydown="if(event.key==='Enter')doUserLogin()"/></div>
+      <div class="auth-divider"><div class="auth-divider-line"></div><span class="auth-divider-text">או</span><div class="auth-divider-line"></div></div>
+      <div class="field-group"><input type="email"    id="loginEmail"    placeholder="אימייל"/></div>
+      <div class="field-group"><input type="password" id="loginPass"     placeholder="סיסמה" onkeydown="if(event.key==='Enter')doUserLogin()"/></div>
       <div class="modal-error hidden" id="loginError"></div>
-      <button class="btn-full" id="loginSubmitBtn" onclick="doUserLogin()"></button>
-      <div style="text-align:center;margin-top:6px">
-        <span class="modal-link" style="font-size:11px;color:var(--text3)" id="forgotPasswordLink" onclick="switchToForgot()"></span>
-      </div>
-      <div class="modal-link" id="switchToRegisterLink" onclick="switchToRegister()"></div>
-      <div style="text-align:center;margin-top:10px"><span style="color:var(--text4);font-size:12px;cursor:pointer" onclick="closeAuthModal()" id="cancelLoginLink"></span></div>
+      <button class="btn-full" id="loginSubmitBtn" onclick="doUserLogin()">כניסה</button>
+      <div style="text-align:center;margin-top:6px"><span style="color:var(--text3);font-size:11px;cursor:pointer" onclick="switchToForgot()">שכחתי סיסמה</span></div>
+      <div class="modal-link" onclick="switchToRegister()">אין לך חשבון? הירשם כאן</div>
+      <div style="text-align:center;margin-top:10px"><span style="color:var(--text4);font-size:12px;cursor:pointer" onclick="closeAuthModal()">ביטול</span></div>
     </div>
-
-    <!-- FORGOT PASSWORD VIEW -->
     <div id="forgotView" class="hidden">
-      <div class="modal-title" id="forgotTitle"></div>
-      <div class="modal-sub"   id="forgotSub"></div>
-      <div class="field-group"><input type="email" id="forgotEmail" onkeydown="if(event.key==='Enter')doForgotPassword()"/></div>
+      <div class="modal-title">איפוס סיסמה</div>
+      <div class="modal-sub">הכנס את כתובת האימייל ונשלח קישור לאיפוס הסיסמה</div>
+      <div class="field-group"><input type="email" id="forgotEmail" placeholder="אימייל" onkeydown="if(event.key==='Enter')doForgotPassword()"/></div>
       <div class="modal-error hidden" id="forgotError"></div>
-      <div class="resend-success hidden" id="forgotSuccess" style="margin-bottom:8px;text-align:center;font-size:13px"></div>
-      <button class="btn-full" id="forgotSubmitBtn" onclick="doForgotPassword()"></button>
-      <div class="modal-link" id="forgotBackLink" onclick="switchToLogin()"></div>
+      <div class="hidden" id="forgotSuccess" style="color:#30d158;margin-bottom:8px;text-align:center;font-size:13px"></div>
+      <button class="btn-full" id="forgotSubmitBtn" onclick="doForgotPassword()">שלח קישור לאיפוס</button>
+      <div class="modal-link" onclick="switchToLogin()">← חזרה לכניסה</div>
     </div>
     <div id="registerView" class="hidden">
-      <div class="modal-title" id="registerTitle"></div>
-      <div class="modal-sub"   id="registerSub"></div>
+      <div class="modal-title">הרשמה</div>
+      <div class="modal-sub">צור חשבון חדש</div>
       <button class="btn-google" id="googleRegisterBtn" onclick="signInWithGoogle()"></button>
-      <div class="auth-divider"><div class="auth-divider-line"></div><span class="auth-divider-text" id="authDividerText2"></span><div class="auth-divider-line"></div></div>
-      <div class="field-group"><input type="text"     id="regUser"/></div>
-      <div class="field-group"><input type="email"    id="regEmail"/></div>
-      <div class="field-group"><input type="password" id="regPass"/></div>
-      <div class="field-group"><input type="password" id="regPass2" onkeydown="if(event.key==='Enter')doRegister()"/></div>
+      <div class="auth-divider"><div class="auth-divider-line"></div><span class="auth-divider-text">או</span><div class="auth-divider-line"></div></div>
+      <div class="field-group"><input type="text"     id="regUser"  placeholder="שם משתמש (יוצג לאחרים)"/></div>
+      <div class="field-group"><input type="email"    id="regEmail" placeholder="אימייל"/></div>
+      <div class="field-group"><input type="password" id="regPass"  placeholder="סיסמה (לפחות 6 תווים)"/></div>
+      <div class="field-group"><input type="password" id="regPass2" placeholder="אשר סיסמה" onkeydown="if(event.key==='Enter')doRegister()"/></div>
       <div class="modal-error hidden" id="registerError"></div>
-      <button class="btn-full" id="registerSubmitBtn" onclick="doRegister()"></button>
-      <div class="modal-link" id="switchToLoginLink" onclick="switchToLogin()"></div>
-      <div style="text-align:center;margin-top:10px"><span style="color:var(--text4);font-size:12px;cursor:pointer" onclick="closeAuthModal()" id="cancelRegLink"></span></div>
+      <button class="btn-full" id="registerSubmitBtn" onclick="doRegister()">הרשמה ושליחת קישור אימות</button>
+      <div class="modal-link" onclick="switchToLogin()">כבר יש לך חשבון? כנס כאן</div>
+      <div style="text-align:center;margin-top:10px"><span style="color:var(--text4);font-size:12px;cursor:pointer" onclick="closeAuthModal()">ביטול</span></div>
     </div>
     <div id="verifyView" class="hidden">
       <div class="verify-box">
-        <div class="verify-icon"  id="verifyIcon"></div>
-        <div class="verify-title" id="verifyTitle"></div>
+        <div style="font-size:40px;margin-bottom:12px">📧</div>
+        <div style="font-size:17px;font-weight:bold;margin-bottom:8px">בדוק את האימייל שלך</div>
         <div class="verify-sub">
-          <span id="verifySentLabel"></span><br>
+          שלחנו קישור אימות אל<br>
           <span class="verify-email-highlight" id="verifyEmailDisplay"></span><br><br>
-          <span id="verifyClickLabel"></span><br>
-          <span id="verifySpamNote" style="font-size:11px;color:var(--text4)"></span>
+          לחץ על הקישור במייל ואז חזור לכאן כדי להתחבר.<br>
+          <span style="font-size:11px;color:var(--text4)">לא מצאת? בדוק בתיקיית ספאם/דואר זבל</span>
         </div>
         <div id="resendArea" style="margin-top:16px">
-          <span class="resend-link" id="resendLink" onclick="resendVerification()"></span>
+          <span class="resend-link" id="resendLink" onclick="resendVerification()">שלח מחדש</span>
           <span class="hidden resend-cooldown" id="resendCooldown"></span>
           <span class="hidden resend-success"  id="resendSuccess"></span>
         </div>
         <div class="modal-divider"></div>
-        <div class="modal-link" id="backToLoginLink" onclick="switchToLogin()"></div>
+        <div class="modal-link" onclick="switchToLogin()">← חזרה לכניסה</div>
       </div>
     </div>
   </div>
 </div>
 
 <!-- ══ GOOGLE USERNAME MODAL ══ -->
+
 <div class="modal-overlay hidden" id="usernameModal">
   <div class="modal">
-    <div class="modal-title" id="usernameModalTitle"></div>
-    <div class="modal-sub"   id="usernameModalSub"></div>
-    <div class="field-group"><input type="text" id="googleUsernameInput" onkeydown="if(event.key==='Enter')saveGoogleUsername()"/></div>
+    <div class="modal-title">בחר שם משתמש</div>
+    <div class="modal-sub">שם זה יוצג לאחרים בעת העלאת תשובות</div>
+    <div class="field-group"><input type="text" id="googleUsernameInput" placeholder="שם משתמש (לפחות 2 תווים)" onkeydown="if(event.key==='Enter')saveGoogleUsername()"/></div>
     <div class="modal-error hidden" id="usernameError"></div>
-    <button class="btn-full" id="usernameSubmitBtn" onclick="saveGoogleUsername()"></button>
+    <button class="btn-full" id="usernameSubmitBtn" onclick="saveGoogleUsername()">המשך</button>
   </div>
 </div>
 
 <!-- ══ ANSWERS MODAL ══ -->
+
 <div class="modal-overlay hidden" id="answersModal">
   <div class="answers-modal">
-
-    <!-- Header -->
     <div class="answers-header">
       <div>
-        <div class="answers-title"   id="answersTitle"></div>
+        <div class="answers-title">תשובות</div>
         <div class="answers-subject" id="answersSubject"></div>
       </div>
       <button class="close-btn" onclick="closeAnswers()">&#215;</button>
     </div>
-
-    <!-- Tab bar -->
     <div class="answers-tabs">
-      <button class="answers-tab active" id="tabBtnAssignment" onclick="switchAnswersTab('assignment')">
-        📋 <span id="tabLabelAssignment">המשימה</span>
-      </button>
-      <button class="answers-tab" id="tabBtnAnswers" onclick="switchAnswersTab('answers')">
-        💡 <span id="tabLabelAnswers">תשובות</span>
-      </button>
+      <button class="answers-tab active" id="tabBtnAssignment" onclick="switchAnswersTab('assignment')">📋 המשימה</button>
+      <button class="answers-tab"        id="tabBtnAnswers"    onclick="switchAnswersTab('answers')">💡 תשובות</button>
     </div>
-
-    <!-- Scrollable body with two panels -->
     <div class="answers-body">
-
-      <!-- PANEL 1: Assignment images (admin-uploaded) -->
       <div class="tab-panel active" id="panelAssignment">
         <div id="assignmentImgsWrap">
           <div style="text-align:center;color:var(--text4);font-size:13px;padding:30px" id="assignmentLoading">טוען...</div>
           <div class="assignment-imgs-grid hidden" id="assignmentImgsGrid"></div>
           <div class="no-assignment-imgs hidden" id="noAssignmentImgs">
             <div class="no-assignment-imgs-icon">🖼️</div>
-            <div id="noAssignmentImgsText">אין תמונות משימה</div>
+            <div>אין תמונות משימה</div>
           </div>
         </div>
       </div>
-
-      <!-- PANEL 2: Difficulty + user answers -->
       <div class="tab-panel" id="panelAnswers">
         <div class="difficulty-section">
           <div class="difficulty-section-title">
-            <span id="diffSectionTitle"></span>
+            <span>🔥 דרגת קושי</span>
             <span id="diffVotersCount" style="color:var(--text4);font-size:11px"></span>
           </div>
           <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:12px">
@@ -739,7 +747,7 @@
                 <span class="difficulty-avg-number" id="diffAvgNumber">—</span>
                 <span class="difficulty-avg-outof">/10</span>
               </div>
-              <div class="difficulty-avg-voters" id="diffAvgSub"></div>
+              <div class="difficulty-avg-voters" id="diffAvgSub">אין הצבעות עדיין</div>
             </div>
             <div style="flex:1;padding-bottom:6px">
               <div class="difficulty-bar-bg"><div class="difficulty-bar-fill" id="diffBarFill" style="width:0%;background:#444"></div></div>
@@ -753,28 +761,28 @@
         <div id="uploadSection">
           <div class="upload-area" onclick="document.getElementById('fileInput').click()">
             <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(event)"/>
-            <div class="upload-area-text" id="uploadAreaText"></div>
+            <div class="upload-area-text">לחץ כדי לבחור תמונות<br><span>ניתן לבחור מספר תמונות</span></div>
           </div>
           <div class="upload-previews" id="uploadPreviews"></div>
-          <button class="upload-btn" id="uploadBtn" onclick="uploadPhotos()" disabled></button>
-          <div class="uploading-text hidden" id="uploadingText"></div>
+          <button class="upload-btn" id="uploadBtn" onclick="uploadPhotos()" disabled>העלה תשובות</button>
+          <div class="uploading-text hidden" id="uploadingText">מעלה תמונות... אנא המתן</div>
         </div>
         <div style="margin-top:24px">
-          <div id="uploadedSectionHeader" style="font-size:12px;color:var(--text4);margin-bottom:12px;letter-spacing:1px"></div>
+          <div style="font-size:12px;color:var(--text4);margin-bottom:12px;letter-spacing:1px">תשובות שהועלו</div>
           <div class="photos-grid" id="photosGrid"></div>
-          <div class="no-photos hidden" id="noPhotos"></div>
+          <div class="no-photos hidden" id="noPhotos">אין תשובות עדיין — היה הראשון להעלות!</div>
         </div>
       </div>
-
-    </div><!-- /answers-body -->
+    </div>
   </div>
 </div>
 
 <!-- ══ LEADERBOARD MODAL ══ -->
+
 <div class="modal-overlay hidden" id="leaderboardModal" onclick="closeLeaderboard(event)">
   <div class="modal" style="max-width:420px" onclick="event.stopPropagation()">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-      <div class="modal-title" id="leaderboardTitle"></div>
+      <div class="modal-title">🏆 טבלת מובילים</div>
       <button class="close-btn" onclick="closeLeaderboard()">&#215;</button>
     </div>
     <div id="leaderboardList"></div>
@@ -782,184 +790,12 @@
 </div>
 
 <!-- ══ LIGHTBOX ══ -->
+
 <div class="lightbox hidden" id="lightbox" onclick="closeLightbox()">
   <img id="lightboxImg" src=""/>
 </div>
 
 <script>
-  // ══════════════════════════════════════════════════════════════════════
-  //  TEXT CONFIG
-  // ══════════════════════════════════════════════════════════════════════
-  const TEXT = {
-    pageTitle:        "מעקב שיעורי בית",
-    headerLabel:      "פורטל כיתה",
-    headerTitle:      "📚 מעקב שיעורי בית",
-    drawerTitle:      "⚙️ הגדרות",
-    drawerAccountLabel:"חשבון",
-    drawerLogoutLabel:"התנתקות",
-    drawerLoginLabel: "כניסה / הרשמה",
-    drawerLoginSub:   "כדי להעלות תשובות",
-    drawerThemeLabel: "ערכת נושא",
-    themeDark:        "🌙 כהה",
-    themeLight:       "☀️ בהיר",
-    drawerMoreLabel:  "עוד",
-    drawerLeaderboardLabel:"🏆 טבלת מובילים",
-    drawerColorsLabel:"צבעי דדליין",
-    drawerAdminLabel: "ניהול",
-    drawerAdminLoginLabel:"כניסת מנהל",
-    drawerAdminLoginSub:  "גישה לעריכת משימות",
-    drawerAdminActiveLabel:"מצב מנהל פעיל",
-    drawerAdminExitLabel: "יציאה ממצב מנהל",
-    btnAddHomework:   "+ הוסף שיעורי בית",
-    formTitle:        "משימה חדשה",
-    phSubject:        "מקצוע (למשל: מתמטיקה)",
-    phPages:          "עמודים (למשל: 45-67)",
-    labelDueDate:     "תאריך הגשה",
-    labelDueTime:     "שעת הגשה (אופציונלי)",
-    checkboxQuestions:"שאלות ספציפיות בלבד",
-    phQuestions:      "רשום אילו שאלות צריך לעשות (למשל: 1, 3, 5-7, 12)",
-    btnAdd:           "הוסף",
-    btnCancel:        "ביטול",
-    emptyEmoji:       "✨",
-    emptyText:        "אין שיעורי בית כרגע.",
-    emptySub:         "תהנו מהחופש!",
-    credit:           "רון יאדגרוב",
-    cardPagesPrefix:  "עמודים",
-    cardQuestionsLabel:"שאלות:",
-    cardHint:         "לחץ לצפייה בתשובות ✦",
-    cardHasImages:    "📋 יש תמונות משימה",
-    cardNotRated:     "🔥 לא דורג עדיין",
-    totalCount:       "סה\"כ {n} משימות",
-    urgencyExpired:   "פג תוקף!",
-    urgencyRed:       "פחות מ-{h} שעות!",
-    urgencyOrange:    "עוד {h} שעות",
-    urgencyGreen:     "עוד {d} ימים",
-    urgencyBlue:      "עוד {d} ימים",
-    diffSectionTitle: "🔥 דרגת קושי",
-    diffNoVotes:      "אין הצבעות עדיין",
-    diffVotesSuffix:  "הצבעות",
-    diffVotedMsg:     "הצבעת {v}/10 · לחץ שוב כדי לשנות",
-    diffLoginWord:    "התחבר",
-    diffLoginSuffix:  " כדי להצביע",
-    diffLabels:{ veryEasy:"קל מאוד", easy:"קל", medium:"בינוני", hard:"קשה", veryHard:"קשה מאוד", impossible:"בלתי אפשרי 💀" },
-    answersTitle:     "תשובות",
-    answersSubjectSep:" — עמ' ",
-    tabAssignment:    "📋 המשימה",
-    tabAnswers:       "💡 תשובות",
-    noAssignmentImgs: "המנהל לא העלה תמונות למשימה זו",
-    uploadAreaLine1:  "לחץ כדי לבחור תמונות",
-    uploadAreaLine2:  "ניתן לבחור מספר תמונות",
-    btnUpload:        "העלה תשובות",
-    uploadingMsg:     "מעלה תמונות... אנא המתן",
-    uploadedHeader:   "תשובות שהועלו",
-    noPhotos:         "אין תשובות עדיין — היה הראשון להעלות!",
-    photoUploaderIcon:"👤 ",
-    photoLikeDefault: "לייק",
-    photoCountSuffix: "תמונות",
-    btnPhotoDelete:   "🗑️ מחק",
-    confirmDeletePhoto:"למחוק תמונה זו?",
-    loginTitle:       "כניסה",
-    loginSub:         "הכנס את פרטיך כדי להעלות תשובות",
-    btnGoogleLogin:   "כניסה עם Google",
-    authDivider:      "או",
-    phEmail:          "אימייל",
-    phPassword:       "סיסמה",
-    btnLoginSubmit:   "כניסה",
-    loginBusy:        "מתחבר...",
-    forgotPassword:   "שכחתי סיסמה",
-    forgotTitle:      "איפוס סיסמה",
-    forgotSub:        "הכנס את כתובת האימייל ונשלח קישור לאיפוס הסיסמה",
-    btnForgotSubmit:  "שלח קישור לאיפוס",
-    forgotBusy:       "שולח...",
-    forgotSuccess:    "✓ נשלח! בדוק את הדואר הנכנס (וספאם)",
-    forgotBackToLogin:"← חזרה לכניסה",
-    switchToRegister: "אין לך חשבון? הירשם כאן",
-    drawerManagerLabel:   "מנהל",
-    drawerManagerOn:      "⚡ הפעל מצב מנהל",
-    drawerManagerOnSub:   "לחץ להפעלה מידית",
-    drawerManagerOff:     "כבה מצב מנהל",
-    drawerManagerActive:  "מצב מנהל פעיל ✓",
-    cancelAuth:       "ביטול",
-    registerTitle:    "הרשמה",
-    registerSub:      "צור חשבון חדש",
-    btnGoogleRegister:"הרשמה עם Google",
-    phUsername:       "שם משתמש (יוצג לאחרים)",
-    phPasswordNew:    "סיסמה (לפחות 6 תווים)",
-    phPasswordConfirm:"אשר סיסמה",
-    btnRegisterSubmit:"הרשמה ושליחת קישור אימות",
-    registerBusy:     "יוצר חשבון...",
-    switchToLogin:    "כבר יש לך חשבון? כנס כאן",
-    googleBusy:       "מתחבר...",
-    verifyIcon:       "📧",
-    verifyTitle:      "בדוק את האימייל שלך",
-    verifySentLabel:  "שלחנו קישור אימות אל",
-    verifyClickLabel: "לחץ על הקישור במייל ואז חזור לכאן כדי להתחבר.",
-    verifySpamNote:   "לא מצאת? בדוק בתיקיית ספאם/דואר זבל",
-    resendLink:       "שלח מחדש",
-    resendSending:    "שולח...",
-    resendSuccess:    "✓ נשלח! בדוק תיקיית ספאם אם לא מצאת",
-    resendError:      "שגיאה בשליחה — נסה שוב",
-    resendNoCreds:    "נסה להתחבר שוב — תקבל הוראות אימות",
-    backToLogin:      "← חזרה לכניסה",
-    usernameModalTitle:"בחר שם משתמש",
-    usernameModalSub:  "שם זה יוצג לאחרים בעת העלאת תשובות",
-    phGoogleUsername:  "שם משתמש (לפחות 2 תווים)",
-    btnUsernameSave:   "המשך",
-    usernameSaving:    "שומר...",
-    phAdminPass:      "סיסמה",
-    btnAdminLogin:    "כניסה",
-    adminWrongPass:   "סיסמה שגויה",
-    confirmDeleteCard:"למחוק משימה זו?",
-    errFillAll:       "נא למלא את כל השדות",
-    errUsernameTooShort:"שם משתמש קצר מדי (לפחות 2 תווים)",
-    errPasswordMismatch:"הסיסמאות אינן תואמות",
-    errPasswordTooShort:"סיסמה קצרה מדי (לפחות 6 תווים)",
-    errUsernameTaken: "שם משתמש כבר תפוס — בחר אחר",
-    errUsernameEmpty: "נא להכניס שם משתמש",
-    errSaveFailed:    "שגיאה בשמירה: ",
-    errMissingFields: "נא למלא את כל השדות!",
-    errMissingQuestions:"נא לרשום את השאלות הספציפיות!",
-    errUploadFailed:  "שגיאה בהעלאת תמונות: ",
-    errUploadInternal:"שגיאה בהעלאה",
-    settingsNow:      "עכשיו",
-    settingsFar:      "הרחק",
-    settingsHoursAbbr:"ש'",
-    settingsDaysAbbr: "י'",
-    settingsLessThan: "פחות מ...",
-    settingsUnitHours:"שעות",
-    settingsUnitDays: "ימים",
-    settingsRedLabel: "🔴 אדום — דחוף!",
-    settingsOrangeLabel:"🟠 כתום — קרוב",
-    settingsGreenLabel:"🟢 ירוק — יש זמן",
-    settingsBlueLabel:"🔵 כחול — רחוק",
-    settingsBlueDesc: "כל מה שמעבר לירוק",
-    btnSettingsReset: "↺ איפוס",
-    btnSettingsSave:  "שמור",
-    errSettingsMinOne:"כל הערכים חייבים להיות לפחות 1",
-    errSettingsOrangeGtRed:"הכתום חייב להיות יותר זמן מהאדום",
-    errSettingsGreenGtOrange:"הירוק חייב להיות יותר זמן מהכתום",
-    leaderboardTitle: "🏆 טבלת מובילים",
-    leaderboardLoading:"טוען...",
-    leaderboardEmpty: "אין נתונים עדיין",
-    leaderboardError: "שגיאה בטעינה",
-    leaderboardMe:    " (את/ה)",
-    greetingPrefix:   "שלום, ",
-    firebaseErrors:{
-      "auth/email-already-in-use":   "האימייל הזה כבר רשום — נסה להתחבר",
-      "auth/invalid-email":           "כתובת אימייל לא תקינה",
-      "auth/weak-password":           "הסיסמה חלשה מדי",
-      "auth/user-not-found":          "לא נמצא חשבון עם האימייל הזה",
-      "auth/wrong-password":          "סיסמה שגויה",
-      "auth/too-many-requests":       "יותר מדי ניסיונות — נסה שוב מאוחר יותר",
-      "auth/invalid-credential":      "אימייל או סיסמה שגויים",
-      "auth/network-request-failed":  "שגיאת רשת — בדוק חיבור אינטרנט",
-      "auth/popup-blocked":           "חלון קופץ נחסם — אפשר חלונות קופצים בדפדפן",
-      "auth/cancelled-popup-request": "הכניסה בוטלה",
-      "auth/account-exists-with-different-credential":"כתובת אימייל זו כבר רשומה בשיטה אחרת",
-    },
-  };
-
-  // ══ FIREBASE ══
   const firebaseConfig = {
     apiKey:"AIzaSyB2TwGFKtyye9-QwIUnSXh2W4ggZ_AIIoE",
     authDomain:"hw-app-15b8f.firebaseapp.com",
@@ -973,95 +809,53 @@
 
   const ADMIN_PASSWORD = "homework123";
   const IMGBB_KEY      = "422246b6dc0e09efd2144d6017395f57";
+  const MANAGER_EMAILS = [];
 
-  // ✏️ Add manager emails here — these users get an instant admin toggle button
-  const MANAGER_EMAILS = [
-    // "ron.yadga12345@gmail.com",
-    // "yadgaron135@school.com",
-  ];
-
-  let isAdmin=false, cards=[], specificQuestions=false, currentCardId=null, currentUser=null;
+  // ══ STATE ══
+  let isAdmin=false, cards=[], specificQuestions=false;
+  let currentCardId=null, currentUser=null;
   let pendingFiles=[], pendingHwFiles=[], photosUnsubscribe=null, diffUnsubscribe=null;
   let pendingVerifyEmail=null, pendingVerifyPass=null, pendingGoogleFirebaseUser=null;
-  let currentAnswersTab = 'assignment';
+  let currentAnswersTab='assignment';
+  let currentFilter='all';   // 'all' | 'hw' | 'exam'
+  let selectedType='hw';     // 'hw' | 'exam'
 
-  // ══ APPLY TEXTS ══
-  const G_SVG = `<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>`;
-
-  function applyTexts() {
-    document.title = TEXT.pageTitle;
-    s("headerLabel",TEXT.headerLabel); s("headerTitle",TEXT.headerTitle);
-    s("drawerTitle",TEXT.drawerTitle);
-    s("drawerAccountLabel",TEXT.drawerAccountLabel);
-    s("drawerLogoutLabel",TEXT.drawerLogoutLabel);
-    s("drawerLoginLabel",TEXT.drawerLoginLabel); s("drawerLoginSub",TEXT.drawerLoginSub);
-    s("drawerThemeLabel",TEXT.drawerThemeLabel);
-    s("themeDark",TEXT.themeDark); s("themeLight",TEXT.themeLight);
-    s("drawerMoreLabel",TEXT.drawerMoreLabel);
-    s("drawerLeaderboardLabel",TEXT.drawerLeaderboardLabel);
-    s("drawerColorsLabel",TEXT.drawerColorsLabel);
-    s("drawerAdminLabel",TEXT.drawerAdminLabel);
-    s("drawerAdminLoginLabel",TEXT.drawerAdminLoginLabel); s("drawerAdminLoginSub",TEXT.drawerAdminLoginSub);
-    s("drawerAdminActiveLabel",TEXT.drawerAdminActiveLabel); s("drawerAdminExitLabel",TEXT.drawerAdminExitLabel);
-    s("addBtn",TEXT.btnAddHomework); s("formTitle",TEXT.formTitle);
-    p("subjectInput",TEXT.phSubject); p("pagesInput",TEXT.phPages);
-    s("labelDueDate",TEXT.labelDueDate); s("labelDueTime",TEXT.labelDueTime);
-    s("checkboxLabel",TEXT.checkboxQuestions); p("questionsInput",TEXT.phQuestions);
-    s("btnAddCard",TEXT.btnAdd); s("btnCancelForm",TEXT.btnCancel);
-    s("emptyEmoji",TEXT.emptyEmoji); s("emptyText",TEXT.emptyText); s("emptySub",TEXT.emptySub);
-    s("credit",TEXT.credit);
-    s("loginTitle",TEXT.loginTitle); s("loginSub",TEXT.loginSub);
-    document.getElementById("googleLoginBtn").innerHTML = G_SVG+" "+TEXT.btnGoogleLogin;
-    s("authDividerText",TEXT.authDivider); p("loginEmail",TEXT.phEmail); p("loginPass",TEXT.phPassword);
-    s("loginSubmitBtn",TEXT.btnLoginSubmit); s("switchToRegisterLink",TEXT.switchToRegister); s("cancelLoginLink",TEXT.cancelAuth);
-    s("forgotPasswordLink",TEXT.forgotPassword);
-    s("forgotTitle",TEXT.forgotTitle); s("forgotSub",TEXT.forgotSub);
-    p("forgotEmail",TEXT.phEmail);
-    s("forgotSubmitBtn",TEXT.btnForgotSubmit); s("forgotBackLink",TEXT.forgotBackToLogin);
-    s("drawerManagerLabel",TEXT.drawerManagerLabel);
-    s("drawerManagerOnLabel",TEXT.drawerManagerOn); s("drawerManagerOnSub",TEXT.drawerManagerOnSub);
-    s("drawerManagerActiveLabel",TEXT.drawerManagerActive); s("drawerManagerOffLabel",TEXT.drawerManagerOff);
-    s("registerTitle",TEXT.registerTitle); s("registerSub",TEXT.registerSub);
-    document.getElementById("googleRegisterBtn").innerHTML = G_SVG+" "+TEXT.btnGoogleRegister;
-    s("authDividerText2",TEXT.authDivider); p("regUser",TEXT.phUsername); p("regEmail",TEXT.phEmail);
-    p("regPass",TEXT.phPasswordNew); p("regPass2",TEXT.phPasswordConfirm);
-    s("registerSubmitBtn",TEXT.btnRegisterSubmit); s("switchToLoginLink",TEXT.switchToLogin); s("cancelRegLink",TEXT.cancelAuth);
-    s("verifyIcon",TEXT.verifyIcon); s("verifyTitle",TEXT.verifyTitle);
-    s("verifySentLabel",TEXT.verifySentLabel); s("verifyClickLabel",TEXT.verifyClickLabel); s("verifySpamNote",TEXT.verifySpamNote);
-    s("resendLink",TEXT.resendLink); s("backToLoginLink",TEXT.backToLogin);
-    s("usernameModalTitle",TEXT.usernameModalTitle); s("usernameModalSub",TEXT.usernameModalSub);
-    p("googleUsernameInput",TEXT.phGoogleUsername); s("usernameSubmitBtn",TEXT.btnUsernameSave);
-    p("adminPassInput",TEXT.phAdminPass); s("adminPassError",TEXT.adminWrongPass); s("adminLoginSubmitBtn",TEXT.btnAdminLogin);
-    s("answersTitle",TEXT.answersTitle);
-    s("diffSectionTitle",TEXT.diffSectionTitle); s("diffAvgSub",TEXT.diffNoVotes);
-    document.getElementById("diffLoginHint").innerHTML=`<span onclick="openAuthForDiff()">${TEXT.diffLoginWord}</span>${TEXT.diffLoginSuffix}`;
-    s("uploadAreaText",TEXT.uploadAreaLine1+`<br><span>`+TEXT.uploadAreaLine2+`</span>`);
-    s("uploadBtn",TEXT.btnUpload); s("uploadingText",TEXT.uploadingMsg); s("uploadedSectionHeader",TEXT.uploadedHeader); s("noPhotos",TEXT.noPhotos);
-    s("noAssignmentImgsText", TEXT.noAssignmentImgs);
-    s("leaderboardTitle",TEXT.leaderboardTitle);
-    s("prevLabelNow",TEXT.settingsNow); s("prevLabelFar",TEXT.settingsFar);
-    s("settingsRedLabel",TEXT.settingsRedLabel); s("settingsLessThan1",TEXT.settingsLessThan); s("settingsUnitHours",TEXT.settingsUnitHours);
-    s("settingsOrangeLabel",TEXT.settingsOrangeLabel); s("settingsLessThan2",TEXT.settingsLessThan); s("settingsUnitDays1",TEXT.settingsUnitDays);
-    s("settingsGreenLabel",TEXT.settingsGreenLabel); s("settingsLessThan3",TEXT.settingsLessThan); s("settingsUnitDays2",TEXT.settingsUnitDays);
-    s("settingsBlueLabel",TEXT.settingsBlueLabel); s("settingsBlueDesc",TEXT.settingsBlueDesc);
-    s("settingsResetBtn",TEXT.btnSettingsReset); s("settingsSaveBtn",TEXT.btnSettingsSave);
-  }
-  function s(id,html){ const e=document.getElementById(id); if(e) e.innerHTML=html; }
-  function p(id,t)   { const e=document.getElementById(id); if(e) e.placeholder=t; }
+  // ══ GOOGLE SVG ══
+  const G_SVG=`<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>`;
+  document.getElementById("googleLoginBtn").innerHTML    = G_SVG+" כניסה עם Google";
+  document.getElementById("googleRegisterBtn").innerHTML = G_SVG+" הרשמה עם Google";
+  document.getElementById("diffLoginHint").innerHTML=`<span onclick="openAuthModal()">התחבר</span> כדי להצביע`;
 
   // ══ THEME ══
-  let currentTheme = localStorage.getItem("hwTheme") || "dark";
-  function applyTheme(t) {
-    currentTheme = t;
-    document.body.classList.toggle("light", t==="light");
-    localStorage.setItem("hwTheme", t);
-    document.getElementById("themeDark").classList.toggle("active", t==="dark");
-    document.getElementById("themeLight").classList.toggle("active", t==="light");
+  let currentTheme=localStorage.getItem("hwTheme")||"dark";
+  function applyTheme(t){
+    currentTheme=t; document.body.classList.toggle("light",t==="light");
+    localStorage.setItem("hwTheme",t);
+    document.getElementById("themeDark").classList.toggle("active",t==="dark");
+    document.getElementById("themeLight").classList.toggle("active",t==="light");
   }
-  function setTheme(t) { applyTheme(t); }
+  function setTheme(t){applyTheme(t);}
 
-  // ══ SETTINGS DRAWER ══
-  function openDrawer() {
+  // ══ FILTER ══
+  function setFilter(f){
+    currentFilter=f;
+    document.getElementById("filterAll").className  ="filter-btn"+(f==="all"?" active-all":"");
+    document.getElementById("filterHw").className   ="filter-btn"+(f==="hw"?" active-hw":"");
+    document.getElementById("filterExam").className ="filter-btn"+(f==="exam"?" active-exam":"");
+    render();
+  }
+
+  // ══ TYPE SELECTOR (form) ══
+  function selectType(t){
+    selectedType=t;
+    document.getElementById("typeOptHw").className   ="type-opt"+(t==="hw"?" active-hw":"");
+    document.getElementById("typeOptExam").className ="type-opt"+(t==="exam"?" active-exam":"");
+    // Update add button label
+    document.getElementById("addBtn").textContent = t==="exam" ? "+ הוסף מבחן" : "+ הוסף שיעורי בית";
+  }
+
+  // ══ DRAWER ══
+  function openDrawer(){
     document.getElementById("st-red").value    = colorSettings.redHours;
     document.getElementById("st-orange").value = colorSettings.orangeDays;
     document.getElementById("st-green").value  = colorSettings.greenDays;
@@ -1069,271 +863,220 @@
     document.getElementById("settingsDrawer").classList.add("open");
     document.getElementById("drawerOverlay").classList.add("open");
   }
-  function closeDrawer() {
+  function closeDrawer(){
     document.getElementById("settingsDrawer").classList.remove("open");
     document.getElementById("drawerOverlay").classList.remove("open");
   }
-  function openAuthFromDrawer() { closeDrawer(); openAuthModal(); }
-
-  function updateDrawerAccountUI() {
-    const loggedIn  = document.getElementById("drawerLoggedIn");
-    const loggedOut = document.getElementById("drawerLoggedOut");
-    if (currentUser) {
-      loggedIn.classList.remove("hidden"); loggedOut.classList.add("hidden");
-      s("drawerUsername", TEXT.greetingPrefix + currentUser.username);
-      s("drawerEmail", currentUser.email || "");
-      document.getElementById("userBadge").textContent = TEXT.greetingPrefix + currentUser.username;
+  function openAuthFromDrawer(){closeDrawer();openAuthModal();}
+  function updateDrawerAccountUI(){
+    const li=document.getElementById("drawerLoggedIn"), lo=document.getElementById("drawerLoggedOut");
+    if(currentUser){
+      li.classList.remove("hidden"); lo.classList.add("hidden");
+      document.getElementById("drawerUsername").innerHTML="שלום, "+currentUser.username;
+      document.getElementById("drawerEmail").textContent=currentUser.email||"";
+      document.getElementById("userBadge").textContent="שלום, "+currentUser.username;
       document.getElementById("userBadge").classList.remove("hidden");
     } else {
-      loggedIn.classList.add("hidden"); loggedOut.classList.remove("hidden");
+      li.classList.add("hidden"); lo.classList.remove("hidden");
       document.getElementById("userBadge").classList.add("hidden");
     }
     updateManagerSectionUI();
   }
-
-  // ══ MANAGER TOGGLE ══
-  function isManager(){ return currentUser && MANAGER_EMAILS.includes(currentUser.email); }
+  function isManager(){return currentUser&&MANAGER_EMAILS.includes(currentUser.email);}
   function updateManagerSectionUI(){
-    const section=document.getElementById("drawerManagerSection");
-    if(!isManager()){ section.classList.add("hidden"); return; }
-    section.classList.remove("hidden");
-    document.getElementById("drawerManagerOff").classList.toggle("hidden", isAdmin);
-    document.getElementById("drawerManagerOn").classList.toggle("hidden", !isAdmin);
+    const s=document.getElementById("drawerManagerSection");
+    if(!isManager()){s.classList.add("hidden");return;}
+    s.classList.remove("hidden");
+    document.getElementById("drawerManagerOff").classList.toggle("hidden",isAdmin);
+    document.getElementById("drawerManagerOn").classList.toggle("hidden",!isAdmin);
   }
   function managerToggleAdmin(on){
     isAdmin=on;
-    if(on){
-      document.getElementById("addBtn").classList.remove("hidden");
-    } else {
-      document.getElementById("addBtn").classList.add("hidden");
-      hideAddForm();
-    }
-    updateManagerSectionUI();
-    updateAdminDrawerUI();
-    render();
+    if(on) document.getElementById("addBtn").classList.remove("hidden");
+    else{document.getElementById("addBtn").classList.add("hidden");hideAddForm();}
+    updateManagerSectionUI(); updateAdminDrawerUI(); render();
   }
-
-  function showDrawerAdminForm() {
+  function showDrawerAdminForm(){
     document.getElementById("drawerAdminForm").classList.toggle("hidden");
     setTimeout(()=>document.getElementById("adminPassInput").focus(),50);
   }
-  function exitAdmin() {
-    isAdmin = false;
+  function exitAdmin(){
+    isAdmin=false;
     document.getElementById("addBtn").classList.add("hidden");
     document.getElementById("drawerAdminLogin").classList.remove("hidden");
     document.getElementById("drawerAdminActive").classList.add("hidden");
-    updateManagerSectionUI();
-    hideAddForm(); render();
+    updateManagerSectionUI(); hideAddForm(); render();
   }
-  function updateAdminDrawerUI() {
-    document.getElementById("drawerAdminLogin").classList.toggle("hidden", isAdmin);
-    document.getElementById("drawerAdminActive").classList.toggle("hidden", !isAdmin);
+  function updateAdminDrawerUI(){
+    document.getElementById("drawerAdminLogin").classList.toggle("hidden",isAdmin);
+    document.getElementById("drawerAdminActive").classList.toggle("hidden",!isAdmin);
   }
 
   // ══ FIREBASE AUTH ══
-  auth.onAuthStateChanged(async (fu) => {
-    if (fu && (fu.emailVerified || isGoogleProvider(fu))) {
-      try {
-        const doc = await db.collection("users").doc(fu.uid).get();
-        currentUser = doc.exists
-          ? { username:doc.data().username, uid:fu.uid, email:fu.email }
-          : { username:fu.email.split("@")[0], uid:fu.uid, email:fu.email };
-      } catch(e) {
-        currentUser = { username:fu.email.split("@")[0], uid:fu.uid, email:fu.email };
-      }
-    } else { currentUser = null; }
+  auth.onAuthStateChanged(async(fu)=>{
+    if(fu&&(fu.emailVerified||isGoogleProvider(fu))){
+      try{
+        const doc=await db.collection("users").doc(fu.uid).get();
+        currentUser=doc.exists?{username:doc.data().username,uid:fu.uid,email:fu.email}:{username:fu.email.split("@")[0],uid:fu.uid,email:fu.email};
+      }catch(e){currentUser={username:fu.email.split("@")[0],uid:fu.uid,email:fu.email};}
+    }else{currentUser=null;}
     updateDrawerAccountUI();
   });
-  function isGoogleProvider(u){ return u.providerData&&u.providerData.some(p=>p.providerId==="google.com"); }
-  function logout(){ auth.signOut(); currentUser=null; updateDrawerAccountUI(); }
+  function isGoogleProvider(u){return u.providerData&&u.providerData.some(p=>p.providerId==="google.com");}
+  function logout(){auth.signOut();currentUser=null;updateDrawerAccountUI();}
 
   // ══ AUTH MODAL ══
-  function openAuthModal(){ document.getElementById("authModal").classList.remove("hidden"); switchToLogin(); }
-  function closeAuthModal(){ document.getElementById("authModal").classList.add("hidden"); }
-  function switchToRegister(){ hide("loginView");hide("verifyView");hide("forgotView");show("registerView");clearErr("registerError"); }
-  function switchToLogin(){ hide("registerView");hide("verifyView");hide("forgotView");show("loginView");clearErr("loginError"); }
-  function switchToForgot(){ hide("loginView");hide("registerView");hide("verifyView");show("forgotView");clearErr("forgotError");document.getElementById("forgotSuccess").classList.add("hidden");setTimeout(()=>document.getElementById("forgotEmail").focus(),50); }
-  function switchToVerify(email){
-    hide("loginView");hide("registerView");hide("forgotView");show("verifyView");
-    document.getElementById("verifyEmailDisplay").textContent=email; resetResendUI();
-  }
+  function openAuthModal(){document.getElementById("authModal").classList.remove("hidden");switchToLogin();}
+  function closeAuthModal(){document.getElementById("authModal").classList.add("hidden");}
+  function switchToRegister(){hide("loginView");hide("verifyView");hide("forgotView");show("registerView");clearErr("registerError");}
+  function switchToLogin(){hide("registerView");hide("verifyView");hide("forgotView");show("loginView");clearErr("loginError");}
+  function switchToForgot(){hide("loginView");hide("registerView");hide("verifyView");show("forgotView");clearErr("forgotError");document.getElementById("forgotSuccess").classList.add("hidden");setTimeout(()=>document.getElementById("forgotEmail").focus(),50);}
+  function switchToVerify(email){hide("loginView");hide("registerView");hide("forgotView");show("verifyView");document.getElementById("verifyEmailDisplay").textContent=email;resetResendUI();}
 
-  // ══ FORGOT PASSWORD ══
   async function doForgotPassword(){
     const email=document.getElementById("forgotEmail").value.trim();
-    const errEl=document.getElementById("forgotError"), sucEl=document.getElementById("forgotSuccess");
-    const btn=document.getElementById("forgotSubmitBtn");
-    clearErr("forgotError"); sucEl.classList.add("hidden");
-    if(!email){showErr(errEl,TEXT.errFillAll);return;}
-    btn.disabled=true; btn.textContent=TEXT.forgotBusy;
-    try{
-      await auth.sendPasswordResetEmail(email);
-      sucEl.textContent=TEXT.forgotSuccess; sucEl.classList.remove("hidden");
-    }catch(err){ showErr(errEl,translateFirebaseError(err.code)); }
-    btn.disabled=false; btn.textContent=TEXT.btnForgotSubmit;
+    const errEl=document.getElementById("forgotError"),sucEl=document.getElementById("forgotSuccess"),btn=document.getElementById("forgotSubmitBtn");
+    clearErr("forgotError");sucEl.classList.add("hidden");
+    if(!email){showErr(errEl,"נא למלא את כל השדות");return;}
+    btn.disabled=true;btn.textContent="שולח...";
+    try{await auth.sendPasswordResetEmail(email);sucEl.textContent="✓ נשלח! בדוק את הדואר הנכנס (וספאם)";sucEl.classList.remove("hidden");}
+    catch(err){showErr(errEl,translateFirebaseError(err.code));}
+    btn.disabled=false;btn.textContent="שלח קישור לאיפוס";
   }
 
-  // ══ GOOGLE SIGN-IN ══
   async function signInWithGoogle(){
     const provider=new firebase.auth.GoogleAuthProvider();
-    setGBtns(true); clearErr("loginError"); clearErr("registerError");
-    try {
-      const cred=await auth.signInWithPopup(provider), fu=cred.user;
+    setGBtns(true);clearErr("loginError");clearErr("registerError");
+    try{
+      const cred=await auth.signInWithPopup(provider),fu=cred.user;
       const doc=await db.collection("users").doc(fu.uid).get();
-      if(doc.exists){
-        currentUser={username:doc.data().username,uid:fu.uid,email:fu.email};
-        updateDrawerAccountUI(); closeAuthModal();
-        if(currentCardId) openAnswers(currentCardId);
-      } else {
-        pendingGoogleFirebaseUser=fu; closeAuthModal();
-        document.getElementById("usernameModal").classList.remove("hidden");
-        setTimeout(()=>document.getElementById("googleUsernameInput").focus(),100);
-      }
-    } catch(err){
-      if(err.code!=="auth/popup-closed-by-user"){
-        const el=document.getElementById("loginView").classList.contains("hidden")
-          ?document.getElementById("registerError"):document.getElementById("loginError");
-        showErr(el,translateFirebaseError(err.code));
-      }
-    }
+      if(doc.exists){currentUser={username:doc.data().username,uid:fu.uid,email:fu.email};updateDrawerAccountUI();closeAuthModal();if(currentCardId)openAnswers(currentCardId);}
+      else{pendingGoogleFirebaseUser=fu;closeAuthModal();document.getElementById("usernameModal").classList.remove("hidden");setTimeout(()=>document.getElementById("googleUsernameInput").focus(),100);}
+    }catch(err){if(err.code!=="auth/popup-closed-by-user"){const el=document.getElementById("loginView").classList.contains("hidden")?document.getElementById("registerError"):document.getElementById("loginError");showErr(el,translateFirebaseError(err.code));}}
     setGBtns(false);
   }
   function setGBtns(v){
-    const lb=document.getElementById("googleLoginBtn"), rb=document.getElementById("googleRegisterBtn");
+    const lb=document.getElementById("googleLoginBtn"),rb=document.getElementById("googleRegisterBtn");
     lb.disabled=rb.disabled=v;
-    lb.innerHTML=v?TEXT.googleBusy:G_SVG+" "+TEXT.btnGoogleLogin;
-    rb.innerHTML=v?TEXT.googleBusy:G_SVG+" "+TEXT.btnGoogleRegister;
+    lb.innerHTML=v?"מתחבר...":G_SVG+" כניסה עם Google";
+    rb.innerHTML=v?"מתחבר...":G_SVG+" הרשמה עם Google";
   }
 
-  // ══ GOOGLE USERNAME ══
   async function saveGoogleUsername(){
     const un=document.getElementById("googleUsernameInput").value.trim();
-    const errEl=document.getElementById("usernameError"), btn=document.getElementById("usernameSubmitBtn");
+    const errEl=document.getElementById("usernameError"),btn=document.getElementById("usernameSubmitBtn");
     clearErr("usernameError");
-    if(!un){showErr(errEl,TEXT.errUsernameEmpty);return;}
-    if(un.length<2){showErr(errEl,TEXT.errUsernameTooShort);return;}
+    if(!un){showErr(errEl,"נא להכניס שם משתמש");return;}
+    if(un.length<2){showErr(errEl,"שם משתמש קצר מדי (לפחות 2 תווים)");return;}
     const ud=await db.collection("usernames").doc(un).get();
-    if(ud.exists){showErr(errEl,TEXT.errUsernameTaken);return;}
-    btn.disabled=true; btn.textContent=TEXT.usernameSaving;
+    if(ud.exists){showErr(errEl,"שם משתמש כבר תפוס — בחר אחר");return;}
+    btn.disabled=true;btn.textContent="שומר...";
     try{
-      const uid=pendingGoogleFirebaseUser.uid, email=pendingGoogleFirebaseUser.email;
+      const uid=pendingGoogleFirebaseUser.uid,email=pendingGoogleFirebaseUser.email;
       await db.collection("users").doc(uid).set({username:un,email});
       await db.collection("usernames").doc(un).set({uid});
-      currentUser={username:un,uid,email}; updateDrawerAccountUI();
+      currentUser={username:un,uid,email};updateDrawerAccountUI();
       document.getElementById("usernameModal").classList.add("hidden");
-      document.getElementById("googleUsernameInput").value=""; pendingGoogleFirebaseUser=null;
-      if(currentCardId) openAnswers(currentCardId);
-    }catch(err){showErr(errEl,TEXT.errSaveFailed+err.message);}
-    btn.disabled=false; btn.textContent=TEXT.btnUsernameSave;
+      document.getElementById("googleUsernameInput").value="";pendingGoogleFirebaseUser=null;
+      if(currentCardId)openAnswers(currentCardId);
+    }catch(err){showErr(errEl,"שגיאה בשמירה: "+err.message);}
+    btn.disabled=false;btn.textContent="המשך";
   }
 
-  // ══ REGISTER ══
   async function doRegister(){
-    const un=document.getElementById("regUser").value.trim(), email=document.getElementById("regEmail").value.trim();
-    const pass=document.getElementById("regPass").value, pass2=document.getElementById("regPass2").value;
-    const errEl=document.getElementById("registerError"), btn=document.getElementById("registerSubmitBtn");
+    const un=document.getElementById("regUser").value.trim(),email=document.getElementById("regEmail").value.trim();
+    const pass=document.getElementById("regPass").value,pass2=document.getElementById("regPass2").value;
+    const errEl=document.getElementById("registerError"),btn=document.getElementById("registerSubmitBtn");
     clearErr("registerError");
-    if(!un||!email||!pass||!pass2){showErr(errEl,TEXT.errFillAll);return;}
-    if(un.length<2){showErr(errEl,TEXT.errUsernameTooShort);return;}
-    if(pass!==pass2){showErr(errEl,TEXT.errPasswordMismatch);return;}
-    if(pass.length<6){showErr(errEl,TEXT.errPasswordTooShort);return;}
+    if(!un||!email||!pass||!pass2){showErr(errEl,"נא למלא את כל השדות");return;}
+    if(un.length<2){showErr(errEl,"שם משתמש קצר מדי (לפחות 2 תווים)");return;}
+    if(pass!==pass2){showErr(errEl,"הסיסמאות אינן תואמות");return;}
+    if(pass.length<6){showErr(errEl,"סיסמה קצרה מדי (לפחות 6 תווים)");return;}
     const ud=await db.collection("usernames").doc(un).get();
-    if(ud.exists){showErr(errEl,TEXT.errUsernameTaken);return;}
-    btn.disabled=true; btn.textContent=TEXT.registerBusy;
+    if(ud.exists){showErr(errEl,"שם משתמש כבר תפוס — בחר אחר");return;}
+    btn.disabled=true;btn.textContent="יוצר חשבון...";
     try{
       const cred=await auth.createUserWithEmailAndPassword(email,pass);
       await db.collection("users").doc(cred.user.uid).set({username:un,email});
       await db.collection("usernames").doc(un).set({uid:cred.user.uid});
       await cred.user.sendEmailVerification();
-      pendingVerifyEmail=email; pendingVerifyPass=pass;
-      await auth.signOut(); switchToVerify(email);
+      pendingVerifyEmail=email;pendingVerifyPass=pass;
+      await auth.signOut();switchToVerify(email);
     }catch(err){showErr(errEl,translateFirebaseError(err.code));}
-    btn.disabled=false; btn.textContent=TEXT.btnRegisterSubmit;
+    btn.disabled=false;btn.textContent="הרשמה ושליחת קישור אימות";
   }
 
-  // ══ LOGIN ══
   async function doUserLogin(){
-    const email=document.getElementById("loginEmail").value.trim(), pass=document.getElementById("loginPass").value;
-    const errEl=document.getElementById("loginError"), btn=document.getElementById("loginSubmitBtn");
+    const email=document.getElementById("loginEmail").value.trim(),pass=document.getElementById("loginPass").value;
+    const errEl=document.getElementById("loginError"),btn=document.getElementById("loginSubmitBtn");
     clearErr("loginError");
-    if(!email||!pass){showErr(errEl,TEXT.errFillAll);return;}
-    btn.disabled=true; btn.textContent=TEXT.loginBusy;
+    if(!email||!pass){showErr(errEl,"נא למלא את כל השדות");return;}
+    btn.disabled=true;btn.textContent="מתחבר...";
     try{
       const cred=await auth.signInWithEmailAndPassword(email,pass);
-      if(!cred.user.emailVerified){
-        pendingVerifyEmail=email; pendingVerifyPass=pass; await auth.signOut(); switchToVerify(email);
-      } else { closeAuthModal(); if(currentCardId) openAnswers(currentCardId); }
+      if(!cred.user.emailVerified){pendingVerifyEmail=email;pendingVerifyPass=pass;await auth.signOut();switchToVerify(email);}
+      else{closeAuthModal();if(currentCardId)openAnswers(currentCardId);}
     }catch(err){showErr(errEl,translateFirebaseError(err.code));}
-    btn.disabled=false; btn.textContent=TEXT.btnLoginSubmit;
+    btn.disabled=false;btn.textContent="כניסה";
   }
 
-  // ══ RESEND VERIFICATION ══
   async function resendVerification(){
-    const lnk=document.getElementById("resendLink"), cool=document.getElementById("resendCooldown"), suc=document.getElementById("resendSuccess");
-    if(!pendingVerifyEmail||!pendingVerifyPass){suc.textContent=TEXT.resendNoCreds;suc.classList.remove("hidden");lnk.classList.add("hidden");return;}
-    lnk.classList.add("hidden"); cool.textContent=TEXT.resendSending; cool.classList.remove("hidden"); suc.classList.add("hidden");
+    const lnk=document.getElementById("resendLink"),cool=document.getElementById("resendCooldown"),suc=document.getElementById("resendSuccess");
+    if(!pendingVerifyEmail||!pendingVerifyPass){suc.textContent="נסה להתחבר שוב";suc.classList.remove("hidden");lnk.classList.add("hidden");return;}
+    lnk.classList.add("hidden");cool.textContent="שולח...";cool.classList.remove("hidden");suc.classList.add("hidden");
     try{
       const cred=await auth.signInWithEmailAndPassword(pendingVerifyEmail,pendingVerifyPass);
-      await cred.user.sendEmailVerification(); await auth.signOut();
-      cool.classList.add("hidden"); suc.textContent=TEXT.resendSuccess; suc.classList.remove("hidden");
-      let t=60; const timer=setInterval(()=>{if(--t<=0){clearInterval(timer);suc.classList.add("hidden");lnk.classList.remove("hidden");}},1000);
-    }catch(err){cool.classList.add("hidden");suc.textContent=TEXT.resendError;suc.classList.remove("hidden");setTimeout(()=>{suc.classList.add("hidden");lnk.classList.remove("hidden");},3000);}
+      await cred.user.sendEmailVerification();await auth.signOut();
+      cool.classList.add("hidden");suc.textContent="✓ נשלח!";suc.classList.remove("hidden");
+      let t=60;const timer=setInterval(()=>{if(--t<=0){clearInterval(timer);suc.classList.add("hidden");lnk.classList.remove("hidden");}},1000);
+    }catch(err){cool.classList.add("hidden");suc.textContent="שגיאה בשליחה";suc.classList.remove("hidden");setTimeout(()=>{suc.classList.add("hidden");lnk.classList.remove("hidden");},3000);}
   }
   function resetResendUI(){document.getElementById("resendLink").classList.remove("hidden");document.getElementById("resendCooldown").classList.add("hidden");document.getElementById("resendSuccess").classList.add("hidden");}
-  function translateFirebaseError(code){return TEXT.firebaseErrors[code]||"שגיאה: "+code;}
+  function translateFirebaseError(code){
+    const m={"auth/email-already-in-use":"האימייל הזה כבר רשום","auth/invalid-email":"כתובת אימייל לא תקינה","auth/weak-password":"הסיסמה חלשה מדי","auth/user-not-found":"לא נמצא חשבון","auth/wrong-password":"סיסמה שגויה","auth/too-many-requests":"יותר מדי ניסיונות","auth/invalid-credential":"אימייל או סיסמה שגויים","auth/network-request-failed":"שגיאת רשת","auth/popup-blocked":"חלון קופץ נחסם","auth/cancelled-popup-request":"הכניסה בוטלה"};
+    return m[code]||"שגיאה: "+code;
+  }
 
   // ══ ADMIN ══
   function doAdminLogin(){
-    const pass=document.getElementById("adminPassInput").value;
-    if(pass===ADMIN_PASSWORD){
+    if(document.getElementById("adminPassInput").value===ADMIN_PASSWORD){
       isAdmin=true;
       document.getElementById("adminPassInput").value="";
-      clearErr("adminPassError");
+      document.getElementById("adminPassError").classList.add("hidden");
       document.getElementById("drawerAdminForm").classList.add("hidden");
       updateAdminDrawerUI();
       document.getElementById("addBtn").classList.remove("hidden");
       render();
-    } else { document.getElementById("adminPassError").classList.remove("hidden"); }
+    }else{document.getElementById("adminPassError").classList.remove("hidden");}
   }
 
-  // ══ HW IMAGE UPLOAD (admin, in add form) ══
-  function handleHwImages(e){
-    pendingHwFiles=[...pendingHwFiles,...Array.from(e.target.files)];
-    renderHwPreviews();
-    document.getElementById("hwImgInput").value="";
-  }
+  // ══ HW IMAGE UPLOAD ══
+  function handleHwImages(e){pendingHwFiles=[...pendingHwFiles,...Array.from(e.target.files)];renderHwPreviews();document.getElementById("hwImgInput").value="";}
   function renderHwPreviews(){
-    const c=document.getElementById("hwImgPreviews"); c.innerHTML="";
-    pendingHwFiles.forEach((f,i)=>{
-      const r=new FileReader();
-      r.onload=e=>{
-        const w=document.createElement("div"); w.className="hw-img-preview";
-        w.innerHTML=`<img src="${e.target.result}"/><button class="hw-img-preview-remove" onclick="removeHwFile(${i})">&#215;</button>`;
-        c.appendChild(w);
-      };
-      r.readAsDataURL(f);
-    });
+    const c=document.getElementById("hwImgPreviews");c.innerHTML="";
+    pendingHwFiles.forEach((f,i)=>{const r=new FileReader();r.onload=e=>{const w=document.createElement("div");w.className="hw-img-preview";w.innerHTML=`<img src="${e.target.result}"/><button class="hw-img-preview-remove" onclick="removeHwFile(${i})">&#215;</button>`;c.appendChild(w);};r.readAsDataURL(f);});
   }
-  function removeHwFile(i){ pendingHwFiles.splice(i,1); renderHwPreviews(); }
+  function removeHwFile(i){pendingHwFiles.splice(i,1);renderHwPreviews();}
 
-  // ══ HOMEWORK FORM ══
+  // ══ FORM ══
   function toggleQuestions(){
     specificQuestions=!specificQuestions;
     document.getElementById("customCheckbox").classList.toggle("checked",specificQuestions);
     document.getElementById("checkboxRow").classList.toggle("active",specificQuestions);
     document.getElementById("questionsBox").classList.toggle("open",specificQuestions);
-    if(specificQuestions) setTimeout(()=>document.getElementById("questionsInput").focus(),300);
+    if(specificQuestions)setTimeout(()=>document.getElementById("questionsInput").focus(),300);
     else document.getElementById("questionsInput").value="";
   }
   function showAddForm(){
     document.getElementById("addForm").classList.remove("hidden");
     document.getElementById("addBtn").classList.add("hidden");
+    // Reset type to hw on form open
+    selectType('hw');
   }
   function hideAddForm(){
     document.getElementById("addForm").classList.add("hidden");
-    if(isAdmin) document.getElementById("addBtn").classList.remove("hidden");
-    // Clear hw images
-    pendingHwFiles=[]; renderHwPreviews();
+    if(isAdmin)document.getElementById("addBtn").classList.remove("hidden");
+    pendingHwFiles=[];renderHwPreviews();
   }
   async function addCard(){
     const subject=document.getElementById("subjectInput").value.trim();
@@ -1341,124 +1084,134 @@
     const dueDate=document.getElementById("dateInput").value;
     const dueTime=document.getElementById("timeInput").value||"";
     const questions=specificQuestions?document.getElementById("questionsInput").value.trim():"";
-    if(!subject||!pages||!dueDate) return alert(TEXT.errMissingFields);
-    if(specificQuestions&&!questions) return alert(TEXT.errMissingQuestions);
-
+    if(!subject||!pages||!dueDate)return alert("נא למלא את כל השדות!");
+    if(specificQuestions&&!questions)return alert("נא לרשום את השאלות הספציפיות!");
     const btn=document.getElementById("btnAddCard");
-    btn.disabled=true; btn.textContent="מוסיף...";
-
-    // Upload hw images first if any
+    btn.disabled=true;btn.textContent="מוסיף...";
     let hwImageUrls=[];
     if(pendingHwFiles.length>0){
-      try{
-        for(const f of pendingHwFiles) hwImageUrls.push(await uploadToImgBB(f));
-      }catch(err){ alert(TEXT.errUploadFailed+err.message); btn.disabled=false; btn.textContent=TEXT.btnAdd; return; }
+      try{for(const f of pendingHwFiles)hwImageUrls.push(await uploadToImgBB(f));}
+      catch(err){alert("שגיאה בהעלאת תמונות: "+err.message);btn.disabled=false;btn.textContent="הוסף";return;}
     }
-
-    await db.collection("homework").add({subject,pages,dueDate,dueTime,questions,hwImages:hwImageUrls});
+    await db.collection("homework").add({subject,pages,dueDate,dueTime,questions,hwImages:hwImageUrls,type:selectedType});
     document.getElementById("subjectInput").value=document.getElementById("pagesInput").value="";
     document.getElementById("dateInput").value=document.getElementById("timeInput").value="";
     document.getElementById("questionsInput").value="";
-    pendingHwFiles=[]; renderHwPreviews();
-    if(specificQuestions) toggleQuestions();
+    pendingHwFiles=[];renderHwPreviews();
+    if(specificQuestions)toggleQuestions();
     hideAddForm();
-    btn.disabled=false; btn.textContent=TEXT.btnAdd;
+    btn.disabled=false;btn.textContent="הוסף";
   }
-  async function deleteCard(id){ if(confirm(TEXT.confirmDeleteCard)) await db.collection("homework").doc(id).delete(); }
+  async function deleteCard(id){if(confirm("למחוק משימה זו?"))await db.collection("homework").doc(id).delete();}
 
   // ══ COLOUR SETTINGS ══
   const DEFAULT_SETTINGS={redHours:3,orangeDays:2,greenDays:7};
   let colorSettings=(()=>{try{const s=localStorage.getItem("hwColorSettings");if(s)return{...DEFAULT_SETTINGS,...JSON.parse(s)};}catch(e){}return{...DEFAULT_SETTINGS};})();
-
   function updateSettingsPreview(){
     const rH=Math.max(1,parseFloat(document.getElementById("st-red").value)||DEFAULT_SETTINGS.redHours);
     const oD=Math.max(1,parseFloat(document.getElementById("st-orange").value)||DEFAULT_SETTINGS.orangeDays);
     const gD=Math.max(1,parseFloat(document.getElementById("st-green").value)||DEFAULT_SETTINGS.greenDays);
-    const total=gD*1.5;
-    const rW=Math.min((rH/24)/total*100,33), oW=Math.min(((oD-rH/24)/total)*100,33), gW=Math.min(((gD-oD)/total)*100,34), bW=100-rW-oW-gW;
+    const total=gD*1.5,rW=Math.min((rH/24)/total*100,33),oW=Math.min(((oD-rH/24)/total)*100,33),gW=Math.min(((gD-oD)/total)*100,34),bW=100-rW-oW-gW;
     document.getElementById("prev-red").style.cssText=`background:#ff2d55;flex:${rW}`;
     document.getElementById("prev-orange").style.cssText=`background:#ff9f0a;flex:${Math.max(oW,0)}`;
     document.getElementById("prev-green").style.cssText=`background:#30d158;flex:${Math.max(gW,0)}`;
     document.getElementById("prev-blue").style.cssText=`background:#64d2ff;flex:${Math.max(bW,0)}`;
-    document.getElementById("prevLabelRed").textContent=rH+TEXT.settingsHoursAbbr;
-    document.getElementById("prevLabelOrange").textContent=oD+TEXT.settingsDaysAbbr;
-    document.getElementById("prevLabelGreen").textContent=gD+TEXT.settingsDaysAbbr;
+    document.getElementById("prevLabelRed").textContent=rH+"ש'";
+    document.getElementById("prevLabelOrange").textContent=oD+"י'";
+    document.getElementById("prevLabelGreen").textContent=gD+"י'";
   }
   function saveSettings(){
     const rH=parseFloat(document.getElementById("st-red").value);
     const oD=parseFloat(document.getElementById("st-orange").value);
     const gD=parseFloat(document.getElementById("st-green").value);
-    const errEl=document.getElementById("settingsError"); clearErr("settingsError");
-    if(!rH||!oD||!gD||rH<1||oD<1||gD<1){showErr(errEl,TEXT.errSettingsMinOne);return;}
-    if(rH/24>=oD){showErr(errEl,TEXT.errSettingsOrangeGtRed);return;}
-    if(oD>=gD){showErr(errEl,TEXT.errSettingsGreenGtOrange);return;}
+    const errEl=document.getElementById("settingsError");clearErr("settingsError");
+    if(!rH||!oD||!gD||rH<1||oD<1||gD<1){showErr(errEl,"כל הערכים חייבים להיות לפחות 1");return;}
+    if(rH/24>=oD){showErr(errEl,"הכתום חייב להיות יותר זמן מהאדום");return;}
+    if(oD>=gD){showErr(errEl,"הירוק חייב להיות יותר זמן מהכתום");return;}
     colorSettings={redHours:rH,orangeDays:oD,greenDays:gD};
     localStorage.setItem("hwColorSettings",JSON.stringify(colorSettings));
-    closeDrawer(); render();
+    closeDrawer();render();
   }
   function resetSettings(){
-    colorSettings={...DEFAULT_SETTINGS};
-    localStorage.removeItem("hwColorSettings");
+    colorSettings={...DEFAULT_SETTINGS};localStorage.removeItem("hwColorSettings");
     document.getElementById("st-red").value=DEFAULT_SETTINGS.redHours;
     document.getElementById("st-orange").value=DEFAULT_SETTINGS.orangeDays;
     document.getElementById("st-green").value=DEFAULT_SETTINGS.greenDays;
-    updateSettingsPreview(); clearErr("settingsError");
+    updateSettingsPreview();clearErr("settingsError");
   }
 
   // ══ RENDER ══
   function getMinutesUntil(d,t){return Math.round((new Date(`${d}T${t||"23:59"}:00`)-new Date())/60000);}
   function getUrgency(min){
-    const {redHours,orangeDays,greenDays}=colorSettings, h=min/60, d=min/1440;
-    if(min<0)         return{label:TEXT.urgencyExpired,                                color:"#ff2d55",bg:"#2a0a10",border:"#ff2d55",  glow:"0 0 20px #ff2d5566"};
-    if(h<redHours)    return{label:TEXT.urgencyRed.replace("{h}",redHours),            color:"#ff2d55",bg:"#2a0a10",border:"#ff2d55",  glow:"0 0 20px #ff2d5566"};
-    if(d<orangeDays)  return{label:TEXT.urgencyOrange.replace("{h}",Math.round(h)),    color:"#ff9f0a",bg:"#201500",border:"#ff9f0a",  glow:"0 0 15px #ff9f0a44"};
-    if(d<greenDays)   return{label:TEXT.urgencyGreen.replace("{d}",Math.floor(d)),     color:"#30d158",bg:"#0a1f10",border:"#30d158",  glow:"0 0 15px #30d15833"};
-    return              {label:TEXT.urgencyBlue.replace("{d}",Math.floor(d)),          color:"#64d2ff",bg:"#001a2a",border:"#64d2ff44",glow:"none"};
+    const{redHours,orangeDays,greenDays}=colorSettings,h=min/60,d=min/1440;
+    if(min<0)        return{label:"פג תוקף!",          color:"#ff2d55",bg:"#2a0a10",border:"#ff2d55",  glow:"0 0 20px #ff2d5566"};
+    if(h<redHours)   return{label:`פחות מ-${redHours} שעות!`,color:"#ff2d55",bg:"#2a0a10",border:"#ff2d55",  glow:"0 0 20px #ff2d5566"};
+    if(d<orangeDays) return{label:`עוד ${Math.round(h)} שעות`,color:"#ff9f0a",bg:"#201500",border:"#ff9f0a",  glow:"0 0 15px #ff9f0a44"};
+    if(d<greenDays)  return{label:`עוד ${Math.floor(d)} ימים`, color:"#30d158",bg:"#0a1f10",border:"#30d158",  glow:"0 0 15px #30d15833"};
+    return             {label:`עוד ${Math.floor(d)} ימים`, color:"#64d2ff",bg:"#001a2a",border:"#64d2ff44",glow:"none"};
   }
   function formatDate(dd,dt){
-    const d=new Date(`${dd}T${dt||"23:59"}:00`), p=d.toLocaleDateString("he-IL",{weekday:"short",month:"short",day:"numeric"});
+    const d=new Date(`${dd}T${dt||"23:59"}:00`),p=d.toLocaleDateString("he-IL",{weekday:"short",month:"short",day:"numeric"});
     return dt?p+" · "+dt:p;
   }
 
   const cardDiffCache={};
   function watchCardDiff(id){
-    if(cardDiffCache[id]?.unsub) return;
+    if(cardDiffCache[id]?.unsub)return;
     cardDiffCache[id]={avg:null,count:0,unsub:null};
     cardDiffCache[id].unsub=db.collection("homework").doc(id).collection("votes").doc("data").onSnapshot(doc=>{
-      const v=doc.exists?(doc.data().votes||{}):{}, vals=Object.values(v), cnt=vals.length;
+      const v=doc.exists?(doc.data().votes||{}):{},vals=Object.values(v),cnt=vals.length;
       const avg=cnt>0?vals.reduce((a,b)=>a+b,0)/cnt:null;
-      cardDiffCache[id].avg=avg?Math.round(avg*10)/10:null; cardDiffCache[id].count=cnt; render();
+      cardDiffCache[id].avg=avg?Math.round(avg*10)/10:null;cardDiffCache[id].count=cnt;render();
     });
   }
   function getDiffColor(s){if(!s||s===0)return"#444";if(s<=3)return"#30d158";if(s<=5)return"#64d2ff";if(s<=7)return"#ff9f0a";if(s<=9)return"#ff6b35";return"#ff2d55";}
-  function getDiffLabel(s){if(!s||s===0)return"";if(s<=2)return TEXT.diffLabels.veryEasy;if(s<=4)return TEXT.diffLabels.easy;if(s<=6)return TEXT.diffLabels.medium;if(s<=8)return TEXT.diffLabels.hard;if(s<=9)return TEXT.diffLabels.veryHard;return TEXT.diffLabels.impossible;}
+  function getDiffLabel(s){if(!s||s===0)return"";if(s<=2)return"קל מאוד";if(s<=4)return"קל";if(s<=6)return"בינוני";if(s<=8)return"קשה";if(s<=9)return"קשה מאוד";return"בלתי אפשרי 💀";}
 
   function render(){
-    const list=document.getElementById("cardsList"), empty=document.getElementById("emptyState");
-    const total=document.getElementById("totalCount"), credit=document.getElementById("credit");
+    const list=document.getElementById("cardsList"),empty=document.getElementById("emptyState");
+    const total=document.getElementById("totalCount"),credit=document.getElementById("credit");
     list.innerHTML="";
-    const sorted=[...cards].sort((a,b)=>new Date(`${a.dueDate}T${a.dueTime||"23:59"}`)-new Date(`${b.dueDate}T${b.dueTime||"23:59"}`));
+
+    // Filter cards by type
+    let filtered=cards;
+    if(currentFilter==="hw")   filtered=cards.filter(c=>(c.type||"hw")==="hw");
+    if(currentFilter==="exam") filtered=cards.filter(c=>c.type==="exam");
+
+    const sorted=[...filtered].sort((a,b)=>new Date(`${a.dueDate}T${a.dueTime||"23:59"}`)-new Date(`${b.dueDate}T${b.dueTime||"23:59"}`));
+
+    const emptyTextEl=document.getElementById("emptyText");
+    if(currentFilter==="exam")      emptyTextEl.textContent="אין מבחנים כרגע.";
+    else if(currentFilter==="hw")   emptyTextEl.textContent="אין שיעורי בית כרגע.";
+    else                             emptyTextEl.textContent="אין שיעורי בית כרגע.";
+
     if(!sorted.length){empty.classList.remove("hidden");total.classList.add("hidden");credit.classList.add("hidden");return;}
     empty.classList.add("hidden");total.classList.remove("hidden");credit.classList.remove("hidden");
-    total.textContent=TEXT.totalCount.replace("{n}",sorted.length);
+    total.textContent=`סה"כ ${sorted.length} משימות`;
+
     sorted.forEach((card,i)=>{
-      const mins=getMinutesUntil(card.dueDate,card.dueTime), u=getUrgency(mins);
+      const mins=getMinutesUntil(card.dueDate,card.dueTime),u=getUrgency(mins);
       watchCardDiff(card.id);
       const dd=cardDiffCache[card.id];
+      const isExam=(card.type==="exam");
+      const typeBadge=isExam
+        ?`<div class="type-badge type-badge-exam">📝 מבחן</div>`
+        :`<div class="type-badge type-badge-hw">📚 שיעורי בית</div>`;
       let diffHTML=dd&&dd.count>0?`<div class="card-difficulty-badge" style="color:${getDiffColor(dd.avg)};border-color:${getDiffColor(dd.avg)}33">🔥 קושי ${dd.avg}/10 · ${getDiffLabel(dd.avg)}</div>`
-                  :dd?`<div class="card-difficulty-badge" style="color:var(--text4)">${TEXT.cardNotRated}</div>`:"";
-      const qHTML=card.questions?`<div class="card-questions"><span class="card-questions-label">${TEXT.cardQuestionsLabel}</span>${card.questions}</div>`:"";
+                  :dd?`<div class="card-difficulty-badge" style="color:var(--text4)">🔥 לא דורג עדיין</div>`:"";
+      const qHTML=card.questions?`<div class="card-questions"><span class="card-questions-label">שאלות:</span>${card.questions}</div>`:"";
       const hasImgs=card.hwImages&&card.hwImages.length>0;
-      const imgBadge=hasImgs?`<div class="card-has-images">${TEXT.cardHasImages} (${card.hwImages.length})</div>`:"";
+      const imgBadge=hasImgs?`<div class="card-has-images">📋 יש תמונות משימה (${card.hwImages.length})</div>`:"";
       const div=document.createElement("div");
-      div.className="card"; div.style.cssText=`background:${u.bg};border:1px solid ${u.border};box-shadow:${u.glow}`;
+      div.className="card";div.style.cssText=`background:${u.bg};border:1px solid ${u.border};box-shadow:${u.glow}`;
       div.onclick=e=>{if(!e.target.classList.contains("delete-btn")&&!e.target.closest(".delete-btn"))handleCardClick(card.id);};
       div.innerHTML=`<div class="card-number" style="border:1px solid ${u.color}44;color:${u.color}">#${i+1}</div>
         <div class="card-info">
+          ${typeBadge}
           <div class="card-subject">${card.subject}</div>
-          <div class="card-pages">${TEXT.cardPagesPrefix} <span>${card.pages}</span></div>
+          <div class="card-pages">עמודים <span>${card.pages}</span></div>
           ${qHTML}${imgBadge}${diffHTML}
-          <div class="card-hint">${TEXT.cardHint}</div>
+          <div class="card-hint">לחץ לצפייה בתשובות ✦</div>
         </div>
         <div class="card-due ${isAdmin?"has-delete":""}">
           <div class="card-urgency" style="color:${u.color}">${u.label}</div>
@@ -1471,63 +1224,43 @@
 
   db.collection("homework").orderBy("dueDate").onSnapshot(snap=>{cards=snap.docs.map(d=>({id:d.id,...d.data()}));render();});
 
-  // ══ TAB SWITCHING ══
-  function switchAnswersTab(tab){
-    currentAnswersTab = tab;
-    // Update tab button styles
-    document.getElementById("tabBtnAssignment").classList.toggle("active", tab==="assignment");
-    document.getElementById("tabBtnAnswers").classList.toggle("active", tab==="answers");
-    // Show/hide panels
-    document.getElementById("panelAssignment").classList.toggle("active", tab==="assignment");
-    document.getElementById("panelAnswers").classList.toggle("active", tab==="answers");
-  }
-
   // ══ ANSWERS MODAL ══
-  function handleCardClick(id){
-    currentCardId=id;
-    openAnswers(id);
+  function switchAnswersTab(tab){
+    currentAnswersTab=tab;
+    document.getElementById("tabBtnAssignment").classList.toggle("active",tab==="assignment");
+    document.getElementById("tabBtnAnswers").classList.toggle("active",tab==="answers");
+    document.getElementById("panelAssignment").classList.toggle("active",tab==="assignment");
+    document.getElementById("panelAnswers").classList.toggle("active",tab==="answers");
   }
+  function handleCardClick(id){currentCardId=id;openAnswers(id);}
   function openAnswers(id){
-    currentCardId=id; const card=cards.find(c=>c.id===id);
-    document.getElementById("answersSubject").textContent=card?card.subject+TEXT.answersSubjectSep+card.pages:"";
+    currentCardId=id;const card=cards.find(c=>c.id===id);
+    document.getElementById("answersSubject").textContent=card?card.subject+" — עמ' "+card.pages:"";
     document.getElementById("answersModal").classList.remove("hidden");
-    // Always start on assignment tab
     switchAnswersTab('assignment');
-    pendingFiles=[]; renderPreviews(); document.getElementById("uploadBtn").disabled=true;
+    pendingFiles=[];renderPreviews();document.getElementById("uploadBtn").disabled=true;
     document.getElementById("uploadingText").classList.add("hidden");
-    loadAssignmentImages(card);
-    loadPhotos(id);
-    loadDiffVotes(id);
+    loadAssignmentImages(card);loadPhotos(id);loadDiffVotes(id);
   }
   function closeAnswers(){
     document.getElementById("answersModal").classList.add("hidden");
     if(photosUnsubscribe){photosUnsubscribe();photosUnsubscribe=null;}
     if(diffUnsubscribe){diffUnsubscribe();diffUnsubscribe=null;}
-    currentCardId=null; document.getElementById("fileInput").value=""; pendingFiles=[]; renderPreviews();
+    currentCardId=null;document.getElementById("fileInput").value="";pendingFiles=[];renderPreviews();
   }
-
-  // ══ ASSIGNMENT IMAGES (admin-uploaded, stored in card doc) ══
   function loadAssignmentImages(card){
-    const loading=document.getElementById("assignmentLoading");
-    const grid=document.getElementById("assignmentImgsGrid");
-    const noImgs=document.getElementById("noAssignmentImgs");
-    loading.classList.remove("hidden"); grid.classList.add("hidden"); noImgs.classList.add("hidden");
-    grid.innerHTML="";
+    const loading=document.getElementById("assignmentLoading"),grid=document.getElementById("assignmentImgsGrid"),noImgs=document.getElementById("noAssignmentImgs");
+    loading.classList.remove("hidden");grid.classList.add("hidden");noImgs.classList.add("hidden");grid.innerHTML="";
     const urls=(card&&card.hwImages&&card.hwImages.length)?card.hwImages:[];
     loading.classList.add("hidden");
-    if(!urls.length){ noImgs.classList.remove("hidden"); return; }
+    if(!urls.length){noImgs.classList.remove("hidden");return;}
     grid.classList.remove("hidden");
-    urls.forEach(url=>{
-      const wrap=document.createElement("div"); wrap.className="assignment-img-wrap";
-      wrap.innerHTML=`<img src="${url}" loading="lazy" onclick="openLightbox('${url}')"/>`;
-      grid.appendChild(wrap);
-    });
+    urls.forEach(url=>{const wrap=document.createElement("div");wrap.className="assignment-img-wrap";wrap.innerHTML=`<img src="${url}" loading="lazy" onclick="openLightbox('${url}')"/>`;grid.appendChild(wrap);});
   }
-
   function loadPhotos(id){
-    if(photosUnsubscribe) photosUnsubscribe();
-    const grid=document.getElementById("photosGrid"), np=document.getElementById("noPhotos");
-    grid.innerHTML=`<div style="text-align:center;color:var(--text4);font-size:13px;padding:20px">${TEXT.leaderboardLoading}</div>`;
+    if(photosUnsubscribe)photosUnsubscribe();
+    const grid=document.getElementById("photosGrid"),np=document.getElementById("noPhotos");
+    grid.innerHTML=`<div style="text-align:center;color:var(--text4);font-size:13px;padding:20px">טוען...</div>`;
     np.classList.add("hidden");
     photosUnsubscribe=db.collection("homework").doc(id).collection("photos").orderBy("timestamp","desc").onSnapshot(snap=>{
       const posts=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.likes?.length||0)-(a.likes?.length||0));
@@ -1535,94 +1268,93 @@
       if(!posts.length){np.classList.remove("hidden");return;}
       np.classList.add("hidden");
       posts.forEach(post=>{
-        const liked=currentUser&&post.likes?.includes(currentUser.username), lc=post.likes?.length||0;
+        const liked=currentUser&&post.likes?.includes(currentUser.username),lc=post.likes?.length||0;
         const time=post.timestamp?new Date(post.timestamp.toDate()).toLocaleDateString("he-IL",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"";
         const urls=post.urls||(post.url?[post.url]:[]);
         const imgs=urls.map(u=>`<img class="photo-img" src="${u}" loading="lazy" onclick="openLightbox('${u}')"/>`).join('<div style="height:2px;background:var(--bg)"></div>');
-        const div=document.createElement("div"); div.className="photo-card";
-        div.innerHTML=`<div class="photo-card-header"><span class="photo-uploader">${TEXT.photoUploaderIcon}${post.uploader}</span><span class="photo-time">${time}${urls.length>1?` · ${urls.length} ${TEXT.photoCountSuffix}`:""}</span></div>
+        const div=document.createElement("div");div.className="photo-card";
+        div.innerHTML=`<div class="photo-card-header"><span class="photo-uploader">👤 ${post.uploader}</span><span class="photo-time">${time}${urls.length>1?` · ${urls.length} תמונות`:""}</span></div>
           ${imgs}
           <div class="photo-actions">
-            <button class="like-btn ${liked?"liked":""}" onclick="toggleLike('${post.id}')">❤️ ${lc>0?lc:TEXT.photoLikeDefault}</button>
-            ${isAdmin?`<button class="photo-delete-btn" onclick="deletePhoto('${post.id}')">${TEXT.btnPhotoDelete}</button>`:""}
+            <button class="like-btn ${liked?"liked":""}" onclick="toggleLike('${post.id}')">❤️ ${lc>0?lc:"לייק"}</button>
+            ${isAdmin?`<button class="photo-delete-btn" onclick="deletePhoto('${post.id}')">🗑️ מחק</button>`:""}
           </div>`;
         grid.appendChild(div);
       });
     });
   }
-  async function deletePhoto(pid){ if(!isAdmin)return; if(confirm(TEXT.confirmDeletePhoto)) await db.collection("homework").doc(currentCardId).collection("photos").doc(pid).delete(); }
+  async function deletePhoto(pid){if(!isAdmin)return;if(confirm("למחוק תמונה זו?"))await db.collection("homework").doc(currentCardId).collection("photos").doc(pid).delete();}
   async function toggleLike(pid){
     if(!currentUser)return;
     const ref=db.collection("homework").doc(currentCardId).collection("photos").doc(pid);
-    const doc=await ref.get(); if(!doc.exists)return;
-    const likes=doc.data().likes||[], un=currentUser.username;
+    const doc=await ref.get();if(!doc.exists)return;
+    const likes=doc.data().likes||[],un=currentUser.username;
     await ref.update({likes:likes.includes(un)?likes.filter(u=>u!==un):[...likes,un]});
   }
 
   // ══ DIFFICULTY ══
   function renderDiffButtons(myVote){
-    const cont=document.getElementById("diffButtons"); cont.innerHTML="";
+    const cont=document.getElementById("diffButtons");cont.innerHTML="";
     for(let i=1;i<=10;i++){
-      const btn=document.createElement("button"), color=getDiffColor(i);
-      btn.className="diff-btn"+(myVote===i?" selected":""); btn.textContent=i;
+      const btn=document.createElement("button"),color=getDiffColor(i);
+      btn.className="diff-btn"+(myVote===i?" selected":"");btn.textContent=i;
       if(myVote===i){btn.style.background=color;btn.style.borderColor=color;btn.style.color="#000";}
       else{btn.style.borderColor=color+"44";btn.style.color=color+"99";}
       btn.onmouseenter=()=>{if(myVote!==i){btn.style.borderColor=color;btn.style.color=color;}};
       btn.onmouseleave=()=>{if(myVote!==i){btn.style.borderColor=color+"44";btn.style.color=color+"99";}};
-      btn.onclick=()=>submitDiffVote(i); cont.appendChild(btn);
+      btn.onclick=()=>submitDiffVote(i);cont.appendChild(btn);
     }
-    const hint=document.getElementById("diffLoginHint"), voted=document.getElementById("diffVotedMsg");
+    const hint=document.getElementById("diffLoginHint"),voted=document.getElementById("diffVotedMsg");
     if(!currentUser){hint.classList.remove("hidden");voted.classList.add("hidden");cont.style.opacity="0.4";cont.style.pointerEvents="none";}
     else{hint.classList.add("hidden");cont.style.opacity="1";cont.style.pointerEvents="auto";
-      if(myVote){voted.textContent=TEXT.diffVotedMsg.replace("{v}",myVote);voted.classList.remove("hidden");}
+      if(myVote){voted.textContent=`הצבעת ${myVote}/10 · לחץ שוב כדי לשנות`;voted.classList.remove("hidden");}
       else voted.classList.add("hidden");}
   }
   function updateDiffDisplay(votes){
-    const vals=Object.values(votes), cnt=vals.length, avg=cnt>0?vals.reduce((a,b)=>a+b,0)/cnt:0;
-    const ar=cnt>0?Math.round(avg*10)/10:null, color=getDiffColor(ar);
-    const ne=document.getElementById("diffAvgNumber"), se=document.getElementById("diffAvgSub");
-    const be=document.getElementById("diffBarFill"), ve=document.getElementById("diffVotersCount");
-    if(ar!==null){ne.textContent=ar;ne.style.color=color;se.textContent=getDiffLabel(ar);se.style.color=color+"99";be.style.width=(avg/10*100)+"%";be.style.background=color;ve.textContent=cnt+" "+TEXT.diffVotesSuffix;}
-    else{ne.textContent="—";ne.style.color="#444";se.textContent=TEXT.diffNoVotes;se.style.color="var(--text4)";be.style.width="0%";ve.textContent="";}
+    const vals=Object.values(votes),cnt=vals.length,avg=cnt>0?vals.reduce((a,b)=>a+b,0)/cnt:0;
+    const ar=cnt>0?Math.round(avg*10)/10:null,color=getDiffColor(ar);
+    const ne=document.getElementById("diffAvgNumber"),se=document.getElementById("diffAvgSub");
+    const be=document.getElementById("diffBarFill"),ve=document.getElementById("diffVotersCount");
+    if(ar!==null){ne.textContent=ar;ne.style.color=color;se.textContent=getDiffLabel(ar);se.style.color=color+"99";be.style.width=(avg/10*100)+"%";be.style.background=color;ve.textContent=cnt+" הצבעות";}
+    else{ne.textContent="—";ne.style.color="#444";se.textContent="אין הצבעות עדיין";se.style.color="var(--text4)";be.style.width="0%";ve.textContent="";}
   }
   function loadDiffVotes(id){
     if(diffUnsubscribe){diffUnsubscribe();diffUnsubscribe=null;}
     diffUnsubscribe=db.collection("homework").doc(id).collection("votes").doc("data").onSnapshot(doc=>{
       const v=doc.exists?(doc.data().votes||{}):{};
-      updateDiffDisplay(v); renderDiffButtons(currentUser?(v[currentUser.username]||null):null);
+      updateDiffDisplay(v);renderDiffButtons(currentUser?(v[currentUser.username]||null):null);
     });
   }
   async function submitDiffVote(score){
     if(!currentUser||!currentCardId)return;
     const ref=db.collection("homework").doc(currentCardId).collection("votes").doc("data");
-    const doc=await ref.get(), votes=doc.exists?(doc.data().votes||{}):{};
-    if(votes[currentUser.username]===score) delete votes[currentUser.username]; else votes[currentUser.username]=score;
+    const doc=await ref.get(),votes=doc.exists?(doc.data().votes||{}):{};
+    if(votes[currentUser.username]===score)delete votes[currentUser.username];else votes[currentUser.username]=score;
     await ref.set({votes});
   }
-  function openAuthForDiff(){ openAuthModal(); }
 
   // ══ UPLOAD (user answers) ══
   function handleFiles(e){pendingFiles=[...pendingFiles,...Array.from(e.target.files)];renderPreviews();document.getElementById("uploadBtn").disabled=pendingFiles.length===0;}
   function renderPreviews(){
-    const c=document.getElementById("uploadPreviews"); c.innerHTML="";
+    const c=document.getElementById("uploadPreviews");c.innerHTML="";
     pendingFiles.forEach((f,i)=>{const r=new FileReader();r.onload=e=>{const w=document.createElement("div");w.className="upload-preview";w.innerHTML=`<img src="${e.target.result}"/><button class="upload-preview-remove" onclick="removeFile(${i})">&#215;</button>`;c.appendChild(w);};r.readAsDataURL(f);});
   }
   function removeFile(i){pendingFiles.splice(i,1);renderPreviews();document.getElementById("uploadBtn").disabled=pendingFiles.length===0;}
   async function uploadToImgBB(file){
-    const fd=new FormData(); fd.append("image",file);
+    const fd=new FormData();fd.append("image",file);
     const res=await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`,{method:"POST",body:fd});
-    const data=await res.json(); if(!data.success)throw new Error(TEXT.errUploadInternal); return data.data.url;
+    const data=await res.json();if(!data.success)throw new Error("שגיאה בהעלאה");return data.data.url;
   }
   async function uploadPhotos(){
     if(!currentUser||!pendingFiles.length)return;
-    const btn=document.getElementById("uploadBtn"), ut=document.getElementById("uploadingText");
-    btn.disabled=true; ut.classList.remove("hidden");
+    const btn=document.getElementById("uploadBtn"),ut=document.getElementById("uploadingText");
+    btn.disabled=true;ut.classList.remove("hidden");
     try{
-      const urls=[]; for(const f of pendingFiles) urls.push(await uploadToImgBB(f));
+      const urls=[];for(const f of pendingFiles)urls.push(await uploadToImgBB(f));
       await db.collection("homework").doc(currentCardId).collection("photos").add({urls,uploader:currentUser.username,likes:[],timestamp:firebase.firestore.FieldValue.serverTimestamp()});
-      pendingFiles=[]; renderPreviews(); document.getElementById("fileInput").value="";
-    }catch(err){alert(TEXT.errUploadFailed+err.message);}
-    btn.disabled=true; ut.classList.add("hidden");
+      pendingFiles=[];renderPreviews();document.getElementById("fileInput").value="";
+    }catch(err){alert("שגיאה בהעלאת תמונות: "+err.message);}
+    btn.disabled=true;ut.classList.add("hidden");
   }
 
   // ══ LIGHTBOX ══
@@ -1633,29 +1365,29 @@
   async function openLeaderboard(){
     document.getElementById("leaderboardModal").classList.remove("hidden");
     const el=document.getElementById("leaderboardList");
-    el.innerHTML=`<div style="text-align:center;color:var(--text4);padding:20px;font-size:13px">${TEXT.leaderboardLoading}</div>`;
+    el.innerHTML=`<div style="text-align:center;color:var(--text4);padding:20px;font-size:13px">טוען...</div>`;
     try{
-      const hw=await db.collection("homework").get(), totals={};
+      const hw=await db.collection("homework").get(),totals={};
       for(const d of hw.docs){const ph=await db.collection("homework").doc(d.id).collection("photos").get();ph.forEach(p=>{const data=p.data();totals[data.uploader||"?"]=(totals[data.uploader||"?"]||0)+(data.likes?.length||0);});}
       const sorted=Object.entries(totals).sort((a,b)=>b[1]-a[1]);
-      if(!sorted.length){el.innerHTML=`<div style="text-align:center;color:var(--text4);padding:30px;font-size:14px">${TEXT.leaderboardEmpty}</div>`;return;}
+      if(!sorted.length){el.innerHTML=`<div style="text-align:center;color:var(--text4);padding:30px;font-size:14px">אין נתונים עדיין</div>`;return;}
       const medals=["🥇","🥈","🥉"];
       el.innerHTML=sorted.map(([user,likes],i)=>{
         const isMe=currentUser&&currentUser.username===user;
         return `<div style="display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);border-radius:8px;background:${isMe?"rgba(100,210,255,0.05)":"transparent"}">
           <span style="font-size:20px;width:32px;text-align:center">${medals[i]||(i+1)+"."}</span>
-          <span style="flex:1;font-size:15px;font-weight:bold;color:${isMe?"var(--accent)":"var(--text)"}">${user}${isMe?TEXT.leaderboardMe:""}</span>
+          <span style="flex:1;font-size:15px;font-weight:bold;color:${isMe?"var(--accent)":"var(--text)"}">${user}${isMe?" (את/ה)":""}</span>
           <span style="color:#ff2d55;font-size:14px">❤️ ${likes}</span>
         </div>`;
       }).join("");
-    }catch(e){el.innerHTML=`<div style="color:#ff2d55;text-align:center;padding:20px">${TEXT.leaderboardError}</div>`;}
+    }catch(e){el.innerHTML=`<div style="color:#ff2d55;text-align:center;padding:20px">שגיאה בטעינה</div>`;}
   }
   function closeLeaderboard(e){if(e&&e.target!==document.getElementById("leaderboardModal"))return;document.getElementById("leaderboardModal").classList.add("hidden");}
 
   // ══ AUTO-DELETE EXPIRED ══
   async function deleteExpiredCards(){
-    const now=new Date(), snap=await db.collection("homework").get();
-    snap.forEach(async d=>{const data=d.data(), dt=new Date(`${data.dueDate}T${data.dueTime||"23:59"}:00`);if(now>=dt)await db.collection("homework").doc(d.id).delete();});
+    const now=new Date(),snap=await db.collection("homework").get();
+    snap.forEach(async d=>{const data=d.data(),dt=new Date(`${data.dueDate}T${data.dueTime||"23:59"}:00`);if(now>=dt)await db.collection("homework").doc(d.id).delete();});
   }
 
   // ══ HELPERS ══
@@ -1665,11 +1397,11 @@
   function hide(id){document.getElementById(id).classList.add("hidden");}
 
   // ══ INIT ══
-  applyTexts();
   applyTheme(currentTheme);
   updateAdminDrawerUI();
   deleteExpiredCards();
   setInterval(deleteExpiredCards,60000);
 </script>
+
 </body>
 </html>
